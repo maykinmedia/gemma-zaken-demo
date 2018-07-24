@@ -1,0 +1,1 @@
+default_app_config = 'zdsclient.contrib.django.apps.ZDSClientConfig'
