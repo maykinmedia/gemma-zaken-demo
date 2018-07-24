@@ -22,6 +22,8 @@ class Swagger2OpenApi:
     def convert(self) -> dict:
         tempdir = tempfile.mkdtemp()
 
+        import ipdb; ipdb.set_trace()
+
         infile = os.path.join(tempdir, 'swagger2.0.yaml')
         outfile = os.path.join(tempdir, 'openapi.yaml')
 
@@ -29,7 +31,8 @@ class Swagger2OpenApi:
             with open(infile, 'wb') as _infile:
                 _infile.write(self.swagger)
 
-            cmd = 'node_modules/.bin/swagger2openapi {infile} --outfile {outfile}'.format(
+            cmd = '{bin} {infile} --outfile {outfile}'.format(
+                bin=os.path.join(*'node_modules/.bin/swagger2openapi'.split('/')),
                 infile=infile,
                 outfile=outfile,
             )

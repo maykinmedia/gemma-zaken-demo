@@ -11,6 +11,7 @@ class Settings(object):
         self.base_dir = os.path.abspath(os.path.join(
             os.path.dirname(__file__),
             os.path.pardir,
+            os.path.pardir,
         ))
 
     def load(self, config_file=None):
