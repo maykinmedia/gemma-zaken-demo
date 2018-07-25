@@ -1,0 +1,9 @@
+{% extends "demo/list.html" %}
+
+{% block content %}
+  {{ block.super }}
+
+  <div class="container">
+    {% include "includes/networktraffic.html" %}
+  </div>
+{% endblock %}
