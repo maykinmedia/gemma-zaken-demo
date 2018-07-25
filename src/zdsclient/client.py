@@ -148,6 +148,13 @@ class Client:
         assert response.status_code == 200, response.json()
         return response.json()
 
+    def list(self, resource: str, **path_kwargs):
+        operation_id = '{resource}_list'.format(resource=resource)
+        url = get_operation_url(self.schema, operation_id, **path_kwargs)
+        response = self.request(url)
+        assert response.status_code == 200, response.json()
+        return response.json()
+
     def create(self, resource: str, data: dict, **path_kwargs):
         operation_id = '{resource}_create'.format(resource=resource)
         url = get_operation_url(self.schema, operation_id, **path_kwargs)

@@ -34,12 +34,35 @@ DEBUG = True
 # Add the hostnames or IP addresses that access this web application here.
 ALLOWED_HOSTS = []
 
+#
+# Project specific settings
+#
 # Add a Google API key to show a map in the demo application.
 GOOGLE_API_KEY = ''
 
-# Services service via NLX:
-NLX_OUTWAY_URL = 'http://localhost:12018'
-KADASTER_SERVICE_URL = '{}/demo-organization/kadaster-brk'.format(NLX_OUTWAY_URL)
+# ZDS Client configuration.
+ZDSCLIENT_CONFIG = {
+    'zrc': {
+        'host': 'localhost',
+        'port': 8000,
+        'scheme': 'http'
+    },
 
-# If you want to use the Kadaster directly, just use:
-# KADASTER_SERVICE_URL = 'https://brk.basisregistraties.overheid.nl'
+    'drc': {
+        'host': 'localhost',
+        'port': 8001,
+        'scheme': 'http'
+    },
+    'ztc': {
+        'host': 'localhost',
+        'port': 8002,
+        'scheme': 'http'
+    },
+    'orc': {
+        'host': 'localhost',
+        'port': 8003,
+        'scheme': 'http'
+    }
+}
+
+DEMO_BRONORGANISATIE = '517439943'

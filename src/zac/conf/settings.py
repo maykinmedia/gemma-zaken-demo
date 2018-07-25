@@ -42,13 +42,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'widget_tweaks',
+    'hijack',
+    'compat',  # Part of hijack
+    'hijack_admin',
 
     'zac.accounts',
-    'zac.datamodel',
-    'zac.demo',
+    'zdsclient.contrib.django',
 
-    'zdsclient.contrib.django'
+    # Demo applicaties
+    'zac.demo.mor',
+    'zac.demo.zaakbeheer',
 ]
 
 MIDDLEWARE = [
@@ -140,22 +143,24 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # Additional locations of static files
 STATICFILES_DIRS = (
     os.path.join(DJANGO_PROJECT_DIR, 'static'),
-    ('bootstrap', os.path.join(BASE_DIR, 'node_modules', 'bootstrap', 'dist')),
-    ('jquery', os.path.join(BASE_DIR, 'node_modules', 'jquery', 'dist')),
-    ('popperjs', os.path.join(BASE_DIR, 'node_modules', 'popper.js', 'dist')),
-    ('holderjs', os.path.join(BASE_DIR, 'node_modules', 'holderjs')),
 )
 
+# Django-Hijack
+HIJACK_LOGIN_REDIRECT_URL = '/'
+HIJACK_LOGOUT_REDIRECT_URL = reverse_lazy('admin:accounts_user_changelist')
+HIJACK_REGISTER_ADMIN = False
+# This is a CSRF-security risk.
+# See: http://django-hijack.readthedocs.io/en/latest/configuration/#allowing-get-method-for-hijack-views
+HIJACK_ALLOW_GET_REQUESTS = True
+
+
+#
+# Project specific settings
+#
 # Add a Google API key to show a map in the demo application.
 GOOGLE_API_KEY = ''
 
-# Services service via NLX:
-NLX_OUTWAY_URL = 'http://localhost:12018'
-KADASTER_SERVICE_URL = '{}/demo-organization/kadaster-brk'.format(NLX_OUTWAY_URL)
-
-# If you want to use the Kadaster directly, just use:
-# KADASTER_SERVICE_URL = 'https://brk.basisregistraties.overheid.nl'
-
+# ZDS Client configuration.
 ZDSCLIENT_CONFIG = {
     'zrc': {
         'host': 'localhost',
@@ -173,7 +178,18 @@ ZDSCLIENT_CONFIG = {
         'port': 8002,
         'scheme': 'http'
     },
+    'orc': {
+        'host': 'localhost',
+        'port': 8003,
+        'scheme': 'http'
+    }
 }
+
+DEMO_BRONORGANISATIE = '517439943'
+
+DEMO_ZTC_CATALOGUS_UUID = 'a0dfa894-0dd1-4395-8e8c-b169130d7ebb'
+DEMO_MOR_ZTC_ZAAKTYPE_UUID = 'f82abbc7-e963-4808-961d-304cdde7f935'  # Melding Openbare Ruimte
+DEMO_MOR_ZTC_STATUSTYPE_NEW_UUID = '9614ec19-ec65-4472-9a73-9f7f37c7c338'  # Nieuw
 
 # Override settings with local settings.
 try:
