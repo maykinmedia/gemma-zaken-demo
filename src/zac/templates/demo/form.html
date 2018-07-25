@@ -1,0 +1,17 @@
+{% extends "demo/base.html" %}
+
+{% block content %}
+
+  <div class="container">
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      {% include "includes/form_fields.html" %}
+
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+  </div>
+
+{% endblock %}

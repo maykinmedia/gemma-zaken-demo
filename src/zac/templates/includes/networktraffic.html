@@ -1,0 +1,37 @@
+<p>
+  <a class="btn btn-warning" data-toggle="collapse" href="#networktraffic" role="button" aria-expanded="false" aria-controls="networktraffic">
+    Toon netwerk communicatie
+  </a>
+</p>
+
+<div class="collapse" id="networktraffic">
+
+  {% for entry in log_entries %}
+    <h5>
+      <i class="fas fa-desktop"></i> applicatie <i style="color: lightgray;" class="fas fa-exchange-alt"></i> <i class="fas fa-database"></i> {{ entry.service }}
+    </h5>
+    <p><strong>{{ entry.request.method }}</strong> {{ entry.request.url }} <span class="badge badge-{% if entry.response.status < 400 %}success{% else %}warning{% endif %}">HTTP {{ entry.response.status }}</span></p>
+
+    <p>
+      {% if entry.request.data %}
+        <a class="btn btn-secondary btn-sm" data-toggle="collapse" href="#request-{{ forloop.counter }}" role="button" aria-expanded="false" aria-controls="request-{{ forloop.counter }}">
+          Toon verzoek
+        </a>
+      {% endif %}
+      <a class="btn btn-secondary btn-sm" data-toggle="collapse" href="#response-{{ forloop.counter }}" role="button" aria-expanded="false" aria-controls="response-{{ forloop.counter }}">
+        Toon antwoord
+      </a>
+    </p>
+
+    <div class="collapse" id="request-{{ forloop.counter }}">
+      <h6>Verzoek</h6>
+      <pre class="card card-body pre-scrollable">{{ entry.request.data }}</pre>
+    </div>
+
+    <div class="collapse" id="response-{{ forloop.counter }}">
+      <h6>Antwoord</h6>
+      <pre class="card card-body pre-scrollable">{{ entry.response.data }}</pre>
+    </div>
+  {% endfor %}
+
+</div>

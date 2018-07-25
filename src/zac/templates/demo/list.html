@@ -1,0 +1,28 @@
+{% extends "demo/base.html" %}
+
+{% block content %}
+
+  <div class="container">
+
+    <table class="table">
+      <thead>
+        <tr>
+          {% for header_column in header %}
+            <th scope="col">{{ header_column }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            {% for col in row %}
+              <td>{{ col }}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+
+{% endblock %}

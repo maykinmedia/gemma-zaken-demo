@@ -1,3 +1,4 @@
+import datetime
 import os
 import shutil
 import subprocess
@@ -22,8 +23,6 @@ class Swagger2OpenApi:
     def convert(self) -> dict:
         tempdir = tempfile.mkdtemp()
 
-        import ipdb; ipdb.set_trace()
-
         infile = os.path.join(tempdir, 'swagger2.0.yaml')
         outfile = os.path.join(tempdir, 'openapi.yaml')
 
@@ -45,13 +44,57 @@ class Swagger2OpenApi:
             shutil.rmtree(tempdir)
 
 
-class Client:
+class Log:
+    _entries = []
+    max_entries = 100
 
+    @classmethod
+    def add(cls, service, url, method, request_headers, request_data, response_status, response_headers, response_data):
+        # Definitly not thread-safe
+        if len(cls._entries) >= cls.max_entries:
+            cls._entries.pop(0)
+
+        entry = {
+            'timestamp': datetime.datetime.now(),
+            'service': service,
+            'request': {
+                'url': url,
+                'method': method,
+                'headers': request_headers,
+                'data': request_data,
+            },
+            'response': {
+                'status': response_status,
+                'headers': response_headers,
+                'data': response_data,
+            }
+        }
+
+        cls._entries.append(entry)
+
+    @classmethod
+    def clear(cls):
+        cls._entries = []
+
+    @classmethod
+    def entries(cls):
+        return cls._entries
+
+
+class Client:
     _schema = None
+    _log = Log()
 
     def __init__(self, service: str, base_path: str='/api/v1/'):
         self.service = service
         self.base_path = base_path
+
+    @property
+    def log(self):
+        """
+        Local log entries.
+        """
+        return (entry for entry in self._log.entries() if entry['service'] == self.service)
 
     @property
     def base_url(self) -> str:
@@ -73,9 +116,24 @@ class Client:
         url = urljoin(self.base_url, path)
         headers = kwargs.pop('headers', {})
         headers.setdefault('Accept', 'application/json')
+        headers.setdefault('Accept-Crs', 'EPSG:4326')
         headers.setdefault('Content-Type', 'application/json')
         kwargs['headers'] = headers
-        return requests.request(method, url, **kwargs)
+
+        response = requests.request(method, url, **kwargs)
+
+        self._log.add(
+            self.service,
+            url,
+            method,
+            headers,
+            kwargs.get('data', kwargs.get('json', None)),
+            response.status_code,
+            dict(response.headers),
+            response.content.decode('utf-8'),
+        )
+
+        return response
 
     def fetch_schema(self):
         url = urljoin(self.base_url, 'schema/openapi.yaml')

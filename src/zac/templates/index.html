@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <main role="main">
+    <section class="jumbotron text-center">
+      <div class="container">
+        <h1 class="jumbotron-heading">Demo applicaties</h1>
+        <p class="lead text-muted">De demo applicaties maken gebruik van 1 of meer van de Zaak-gerelateerde componenten.</p>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>&nbsp;</th>
+              <th colspan="4">Componenten</th>
+            </tr>
+            <tr>
+              <th>Applicatie</th>
+              <th>ZRC</th>
+              <th>ZTC</th>
+              <th>DRC</th>
+              <th>ORC</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="{% url 'demo:mor-index' %}">Melding Openbare Ruimte</a></td>
+              <td><i class="far fa-check-square"></i></td>
+              <td><i class="far fa-check-square"></i></td>
+              <td><i class="far fa-check-square"></i></td>
+              <td><i class="far fa-square"></i></td>
+            </tr>
+            <tr>
+              <td><a href="{% url 'demo:zaakbeheer-index' %}">Zaakbeheer</a></td>
+              <td><i class="far fa-check-square"></i></td>
+              <td><i class="far fa-check-square"></i></td>
+              <td><i class="far fa-square"></i></td>
+              <td><i class="far fa-square"></i></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>
+          <a href="{% url 'admin:index' %}" class="btn btn-secondary">Configuratie</a>
+        </p>
+      </div>
+    </section>
+  </main>
+{% endblock %}
