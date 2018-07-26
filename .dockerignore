@@ -1,1 +1,8 @@
-src/zac/conf/local.py
+node_modules
+Dockerfile*
+docker-compose*
+.dockerignore
+.git
+.vscode
+env/
+local.py

@@ -24,7 +24,7 @@ BASE_DIR = os.path.abspath(os.path.join(DJANGO_PROJECT_DIR, os.path.pardir, os.p
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ''
+SECRET_KEY = 'o(je41k00h8cz*x36@6uyq&c3mz(3*w()z&hlb017@xeikc&x5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -119,7 +119,7 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'accounts.User'
 
 # Logout redirect
-LOGOUT_REDIRECT_URL = reverse_lazy('datamodel:index')
+LOGOUT_REDIRECT_URL = reverse_lazy('index')
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
