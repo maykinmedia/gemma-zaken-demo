@@ -8,6 +8,7 @@
             type="{{ field.field.widget.input_type }}"
             class="form-check-input"
             id="{{ field.id_for_label }}"
+            {% for key, value in field.field.widget.attrs.items %}{{ key }}="{{ value }}" {% endfor %}
           >
           <label for="{{ field.id_for_label }}" class=" form-check-label {{ field.field.required|yesno:'required,' }}">{{ field.label }}</label>
       {% else %}
@@ -20,7 +21,19 @@
             name="{{ field.html_name }}"
             id="{{ field.id_for_label }}"
             class="form-control {% if field.errors %}is-invalid{% endif %}"
+            {% for key, value in field.field.widget.attrs.items %}{{ key }}="{{ value }}" {% endfor %}
           >{{ field.value|default:'' }}</textarea>
+        {% elif field.field.choices %}
+          <select
+            name="{{ field.html_name }}"
+            id="{{ field.id_for_label }}"
+            class="form-control {% if field.errors %}is-invalid{% endif %}"
+            {% for key, value in field.field.widget.attrs.items %}{{ key }}="{{ value }}" {% endfor %}
+          >
+            {% for key, value in field.field.choices %}
+              <option value="{{ key }}" {% if field.value == key %}selected="selected"{% endif %}>{{ value }}</option>
+            {% endfor %}
+          </select>
         {% else %}
           <input
             type="{{ field.field.widget.input_type }}"
@@ -28,6 +41,7 @@
             id="{{ field.id_for_label }}"
             value="{{ field.value|default:'' }}"
             class="form-control {% if field.errors %}is-invalid{% endif %}"
+            {% for key, value in field.field.widget.attrs.items %}{{ key }}="{{ value }}" {% endfor %}
           >
         {% endif %}
         {% if field.help_text %}

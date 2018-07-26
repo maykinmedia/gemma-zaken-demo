@@ -1,0 +1,44 @@
+{% extends "demo/base.html" %}
+
+{% block extra_style %}
+  {{ block.super }}
+
+  <style>
+    #map-canvas { height: 600px; }
+  </style>
+{% endblock %}
+
+{% block content %}
+
+  <div class="container">
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="row">
+        <div class="col-sm">
+
+          <label class="required">Locatie</label>
+          <div id="map-canvas"></div>
+
+        </div>
+        <div class="col-sm">
+
+          {% include "includes/form_fields.html" %}
+
+          <button type="submit" class="btn btn-primary">Versturen</button>
+
+        </div>
+      </div>
+
+    </form>
+
+  </div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+  {{ block.super }}
+
+  <script src="https://maps.googleapis.com/maps/api/js?key={{ settings.GOOGLE_API_KEY }}&callback=initMap" async defer></script>
+{% endblock %}
