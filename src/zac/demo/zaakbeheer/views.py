@@ -74,4 +74,104 @@ class ZaakListView(TemplateView):
             'header': headers,
             'rows': rows,
             'log_entries': Log.entries()
-        }
+        })
+
+        return context
+
+
+
+class ZaakDetailForm(forms.Form):
+    zaaktype = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+    zaakidentificatie = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+    bronorganisatie = forms.CharField()
+    registratiedatum = forms.DateField()
+    status = forms.ChoiceField()
+    status_toelichting = forms.CharField()
+    toelichting = forms.CharField(widget=forms.Textarea)
+    longitude = forms.FloatField(widget=forms.HiddenInput)
+    latitude = forms.FloatField(widget=forms.HiddenInput)
+
+    def __init__(self, *args, **kwargs):
+        status_choices = kwargs.pop('status_choices')
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['status'].choices = status_choices
+
+
+class ZaakDetailView(FormView):
+    title = 'Zaakbeheer'
+    subtitle = 'Details van een Zaak uit het ZRC'
+    template_name = 'demo/zaakbeheer/zaak_detail.html'
+    form_class = ZaakDetailForm
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        Log.clear()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'log_entries': Log.entries()
+        })
+        return context
+
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+
+        # Haal Zaak op uit ZRC
+        zaak = zrc_client.retrieve('zaak', uuid=self.kwargs.get('uuid'))
+        # TODO: We should be able to filter on zaak, to get all (historical) statusses for this Zaak.
+        # For now, we just retrieve the current status of this Zaak.
+        status = zrc_client.retrieve('status', uuid=get_uuid(zaak['status']))
+
+        # Haal Zaaktype op.
+        zaaktype = None
+        if zaak['zaaktype']:
+            zaaktype = ztc_client.retrieve('zaaktype', catalogus_uuid=settings.DEMO_ZTC_CATALOGUS_UUID, uuid=get_uuid(zaak['zaaktype']))
+
+        # Haal mogelijke statusTypen op van deze Zaak.
+        statustype_urls = zaaktype['statustypen']
+        statustype_choices = []
+        for statustype_url in statustype_urls:
+            statustype = ztc_client.retrieve('statustype', catalogus_uuid=settings.DEMO_ZTC_CATALOGUS_UUID, zaaktype_uuid=get_uuid(zaak['zaaktype']), uuid=get_uuid(statustype_url))
+            statustype_choices.append(
+                (statustype_url, statustype['omschrijving'])
+            )
+
+        form_kwargs.update({
+            'status_choices': statustype_choices
+        })
+
+        if 'initial' in form_kwargs:
+            extra_initial = zaak
+            extra_initial.update({
+                'zaaktype': zaaktype['omschrijving'] if zaaktype else '(onbekend)',
+                'status_toelichting': status['statustoelichting'],
+            })
+
+            # Extract longitude/latitude from zaakgeometrie if present.
+            if zaak['zaakgeometrie'] and \
+                    zaak['zaakgeometrie'].get('type', '').upper() == 'POINT' and \
+                    len(zaak['zaakgeometrie'].get('coordinates', [])) == 2:
+
+                extra_initial.update({
+                    'longitude': zaak['zaakgeometrie']['coordinates'][0],
+                    'latitude': zaak['zaakgeometrie']['coordinates'][1],
+                })
+            form_kwargs['initial'].update(extra_initial)
+
+        return form_kwargs
+    #
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #
+    #
+    #     context.update({
+    #         'header': headers,
+    #         'rows': rows,
+    #         'log_entries': Log.entries()
+    #     })
+    #
+    #     return context

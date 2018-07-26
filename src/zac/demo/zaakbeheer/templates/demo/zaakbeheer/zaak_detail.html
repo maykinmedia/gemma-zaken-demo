@@ -1,0 +1,36 @@
+{% extends "demo/form_with_map.html" %}
+
+{% block extra_scripts %}
+  <script type="application/javascript">
+
+    function initMap() {
+      var location = new google.maps.LatLng($('#id_latitude').val(), $('#id_longitude').val());
+
+      var mapDiv = document.getElementById('map-canvas');
+      var map = new google.maps.Map(mapDiv, {
+        center: location,
+        zoom: 15,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        styles: [
+          {
+            featureType: 'poi.business',
+            stylers: [{visibility: 'off'}]
+          },
+          {
+            featureType: 'transit',
+            elementType: 'labels.icon',
+            stylers: [{visibility: 'off'}]
+          }
+        ]
+      });
+
+      var marker = new google.maps.Marker({
+          map: map,
+          position: location
+      });
+
+    }
+  </script>
+
+  {{ block.super }}
+{% endblock %}
