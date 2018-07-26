@@ -121,6 +121,10 @@ class Client:
         kwargs['headers'] = headers
 
         response = requests.request(method, url, **kwargs)
+        try:
+            response_json = response.json()
+        except:
+            response_json = None
 
         self._log.add(
             self.service,
@@ -128,9 +132,9 @@ class Client:
             method,
             headers,
             kwargs.get('data', kwargs.get('json', None)),
-            response.status_code,
-            dict(response.headers),
-            response.content.decode('utf-8'),
+            response.status_code if response else None,
+            dict(response.headers) if response else None,
+            response_json,
         )
 
         return response
