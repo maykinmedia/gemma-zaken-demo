@@ -8,8 +8,8 @@ from urllib.parse import urljoin
 import requests
 import yaml
 
-from .schema import get_operation_url
 from .conf import settings
+from .schema import get_operation_url
 
 
 class Swagger2OpenApi:

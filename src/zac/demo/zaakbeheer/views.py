@@ -2,8 +2,9 @@ from django import forms
 from django.conf import settings
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from django.views.generic import TemplateView, FormView
+from django.views.generic import FormView, TemplateView
 
+from zac.demo.models import SiteConfiguration
 from zdsclient import zrc_client, ztc_client
 from zdsclient.client import Log
 
@@ -25,6 +26,8 @@ class ZaakListView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        config = SiteConfiguration.get_solo()
+
         zaken = zrc_client.list('zaak')
         # Workaround: The status should be done with embedding when requesting a list of Zaken.
         statussen = zrc_client.list('status')
@@ -33,7 +36,7 @@ class ZaakListView(TemplateView):
         ])
         # TODO: The by-url pattern might be so common it should be in the client.
 
-        zaaktypen = ztc_client.list('zaaktype', catalogus_uuid=settings.DEMO_ZTC_CATALOGUS_UUID)
+        zaaktypen = ztc_client.list('zaaktype', catalogus_uuid=config.ztc_catalogus_uuid)
         zaaktypes_by_url = dict([
             (zaaktype['url'], zaaktype) for zaaktype in zaaktypen
         ])
@@ -44,7 +47,7 @@ class ZaakListView(TemplateView):
         for zaaktype in zaaktypen:
             # Workaround: UUID is not part of the serialiser yet, otherwise it was simply: zaaktype['uuid']
             zaaktype_uuid = get_uuid(zaaktype['url'])
-            statustypen += ztc_client.list('statustype', catalogus_uuid=settings.DEMO_ZTC_CATALOGUS_UUID, zaaktype_uuid=zaaktype_uuid)
+            statustypen += ztc_client.list('statustype', catalogus_uuid=config.ztc_catalogus_uuid, zaaktype_uuid=zaaktype_uuid)
         statustypen_by_url = dict([
             (statustype['url'], statustype) for statustype in statustypen
         ])
@@ -120,6 +123,8 @@ class ZaakDetailView(FormView):
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
 
+        config = SiteConfiguration.get_solo()
+
         # Haal Zaak op uit ZRC
         zaak = zrc_client.retrieve('zaak', uuid=self.kwargs.get('uuid'))
         # TODO: We should be able to filter on zaak, to get all (historical) statusses for this Zaak.
@@ -129,13 +134,13 @@ class ZaakDetailView(FormView):
         # Haal Zaaktype op.
         zaaktype = None
         if zaak['zaaktype']:
-            zaaktype = ztc_client.retrieve('zaaktype', catalogus_uuid=settings.DEMO_ZTC_CATALOGUS_UUID, uuid=get_uuid(zaak['zaaktype']))
+            zaaktype = ztc_client.retrieve('zaaktype', catalogus_uuid=config.ztc_catalogus_uuid, uuid=get_uuid(zaak['zaaktype']))
 
         # Haal mogelijke statusTypen op van deze Zaak.
         statustype_urls = zaaktype['statustypen']
         statustype_choices = []
         for statustype_url in statustype_urls:
-            statustype = ztc_client.retrieve('statustype', catalogus_uuid=settings.DEMO_ZTC_CATALOGUS_UUID, zaaktype_uuid=get_uuid(zaak['zaaktype']), uuid=get_uuid(statustype_url))
+            statustype = ztc_client.retrieve('statustype', catalogus_uuid=config.ztc_catalogus_uuid, zaaktype_uuid=get_uuid(zaak['zaaktype']), uuid=get_uuid(statustype_url))
             statustype_choices.append(
                 (statustype_url, statustype['omschrijving'])
             )

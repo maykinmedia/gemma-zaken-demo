@@ -4,12 +4,12 @@ import logging
 import uuid
 
 from django import forms
-from django.conf import settings
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, FormView
+from django.views.generic import FormView, TemplateView
 
-from zdsclient import ztc_client, zrc_client, drc_client
+from zac.demo.models import SiteConfiguration
+from zdsclient import drc_client, zrc_client, ztc_client
 from zdsclient.client import Log
 
 logger = logging.getLogger(__name__)
@@ -44,17 +44,19 @@ class MORCreateView(FormView):
     def form_valid(self, form):
         Log.clear()
 
+        config = SiteConfiguration.get_solo()
+
         # Haal ZaakType en StatusType op uit het ZTC.
         zaaktype = ztc_client.retrieve(
             'zaaktype',
-            catalogus_uuid=settings.DEMO_ZTC_CATALOGUS_UUID,
-            uuid=settings.DEMO_MOR_ZTC_ZAAKTYPE_UUID
+            catalogus_uuid=config.ztc_catalogus_uuid,
+            uuid=config.ztc_mor_zaaktype_uuid,
         )  # Nieuw
         status_type = ztc_client.retrieve(
             'statustype',
-            catalogus_uuid=settings.DEMO_ZTC_CATALOGUS_UUID,
-            zaaktype_uuid=settings.DEMO_MOR_ZTC_ZAAKTYPE_UUID,
-            uuid=settings.DEMO_MOR_ZTC_STATUSTYPE_NEW_UUID
+            catalogus_uuid=config.ztc_catalogus_uuid,
+            zaaktype_uuid=config.ztc_mor_zaaktype_uuid,
+            uuid=config.ztc_mor_statustype_new_uuid,
         )
         # assert status_type['url'] in zaaktype['statustypen']
 
@@ -64,7 +66,7 @@ class MORCreateView(FormView):
         # Maak een Zaak aan in het ZRC.
         data = {
             'zaaktype': zaaktype['url'],
-            'bronorganisatie': settings.DEMO_BRONORGANISATIE,
+            'bronorganisatie': config.zrc_bronorganisatie,
             'registratiedatum': datetime.date.today().isoformat(),
             'toelichting': form_data['toelichting'],
         }
@@ -123,7 +125,7 @@ class MORCreateView(FormView):
             eio = drc_client.create('enkelvoudiginformatieobject', {
                 # TODO: Dit moet automatisch?
                 'identificatie': uuid.uuid4().hex,
-                'bronorganisatie': settings.DEMO_BRONORGANISATIE,
+                'bronorganisatie': config.zrc_bronorganisatie,
                 'creatiedatum': zaak['registratiedatum'],
                 'titel': attachment.name,
                 'auteur': 'anoniem',

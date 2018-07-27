@@ -37,32 +37,3 @@ ALLOWED_HOSTS = []
 #
 # Project specific settings
 #
-# Add a Google API key to show a map in the demo application.
-GOOGLE_API_KEY = ''
-
-# ZDS Client configuration.
-ZDSCLIENT_CONFIG = {
-    'zrc': {
-        'host': 'localhost',
-        'port': 8000,
-        'scheme': 'http'
-    },
-
-    'drc': {
-        'host': 'localhost',
-        'port': 8001,
-        'scheme': 'http'
-    },
-    'ztc': {
-        'host': 'localhost',
-        'port': 8002,
-        'scheme': 'http'
-    },
-    'orc': {
-        'host': 'localhost',
-        'port': 8003,
-        'scheme': 'http'
-    }
-}
-
-DEMO_BRONORGANISATIE = '517439943'

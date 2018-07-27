@@ -12,7 +12,11 @@
       <a class="p-2 text-dark" href="{% url 'index' %}">Demo applicaties</a>
       <a class="p-2 text-dark" href="{% url 'admin:index' %}">Admin</a>
     </nav>
-    <a class="btn btn-outline-primary" href="#">Uitloggen</a>
+    {% if request.user %}
+      <a class="btn btn-outline-primary" href="{% url 'admin:logout' %}">Uitloggen</a>
+    {% else %}
+      <a class="btn btn-outline-primary" href="{% url 'admin:login' %}">Inloggen</a>
+    {% endif %}
   </div>
 
   {% for message in messages %}

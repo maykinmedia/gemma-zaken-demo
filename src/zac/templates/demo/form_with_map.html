@@ -1,4 +1,6 @@
 {% extends "demo/base.html" %}
+{% load solo_tags %}
+{% get_solo 'zac.demo.SiteConfiguration' as site_config %}
 
 {% block extra_style %}
   {{ block.super }}
@@ -40,5 +42,5 @@
 {% block extra_scripts %}
   {{ block.super }}
 
-  <script src="https://maps.googleapis.com/maps/api/js?key={{ settings.GOOGLE_API_KEY }}&callback=initMap" async defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key={{ site_config.google_analytics_key }}&callback=initMap" async defer></script>
 {% endblock %}

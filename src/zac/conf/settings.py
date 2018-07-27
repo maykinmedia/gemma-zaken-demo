@@ -45,9 +45,11 @@ INSTALLED_APPS = [
     'hijack',
     'compat',  # Part of hijack
     'hijack_admin',
+    'solo',
 
     'zac.accounts',
-    'zdsclient.contrib.django',
+    'zac.demo',
+    # 'zdsclient.contrib.django',
 
     # Demo applicaties
     'zac.demo.mor',
@@ -159,39 +161,6 @@ HIJACK_ALLOW_GET_REQUESTS = True
 #
 # Project specific settings
 #
-# Add a Google API key to show a map in the demo application.
-GOOGLE_API_KEY = ''
-
-# ZDS Client configuration.
-ZDSCLIENT_CONFIG = {
-    'zrc': {
-        'host': 'localhost',
-        'port': 8000,
-        'scheme': 'http'
-    },
-
-    'drc': {
-        'host': 'localhost',
-        'port': 8001,
-        'scheme': 'http'
-    },
-    'ztc': {
-        'host': 'localhost',
-        'port': 8002,
-        'scheme': 'http'
-    },
-    'orc': {
-        'host': 'localhost',
-        'port': 8003,
-        'scheme': 'http'
-    }
-}
-
-DEMO_BRONORGANISATIE = '517439943'
-
-DEMO_ZTC_CATALOGUS_UUID = 'a0dfa894-0dd1-4395-8e8c-b169130d7ebb'
-DEMO_MOR_ZTC_ZAAKTYPE_UUID = 'f82abbc7-e963-4808-961d-304cdde7f935'  # Melding Openbare Ruimte
-DEMO_MOR_ZTC_STATUSTYPE_NEW_UUID = '9614ec19-ec65-4472-9a73-9f7f37c7c338'  # Nieuw
 
 # Override settings with local settings.
 try:

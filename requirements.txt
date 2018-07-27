@@ -9,3 +9,4 @@ factory_boy==2.10.0
 pyyaml==3.13
 django-hijack==2.1.9
 django-hijack-admin==2.1.9
+django-solo==1.1.3
