@@ -83,6 +83,8 @@ development machine.
 
        $ python src/manage.py runserver
 
+8. Continue to the configuration section.
+
 **Note:** If you are making local, machine specific, changes, add them to
 ``src/zac/conf/local.py``. You can base this file on the
 example file included in the same directory.
@@ -176,11 +178,8 @@ The easiest way to get the project started is by using `Docker Compose`_.
        ...
        Superuser created successfully.
 
-       $ docker exec -it gemmazakendemo_web_1 /app/src/manage.py loaddata admin_index groups
-       Installed 5 object(s) from 2 fixture(s)
-
-4. Point your browser to ``http://localhost:8080/`` to access the project's
-   management interface with the credentials used in step 3.
+4. Point your browser to ``http://localhost:8080/admin/`` to access the
+   project's management interface with the credentials used in step 3.
 
    If you are using ``Docker Machine``, you need to point your browser to the
    Docker VM IP address. You can get the IP address by doing
@@ -194,8 +193,11 @@ The easiest way to get the project started is by using `Docker Compose`_.
        NAME      ACTIVE   DRIVER       STATE     URL
        default   *        virtualbox   Running   tcp://<ip>:<port>
 
-5. To shutdown the services, use ``docker-compose down`` and to clean up your
-   system you can run ``docker system prune``.
+5. Continue to the configuration section.
+
+
+To shutdown the services, use ``docker-compose down`` and to remove
+everything, you can run ``docker rmi gemmazakendemo_web``.
 
 .. _Docker Compose: https://docs.docker.com/compose/install/
 .. _Github: https://github.com/maykinmedia/gemma-zaken-demo/
@@ -222,6 +224,40 @@ all settings.
         vngr/gemma-zaken-demo
 
     $ docker run gemma-zaken-demo /app/src/manage.py createsuperuser
+
+
+Configuration
+=============
+
+This section assumes you have the demo site up and running (either on your
+local machine, or as Docker container, or otherwise).
+
+1. Start the components (ZRC, DRC, ZTC). See the ``infra`` section in the
+   `GEMMA Zaken repository on Github`_ (via Docker, or otherwise).
+
+2. Take note of their URLs (scheme, IP address, port).
+
+3. Navigate to the ZTC management interface and login. Typically:
+   ``http://localhost:8002/admin/``. Create the following objects:
+
+   * Catalogus
+   * ZaakType: Melding Openbare Ruimte
+   * StatusType: Nieuw
+
+4. Make sure you have the UUIDs of all entities created above.
+
+5. Navigate to the management interface of the demo application (this
+   project) and login. Typically: ``http://localhost:8080/admin/``
+
+6. Go to the *Demo* section, and click on *Configuratie*
+
+7. Fill in all settings.
+
+8. Navigate to the root URL of the demo application (``/``).
+
+9. Now you can access all demo applications.
+
+.. _GEMMA Zaken repository on Github: https://github.com/VNG-Realisatie/gemma-zaken/
 
 
 Staging and production

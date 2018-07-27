@@ -58,15 +58,19 @@ RUN apk --no-cache add \
     # pillow dependencies
     jpeg \
     openjpeg \
-    zlib
+    zlib \
+    # frontend runtime requirement
+    nodejs \
+    nodejs-npm
 
 COPY --from=build /app/src /app/src
 COPY ./bin/docker_start.sh /start.sh
+COPY --from=build /app/node_modules /app/node_modules
 RUN mkdir /app/log
 
 COPY --from=build /app/env /app/env
 
 ENV PATH="/app/env/bin:${PATH}"
 WORKDIR /app
-EXPOSE 8000
+EXPOSE 8080
 CMD ["/start.sh"]

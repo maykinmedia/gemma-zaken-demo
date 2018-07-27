@@ -11,6 +11,6 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=zac.conf.docker
     ports:
-      - 8080:8000
+      - 8080:8080
     depends_on:
       - db

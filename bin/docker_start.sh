@@ -27,4 +27,4 @@ python src/manage.py migrate
 
 # Start server
 >&2 echo "Starting server"
-uwsgi --http :8000 --module zac.wsgi --static-map /static=/app/static --chdir=src
+uwsgi --http :8080 --module zac.wsgi --static-map /static=/app/static --chdir=src

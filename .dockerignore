@@ -5,4 +5,5 @@ docker-compose*
 .git
 .vscode
 env/
+src/zac/conf/local.py
 local.py
