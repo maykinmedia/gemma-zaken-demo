@@ -2,9 +2,9 @@
 Installation
 ============
 
-The project is developed in Python using the `Django framework`_. There are 3
-sections below, focussing on developers, running the project using Docker and
-hints for running the project in production.
+The project is developed in Python using the `Django framework`_. You can 
+either install the project locally for development, or use Docker to get it up
+and running quickly
 
 .. _Django framework: https://www.djangoproject.com/
 
@@ -258,39 +258,6 @@ local machine, or as Docker container, or otherwise).
 9. Now you can access all demo applications.
 
 .. _GEMMA Zaken repository on Github: https://github.com/VNG-Realisatie/gemma-zaken/
-
-
-Staging and production
-======================
-
-Ansible is used to deploy test, staging and production servers. It is assumed
-the target machine has a clean `Debian`_ installation.
-
-1. Make sure you have `Ansible`_ installed (globally or in the virtual
-   environment):
-
-   .. code-block:: bash
-
-       $ pip install ansible
-
-2. Navigate to the project directory, and install the Maykin deployment
-   submodule if you haven't already:
-
-   .. code-block:: bash
-
-       $ git submodule update --init
-
-3. Run the Ansible playbook to provision a clean Debian machine:
-
-   .. code-block:: bash
-
-       $ cd deployment
-       $ ansible-playbook <test/staging/production>.yml
-
-For more information, see the ``README`` file in the deployment directory.
-
-.. _Debian: https://www.debian.org/
-.. _Ansible: https://pypi.org/project/ansible/
 
 
 Settings
