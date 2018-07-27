@@ -44,8 +44,8 @@ development machine.
 
    .. code-block:: bash
 
-       $ git clone git@bitbucket.org:maykinmedia/zac.git
-       $ cd zac
+       $ git clone git@github.com:VNG-Realisatie/gemma-zaken-demo.git
+       $ cd gemma-zaken-demo
 
 3. Install all required libraries.
 
@@ -106,7 +106,7 @@ When updating an existing installation:
 
    .. code-block:: bash
 
-       $ cd zac
+       $ cd gemma-zaken-demo
        $ source env/bin/activate
 
 2. Update the code and libraries:
@@ -114,7 +114,7 @@ When updating an existing installation:
    .. code-block:: bash
 
        $ git pull
-       $ pip install -r requirements/dev.txt
+       $ pip install -r requirements.txt
        $ npm install
        $ gulp sass
 
@@ -146,7 +146,7 @@ The easiest way to get the project started is by using `Docker Compose`_.
 
    .. code-block:: bash
 
-       $ git clone git@bitbucket.org:maykinmedia/gemma-zaken-demo.git
+       $ git clone git@github.com:VNG-Realisatie/gemma-zaken-demo.git
        Cloning into 'gemma-zaken-demo'...
        ...
 
@@ -200,7 +200,7 @@ To shutdown the services, use ``docker-compose down`` and to remove
 everything, you can run ``docker rmi gemmazakendemo_web``.
 
 .. _Docker Compose: https://docs.docker.com/compose/install/
-.. _Github: https://github.com/maykinmedia/gemma-zaken-demo/
+.. _Github: https://github.com/VNG-Realisatie/gemma-zaken-demo/
 
 
 More Docker
