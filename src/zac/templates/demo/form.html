@@ -9,7 +9,9 @@
 
       {% include "includes/form_fields.html" %}
 
-      <button type="submit" class="btn btn-primary">Versturen</button>
+      {% block form-buttons %}
+        <button type="submit" class="btn btn-primary">{% block form-submit-label %}Versturen{% endblock %}</button>
+      {% endblock %}
     </form>
 
   </div>

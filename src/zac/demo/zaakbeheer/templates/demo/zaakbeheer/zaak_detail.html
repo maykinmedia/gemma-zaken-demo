@@ -1,5 +1,14 @@
 {% extends "demo/form_with_map.html" %}
 
+{% block form-submit-label %}Bijwerken{% endblock %}
+
+{% block form-buttons %}
+  {{ block.super }}
+
+  <a href="{% url 'demo:zaakbeheer-index' %}" class="btn btn-secondary">Terug naar overzicht</a>
+{% endblock %}
+
+
 {% block extra_scripts %}
   <script type="application/javascript">
 

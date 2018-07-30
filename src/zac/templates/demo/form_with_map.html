@@ -1,6 +1,5 @@
 {% extends "demo/base.html" %}
 {% load solo_tags %}
-{% get_solo 'zac.demo.SiteConfiguration' as site_config %}
 
 {% block extra_style %}
   {{ block.super }}
@@ -28,7 +27,9 @@
 
           {% include "includes/form_fields.html" %}
 
-          <button type="submit" class="btn btn-primary">Versturen</button>
+          {% block form-buttons %}
+            <button type="submit" class="btn btn-primary">{% block form-submit-label %}Versturen{% endblock %}</button>
+          {% endblock %}
 
         </div>
       </div>
@@ -40,7 +41,11 @@
 {% endblock %}
 
 {% block extra_scripts %}
+
+  {% get_solo 'demo.SiteConfiguration' as site_config %}
+
   {{ block.super }}
 
-  <script src="https://maps.googleapis.com/maps/api/js?key={{ site_config.google_analytics_key }}&callback=initMap" async defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key={{ site_config.google_api_key }}&callback=initMap" async defer></script>
+
 {% endblock %}

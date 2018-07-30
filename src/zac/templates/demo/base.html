@@ -32,9 +32,12 @@
 
   {% block content %}{% endblock %}
 
-  <div class="container">
-    {% include "includes/networktraffic.html" %}
-  </div>
+  {% if log_entries %}
+    <div class="container">
+      <hr>
+      {% include "includes/networktraffic.html" with log_entries=log_entries %}
+    </div>
+  {% endif %}
 
   <div class="container">
     <footer class="pt-4 my-md-5 pt-md-5 border-top">

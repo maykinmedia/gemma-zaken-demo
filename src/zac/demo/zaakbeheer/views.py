@@ -53,7 +53,7 @@ class ZaakListView(TemplateView):
         ])
 
         # Construct template vars.
-        headers = ['#', 'Bronorganisatie', 'Type', 'Status', 'Statustype', 'Registratiedatum']
+        headers = ['#', 'Bronorganisatie', 'Type', 'Status (type)', 'Status toelichting', 'Registratiedatum']
         rows = []
         for index, zaak in enumerate(zaken):
             zaaktype = zaaktypes_by_url.get(zaak['zaaktype'])
@@ -68,8 +68,8 @@ class ZaakListView(TemplateView):
                 mark_safe('<a href="{}">{}</a>'.format(detail_url, index + 1)),
                 zaak['bronorganisatie'],
                 zaaktype['omschrijving'] if zaaktype else '(onbekend)',
-                status['statustoelichting'] if status else '(onbekend)',
                 statustype['omschrijving'] if statustype else '(onbekend)',
+                status['statustoelichting'] if status else '(onbekend)',
                 zaak['registratiedatum'],
             ])
 
@@ -112,13 +112,6 @@ class ZaakDetailView(FormView):
         super().__init__(*args, **kwargs)
 
         Log.clear()
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update({
-            'log_entries': Log.entries()
-        })
-        return context
 
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
@@ -168,15 +161,11 @@ class ZaakDetailView(FormView):
             form_kwargs['initial'].update(extra_initial)
 
         return form_kwargs
-    #
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #
-    #
-    #     context.update({
-    #         'header': headers,
-    #         'rows': rows,
-    #         'log_entries': Log.entries()
-    #     })
-    #
-    #     return context
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'log_entries': Log.entries(),
+            'history': [],
+        })
+        return context

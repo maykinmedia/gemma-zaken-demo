@@ -1,49 +1,45 @@
-{% if log_entries %}
+<p>
+  <a class="btn btn-warning" data-toggle="collapse" href="#networktraffic" role="button" aria-expanded="false" aria-controls="networktraffic">
+    Toon netwerk communicatie
+  </a>
+</p>
 
-  <p>
-    <a class="btn btn-warning" data-toggle="collapse" href="#networktraffic" role="button" aria-expanded="false" aria-controls="networktraffic">
-      Toon netwerk communicatie
-    </a>
-  </p>
+<div class="collapse" id="networktraffic">
 
-  <div class="collapse" id="networktraffic">
-
-    {% for entry in log_entries %}
-      <h5>
-        <i class="fas fa-desktop"></i> applicatie <i style="color: lightgray;" class="fas fa-exchange-alt"></i> <i class="fas fa-cloud"></i> {{ entry.service }}
-      </h5>
-      <p>
-        <strong>{{ entry.request.method }}</strong>
-        <a target="_blank" href="{{ entry.request.url }}" title="{{ entry.request.url }}">
-          {% if entry.request.url|length > 110 %}
-            {{ entry.request.url|slice:":50" }} ... {{ entry.request.url|slice:"-60:" }}
-          {% else %}
-            {{ entry.request.url }}
-          {% endif %}
-        </a>
-        <span class="badge badge-{% if entry.response.status < 400 %}success{% else %}warning{% endif %}">HTTP {{ entry.response.status }}</span></p>
-      <p>
-        {% if entry.request.data %}
-          <a class="btn btn-secondary btn-sm" data-toggle="collapse" href="#request-{{ forloop.counter }}" role="button" aria-expanded="false" aria-controls="request-{{ forloop.counter }}">
-            Toon verzoek
-          </a>
+  {% for entry in log_entries %}
+    <h5>
+      <i class="fas fa-desktop"></i> applicatie <i style="color: lightgray;" class="fas fa-exchange-alt"></i> <i class="fas fa-cloud"></i> {{ entry.service }}
+    </h5>
+    <p>
+      <strong>{{ entry.request.method }}</strong>
+      <a target="_blank" href="{{ entry.request.url }}" title="{{ entry.request.url }}">
+        {% if entry.request.url|length > 110 %}
+          {{ entry.request.url|slice:":50" }} ... {{ entry.request.url|slice:"-60:" }}
+        {% else %}
+          {{ entry.request.url }}
         {% endif %}
-        <a class="btn btn-secondary btn-sm" data-toggle="collapse" href="#response-{{ forloop.counter }}" role="button" aria-expanded="false" aria-controls="response-{{ forloop.counter }}">
-          Toon antwoord
+      </a>
+      <span class="badge badge-{% if entry.response.status < 400 %}success{% else %}warning{% endif %}">HTTP {{ entry.response.status }}</span></p>
+    <p>
+      {% if entry.request.data %}
+        <a class="btn btn-secondary btn-sm" data-toggle="collapse" href="#request-{{ forloop.counter }}" role="button" aria-expanded="false" aria-controls="request-{{ forloop.counter }}">
+          Toon verzoek
         </a>
-      </p>
+      {% endif %}
+      <a class="btn btn-secondary btn-sm" data-toggle="collapse" href="#response-{{ forloop.counter }}" role="button" aria-expanded="false" aria-controls="response-{{ forloop.counter }}">
+        Toon antwoord
+      </a>
+    </p>
 
-      <div class="collapse" id="request-{{ forloop.counter }}">
-        <h6>Verzoek</h6>
-        <pre class="card card-body pre-scrollable">{{ entry.request.data|pprint }}</pre>
-      </div>
+    <div class="collapse" id="request-{{ forloop.counter }}">
+      <h6>Verzoek</h6>
+      <pre class="card card-body pre-scrollable">{{ entry.request.data|pprint }}</pre>
+    </div>
 
-      <div class="collapse" id="response-{{ forloop.counter }}">
-        <h6>Antwoord</h6>
-        <pre class="card card-body pre-scrollable">{{ entry.response.data|pprint }}</pre>
-      </div>
-    {% endfor %}
+    <div class="collapse" id="response-{{ forloop.counter }}">
+      <h6>Antwoord</h6>
+      <pre class="card card-body pre-scrollable">{{ entry.response.data|pprint }}</pre>
+    </div>
+  {% endfor %}
 
-  </div>
-
-{% endif %}
+</div>
