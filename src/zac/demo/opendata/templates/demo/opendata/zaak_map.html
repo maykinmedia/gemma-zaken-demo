@@ -116,7 +116,7 @@
           // Meta data to redraw circle...
           $('#id_latitude').val(circle.center.lat);
           $('#id_longitude').val(circle.center.lng);
-          $('#id_radius').val(circle.radius);
+          $('#id_radius').val(parseInt(circle.radius));
       }
 
       updateCoordinates();
