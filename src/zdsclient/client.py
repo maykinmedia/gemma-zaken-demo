@@ -165,3 +165,9 @@ class Client:
         response = self.request(url, method='POST', json=data)
         assert response.status_code == 201, response.json()
         return response.json()
+
+    def operation(self, operation_id: str, data:dict, **path_kwargs):
+        url = get_operation_url(self.schema, operation_id, **path_kwargs)
+        response = self.request(url, method='POST', json=data)
+        assert response.status_code == 200, response.json()
+        return response.json()
