@@ -19,15 +19,19 @@
     {% endif %}
   </div>
 
-  {% for message in messages %}
-    <div class="alert alert-{{ message.tags }}">
-      {{ message }}
-    </div>
-  {% endfor %}
-
   <div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
     <h1 class="display-4">{{ view.title }}</h1>
     <p class="lead">{{ view.subtitle }}</p>
+  </div>
+
+  <div class="container">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
   </div>
 
   {% block content %}{% endblock %}

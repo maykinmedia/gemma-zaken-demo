@@ -34,11 +34,17 @@
       });
 
       var marker = new google.maps.Marker({
-          map: map,
-          position: location
+        map: map,
+        position: location
       });
 
     }
+
+    $(function(){
+      $('#id_statustype_url').on('change', function() {
+          $('#id_status_toelichting').val('');
+      })
+    });
   </script>
 
   {{ block.super }}
