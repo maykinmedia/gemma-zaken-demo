@@ -10,3 +10,4 @@ pyyaml==3.13
 django-hijack==2.1.9
 django-hijack-admin==2.1.9
 django-solo==1.1.3
+gemma-zds-client

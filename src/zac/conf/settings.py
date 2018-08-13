@@ -14,7 +14,6 @@ import os
 
 from django.urls import reverse_lazy
 
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 DJANGO_PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
 BASE_DIR = os.path.abspath(os.path.join(DJANGO_PROJECT_DIR, os.path.pardir, os.path.pardir))
@@ -49,7 +48,6 @@ INSTALLED_APPS = [
 
     'zac.accounts',
     'zac.demo',
-    # 'zdsclient.contrib.django',
 
     # Demo applicaties
     'zac.demo.mor',

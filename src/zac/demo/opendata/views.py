@@ -1,14 +1,12 @@
 import json
 
 from django import forms
-from django.conf import settings
-from django.urls import reverse
-from django.utils.safestring import mark_safe
-from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView
 
 from zac.demo.models import SiteConfiguration
-from zdsclient import zrc_client, ztc_client
-from zdsclient.client import Log
+from zds_client.client import Log
+
+from ..clients import zrc_client, ztc_client
 
 
 def get_uuid(url):

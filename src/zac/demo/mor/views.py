@@ -4,13 +4,13 @@ import logging
 import uuid
 
 from django import forms
-from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
 
 from zac.demo.models import SiteConfiguration
-from zdsclient import drc_client, zrc_client, ztc_client
-from zdsclient.client import Log
+from zds_client.client import Log
+
+from ..clients import drc_client, zrc_client, ztc_client
 
 logger = logging.getLogger(__name__)
 

@@ -5,7 +5,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from zdsclient.conf import settings
+from zds_client import Client
 
 from .models import SiteConfiguration
 
@@ -13,7 +13,7 @@ from .models import SiteConfiguration
 @receiver(post_save, sender=SiteConfiguration)
 def update_settings(sender, instance, **kwargs):
     config = instance.get_zdsclient_config()
-    settings.config.update(config)
+    Client.load_config(django_settings.BASE_DIR, **config)
 
 
 def initialize_settings():
