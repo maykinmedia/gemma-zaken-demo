@@ -1,0 +1,45 @@
+{% extends "demo/base.html" %}
+
+{% block content %}
+
+  <div class="container">
+    {% with arg=exception.args.0 %}
+      <div class="alert alert-danger" role="alert">
+        {{ arg.title }}
+      </div>
+
+      <dl>
+        <dt>Type</dt>
+        <dd>{{ arg.type }}</dd>
+
+        <dt>Code</dt>
+        <dd>{{ arg.code }}</dd>
+
+        <dt>Status</dt>
+        <dd>{{ arg.status }}</dd>
+
+        {% if arg.detail %}
+          <dt>Details</dt>
+          <dd>{{ arg.detail }}</dd>
+        {% endif %}
+
+        <dt>Instantie</dt>
+        <dd>{{ arg.instance }}</dd>
+      </dl>
+
+      {% if invalid_params %}
+        <ul>
+          {% for param in invalid_params %}
+            <li>{{ param.name }}: {{ param.reason }} ({{ param.code }})</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <p>
+      <a href="javascript: location.reload();" class="btn btn-secondary">Nogmaals proberen</a>
+    </p>
+
+  </div>
+
+{% endblock %}
