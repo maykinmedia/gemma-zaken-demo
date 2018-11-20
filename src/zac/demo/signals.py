@@ -18,16 +18,19 @@ def update_settings(sender, instance, **kwargs):
 
 def initialize_settings():
     if 'zdsclient.contrib.django' in django_settings.INSTALLED_APPS:
-        raise ImproperlyConfigured('You cannot have both "zac.demo" and "zdsclient.contrib.django" in your '
-                                   'INSTALLED_SETTINGS.')
+        raise ImproperlyConfigured(
+            'You cannot have both "zac.demo" and "zdsclient.contrib.django" in '
+            'your INSTALLED_SETTINGS.')
 
     from zac.demo.models import SiteConfiguration
 
     try:
         site_config = SiteConfiguration.get_solo()
-    except:
-        warnings.warn('SiteConfiguration could not be loaded. This happens when the migrations have not run before. '
-                      'If this message occurs in any other situation, something went wrong.')
+    except Exception as e:
+        warnings.warn(
+            'SiteConfiguration could not be loaded. This happens when the '
+            'are pending migrations. If this message occurs in any other '
+            'situation, something went wrong: {}'.format(e))
         return
 
     update_settings(None, site_config)
