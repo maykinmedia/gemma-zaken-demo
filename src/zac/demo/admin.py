@@ -11,19 +11,32 @@ class SiteConfigurationAdmin(SingletonModelAdmin):
         (_('Algemeen'), {
             'fields': ['google_api_key', ],
         }),
-        (_('Zaakregistratiecomponent (ZRC)'), {
-            'fields': ['zrc_base_url', 'zrc_bronorganisatie']
+        (_('Zaak registratie component (ZRC)'), {
+            'fields': [
+                'zrc_base_url',
+                'zrc_bronorganisatie'
+            ]
         }),
-        (_('Documentregistratiecomponent (DRC)'), {
+        (_('Document registratie component (DRC)'), {
             'fields': ['drc_base_url']
         }),
-        (_('Zaaktypecatalogus (ZTC)'), {
-            'fields': ['ztc_base_url', 'ztc_catalogus_uuid']
+        (_('Zaaktype catalogus (ZTC)'), {
+            'fields': [
+                'ztc_base_url',
+                'ztc_catalogus_uuid'
+            ]
+        }),
+        (_('Besluit registratie component (BRC)'), {
+            'fields': ['brc_base_url']
         }),
         (_('Overige registraties component (ORC)'), {
             'fields': ['orc_base_url']
         }),
         (_('Demo applicatie: Melding openbare ruimte'), {
-            'fields': ['ztc_mor_zaaktype_uuid', 'ztc_mor_statustype_new_uuid'],
+            'fields': [
+                'ztc_mor_zaaktype_uuid',
+                'ztc_mor_statustype_new_uuid',
+                'ztc_mor_informatieobjecttype_image_uuid',
+            ]
         }),
     )

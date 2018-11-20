@@ -13,6 +13,8 @@
 
   <div class="container">
 
+    {% block content-before-form %}{% endblock %}
+
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
 
@@ -35,6 +37,8 @@
       </div>
 
     </form>
+
+    {% block content-after-form %}{% endblock %}
 
   </div>
 

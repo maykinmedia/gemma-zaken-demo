@@ -48,18 +48,26 @@ class MORCreateView(FormView):
         config = SiteConfiguration.get_solo()
 
         try:
-            # Haal ZaakType en StatusType op uit het ZTC.
+            # Haal ZaakType:Melding Openbare Ruimte uit het ZTC
             zaaktype = ztc_client.retrieve(
                 'zaaktype',
                 catalogus_uuid=config.ztc_catalogus_uuid,
                 uuid=config.ztc_mor_zaaktype_uuid,
-            )  # Nieuw
+            )
+            # Haal StatusType:Nieuw uit het ZTC
             status_type = ztc_client.retrieve(
                 'statustype',
                 catalogus_uuid=config.ztc_catalogus_uuid,
                 zaaktype_uuid=config.ztc_mor_zaaktype_uuid,
                 uuid=config.ztc_mor_statustype_new_uuid,
             )
+            # Haal InformationObjectType:Afbeelding uit het ZTC
+            informatieobjecttype = ztc_client.retrieve(
+                'informatieobjecttype',
+                catalogus_uuid=config.ztc_catalogus_uuid,
+                uuid=config.ztc_mor_informatieobjecttype_image_uuid
+            )
+
             # assert status_type['url'] in zaaktype['statustypen']
 
             # Verwerk de melding informatie...
@@ -136,15 +144,19 @@ class MORCreateView(FormView):
                     'auteur': 'anoniem',
                     'formaat': attachment.content_type,
                     'taal': 'dut',  # TODO: Why?!
-                    'inhoud': base64_string
+                    'inhoud': base64_string,
+                    'informatieobjecttype': informatieobjecttype['url'],
                 })
 
-                # Koppel dit document aan de Zaak in het DMC
-                # TODO: Dit moet (ook) omgekeerd, in het ZRC leven.
-                zio = drc_client.create('zaakinformatieobject', {
-                    'zaak': zaak['url'],
+                # Koppel dit document aan de Zaak in het DRC. De omgekeerde
+                # relatie is de verantwoordelijkheid van het DRC.
+                oio = drc_client.create('objectinformatieobject', {
+                    'object': zaak['url'],
                     'informatieobject': eio['url'],
+                    # TODO: Deze enum moet ergens vandaan komen.
+                    'objectType': 'zaak',
                 })
+
         except ClientError as e:
             return render_client_error_to_response(self.request, e)
 

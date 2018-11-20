@@ -4,6 +4,8 @@
 
   <div class="container">
 
+    {% block content-before-form %}{% endblock %}
+
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
 
@@ -13,6 +15,8 @@
         <button type="submit" class="btn btn-primary">{% block form-submit-label %}Versturen{% endblock %}</button>
       {% endblock %}
     </form>
+
+    {% block content-after-form %}{% endblock %}
 
   </div>
 
