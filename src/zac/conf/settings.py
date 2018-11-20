@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
     'zac.accounts',
     'zac.demo',
+    'zac.status',
 
     # Demo applicaties
     'zac.demo.mor',
@@ -140,7 +141,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Additional locations of static files
