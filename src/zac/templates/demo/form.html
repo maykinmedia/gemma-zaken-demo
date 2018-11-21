@@ -9,6 +9,14 @@
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
 
+      {% if form.errors %}
+        <div class="alert alert-danger" role="alert">
+          <h4 class="alert-heading">Er ging iets mis...</h4>
+          {{ form.non_field_errors }}
+          {{ form.errors }}
+        </div>
+      {% endif %}
+
       {% include "includes/form_fields.html" %}
 
       {% block form-buttons %}

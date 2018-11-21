@@ -18,13 +18,15 @@
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
 
-      <div class="row">
-        <div class="col-sm">
-
-          <label class="required">Locatie</label>
-          <div id="map-canvas"></div>
-
+      {% if form.errors %}
+        <div class="alert alert-danger" role="alert">
+          <h4 class="alert-heading">Er ging iets mis...</h4>
+          {{ form.non_field_errors }}
+          {{ form.errors }}
         </div>
+      {% endif %}
+
+      <div class="row">
         <div class="col-sm">
 
           {% include "includes/form_fields.html" %}
@@ -32,6 +34,12 @@
           {% block form-buttons %}
             <button type="submit" class="btn btn-primary">{% block form-submit-label %}Versturen{% endblock %}</button>
           {% endblock %}
+
+        </div>
+        <div class="col-sm">
+
+          <label class="required">Locatie</label>
+          <div id="map-canvas"></div>
 
         </div>
       </div>
