@@ -4,12 +4,12 @@
 
 {% block content-before-form %}
 
-  <h2>Statussen</h2>
-  {% include "demo/zaakbeheer/includes/status_list.html" with status_list=status_list %}
+  <h2>Besluiten</h2>
+  {% include "demo/zaakbeheer/includes/besluit_list.html" with besluit_list=besluit_list %}
 
   <p>
     <a href="{% url 'demo:zaakbeheer-detail' zaak_uuid %}" class="btn btn-secondary">Terug naar zaak</a>
   </p>
 
-  <h2>Status toevoegen</h2>
+  <h2>Besluit toevoegen</h2>
 {% endblock %}

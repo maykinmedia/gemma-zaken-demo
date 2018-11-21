@@ -1,0 +1,20 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>Datum</th>
+      <th>Besluittype</th>
+      <th>Toelichting</th>
+      <th>Vervalreden</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for besluit in besluit_list %}
+      <tr>
+        <td>{{ besluit.datum }}</td>
+        <td>{{ besluit.besluittype_embedded.omschrijving }}</td>
+        <td>{{ besluit.toelichting }}</td>
+        <td>{{ besluit.vervalredenWeergave }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

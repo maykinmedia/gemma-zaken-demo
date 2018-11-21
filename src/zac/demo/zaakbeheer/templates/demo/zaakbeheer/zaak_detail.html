@@ -4,53 +4,20 @@
 
 {% block content-after-form %}
 
-  <h2>Status historie</h2>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Datum</th>
-        <th>Statustype</th>
-        <th>Toelichting</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for status in status_list %}
-        <tr>
-          <td>{{ status.datumStatusGezet }}</td>
-          <td>{{ status.statusType_embedded.omschrijving }}</td>
-          <td>{{ status.statustoelichting }}</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
+  <h2>Statussen</h2>
+  {% include "demo/zaakbeheer/includes/status_list.html" with status_list=status_list %}
   <p>
     <a href="{% url 'demo:zaakbeheer-statuscreate' zaak_uuid %}" class="btn btn-primary">Status toevoegen</a>
   </p>
 
   <h2>Documenten</h2>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Datum</th>
-        <th>Titel</th>
-        <th>Auteur</th>
-        <th>Formaat</th>
-        <th>Acties</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for document in document_list %}
-        <tr>
-          <td>{{ document.creatiedatum }}</td>
-          <td>{{ document.titel }}</td>
-          <td>{{ document.auteur }}</td>
-          <td>{{ document.formaat }}</td>
-          <td><a target="_blank" href="{% if document.link %}{{ document.link }}{% else %}{{ document.inhoud }}{% endif %}">Downloaden</a></td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  {% include "demo/zaakbeheer/includes/document_list.html" with document_list=document_list %}
+
+  <h2>Besluiten</h2>
+  {% include "demo/zaakbeheer/includes/besluit_list.html" with besluit_list=besluit_list %}
+  <p>
+    <a href="{% url 'demo:zaakbeheer-besluitcreate' zaak_uuid %}" class="btn btn-primary">Besluit toevoegen</a>
+  </p>
 
   <p>
     <a href="{% url 'demo:zaakbeheer-index' %}" class="btn btn-secondary">Terug naar overzicht</a>

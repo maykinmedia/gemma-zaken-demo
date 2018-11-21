@@ -1,0 +1,18 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>Datum</th>
+      <th>Statustype</th>
+      <th>Toelichting</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for status in status_list %}
+      <tr>
+        <td>{{ status.datumStatusGezet }}</td>
+        <td>{{ status.statusType_embedded.omschrijving }}</td>
+        <td>{{ status.statustoelichting }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

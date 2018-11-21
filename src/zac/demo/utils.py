@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.core.exceptions import ValidationError
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
@@ -44,7 +46,7 @@ def render_exception_to_response(request, exc, context=None):
     if type(exc) is ClientError:
         try:
             error = exc.args[0]
-            error.invalid_params = error.get('invalid-params', None)
+            error['invalid_params'] = error.get('invalid-params', None)
         except Exception:
             pass
 
@@ -59,3 +61,34 @@ def render_exception_to_response(request, exc, context=None):
     })
 
     return render(request, 'demo/error.html', context)
+
+
+def api_response_list_to_dict(lst, key=None):
+    """
+    Convert an API response containing a `list` of objects, to a `dict` where
+    the key is an element from the object. By default they `key` = `url`.
+
+    :param lst: The `list` from JSON response.
+    :param key: The key to use in the resulting `dict`.
+    :return: A `dict` with all objects from `lst` addressable by the `key`.
+    """
+    # TODO: The by-url pattern might be so common it should be in the client.
+
+    if key is None:
+        key = 'url'
+
+    return {
+        el[key]: el for el in lst
+    }
+
+
+def isodate(dt=None):
+    """
+    Returns a ISO-compliant date.
+
+    :param dt: Any `datetime`. Defaults to `datetime.now()`.
+    :return: A `string` with the date.
+    """
+    if dt is None:
+        dt = datetime.now()
+    return dt.strftime('%Y-%m-%d')
