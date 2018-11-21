@@ -1,3 +1,5 @@
+{% load demo_utils %}
+
 <p>
   <a class="btn btn-warning" data-toggle="collapse" href="#networktraffic" role="button" aria-expanded="false" aria-controls="networktraffic">
     Toon netwerk communicatie
@@ -14,7 +16,7 @@
       <strong>{{ entry.request.method }}</strong>
       <a target="_blank" href="{{ entry.request.url }}" title="{{ entry.request.url }}">
         {% if entry.request.url|length > 110 %}
-          {{ entry.request.url|slice:":50" }} ... {{ entry.request.url|slice:"-60:" }}
+          {{ entry.request.url|shorten_api_url }}
         {% else %}
           {{ entry.request.url }}
         {% endif %}

@@ -3,38 +3,44 @@
 {% block content %}
 
   <div class="container">
-    {% with arg=exception.args.0 %}
+    {% if client_error %}
+
       <div class="alert alert-danger" role="alert">
-        {{ arg.title }}
+        {{ error.title }}
       </div>
 
       <dl>
         <dt>Type</dt>
-        <dd>{{ arg.type }}</dd>
+        <dd>{{ error.type }}</dd>
 
         <dt>Code</dt>
-        <dd>{{ arg.code }}</dd>
+        <dd>{{ error.code }}</dd>
 
         <dt>Status</dt>
-        <dd>{{ arg.status }}</dd>
+        <dd>{{ error.status }}</dd>
 
-        {% if arg.detail %}
+        {% if error.detail %}
           <dt>Details</dt>
-          <dd>{{ arg.detail }}</dd>
+          <dd>{{ error.detail }}</dd>
         {% endif %}
 
         <dt>Instantie</dt>
-        <dd>{{ arg.instance }}</dd>
+        <dd>{{ error.instance }}</dd>
       </dl>
 
-      {% if invalid_params %}
+      {% if error.invalid_params %}
         <ul>
-          {% for param in invalid_params %}
+          {% for param in error.invalid_params %}
             <li>{{ param.name }}: {{ param.reason }} ({{ param.code }})</li>
           {% endfor %}
         </ul>
       {% endif %}
-    {% endwith %}
+
+    {% else %}
+
+      <pre>{{ exception }}</pre>
+
+    {% endif %}
 
     <p>
       <a href="javascript: location.reload();" class="btn btn-secondary">Nogmaals proberen</a>

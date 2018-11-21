@@ -7,11 +7,11 @@ from django import forms
 from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
 
-from zac.demo.models import SiteConfiguration
-from zds_client.client import Log, ClientError
+from zds_client.client import Log
 
-from zac.demo.utils import render_client_error_to_response
 from ..clients import drc_client, zrc_client, ztc_client
+from ..mixins import ExceptionViewMixin
+from ..models import SiteConfiguration
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ class MORCreateForm(forms.Form):
     bijlage = forms.FileField(required=False, help_text='Foto of andere afbeelding die betrekking heeft op de melding.')
 
 
-class MORCreateView(FormView):
+class MORCreateView(ExceptionViewMixin, FormView):
     title = 'Melding Openbare Ruimte'
     subtitle = 'Maak een nieuwe melding'
 
@@ -39,126 +39,122 @@ class MORCreateView(FormView):
     form_class = MORCreateForm
     success_url = reverse_lazy('demo:mor-thanks')
 
-    def form_invalid(self, form):
-        return super().form_invalid(form)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-    def form_valid(self, form):
         Log.clear()
 
+    def form_valid(self, form):
         config = SiteConfiguration.get_solo()
 
-        try:
-            # Haal ZaakType:Melding Openbare Ruimte uit het ZTC
-            zaaktype = ztc_client.retrieve(
-                'zaaktype',
-                catalogus_uuid=config.ztc_catalogus_uuid,
-                uuid=config.ztc_mor_zaaktype_uuid,
-            )
-            # Haal StatusType:Nieuw uit het ZTC
-            status_type = ztc_client.retrieve(
-                'statustype',
-                catalogus_uuid=config.ztc_catalogus_uuid,
-                zaaktype_uuid=config.ztc_mor_zaaktype_uuid,
-                uuid=config.ztc_mor_statustype_new_uuid,
-            )
-            # Haal InformationObjectType:Afbeelding uit het ZTC
-            informatieobjecttype = ztc_client.retrieve(
-                'informatieobjecttype',
-                catalogus_uuid=config.ztc_catalogus_uuid,
-                uuid=config.ztc_mor_informatieobjecttype_image_uuid
-            )
+        # Haal ZaakType:Melding Openbare Ruimte uit het ZTC
+        zaaktype = ztc_client.retrieve(
+            'zaaktype',
+            catalogus_uuid=config.ztc_catalogus_uuid,
+            uuid=config.ztc_mor_zaaktype_uuid,
+        )
+        # Haal StatusType:Nieuw uit het ZTC
+        status_type = ztc_client.retrieve(
+            'statustype',
+            catalogus_uuid=config.ztc_catalogus_uuid,
+            zaaktype_uuid=config.ztc_mor_zaaktype_uuid,
+            uuid=config.ztc_mor_statustype_new_uuid,
+        )
+        # Haal InformationObjectType:Afbeelding uit het ZTC
+        informatieobjecttype = ztc_client.retrieve(
+            'informatieobjecttype',
+            catalogus_uuid=config.ztc_catalogus_uuid,
+            uuid=config.ztc_mor_informatieobjecttype_image_uuid
+        )
 
-            # assert status_type['url'] in zaaktype['statustypen']
+        # assert status_type['url'] in zaaktype['statustypen']
 
-            # Verwerk de melding informatie...
-            form_data = form.cleaned_data
+        # Verwerk de melding informatie...
+        form_data = form.cleaned_data
 
-            # Maak een Zaak aan in het ZRC.
-            data = {
-                'zaaktype': zaaktype['url'],
-                'bronorganisatie': config.zrc_bronorganisatie,
-                'registratiedatum': datetime.date.today().isoformat(),
-                'toelichting': form_data['toelichting'],
-                'startdatum': datetime.date.today().isoformat(),
-                # TODO: VerantwoordelijkeOrganisatie...
-                'verantwoordelijkeOrganisatie': 'http://www.example.com/api/v1/vo/12345',
-            }
+        # Maak een Zaak aan in het ZRC.
+        data = {
+            'zaaktype': zaaktype['url'],
+            'bronorganisatie': config.zrc_bronorganisatie,
+            'registratiedatum': datetime.date.today().isoformat(),
+            'toelichting': form_data['toelichting'],
+            'startdatum': datetime.date.today().isoformat(),
+            # TODO: VerantwoordelijkeOrganisatie...
+            'verantwoordelijkeOrganisatie': 'http://www.example.com/api/v1/vo/12345',
+        }
 
-            if form_data['longitude'] and form_data['latitude']:
-                data.update({
-                    'zaakgeometrie': {
-                        'type': 'Point',
-                        'coordinates': [
-                            form_data['longitude'],
-                            form_data['latitude'],
-                        ]
-                    }
-                })
-
-            zaak = zrc_client.create('zaak', data)
-
-            # zaak_id = zaak['url'].rsplit('/')[-1]
-            # assert 'url' in zaak
-
-            # Geef de Zaak een status in het ZRC.
-            status = zrc_client.create('status', {
-                'zaak': zaak['url'],
-                'statusType': status_type['url'],
-                'datumStatusGezet': datetime.datetime.now().isoformat(),
-                'statustoelichting': 'Melding ontvangen',
+        if form_data['longitude'] and form_data['latitude']:
+            data.update({
+                'zaakgeometrie': {
+                    'type': 'Point',
+                    'coordinates': [
+                        form_data['longitude'],
+                        form_data['latitude'],
+                    ]
+                }
             })
 
-            # zaak = zrc_client.retrieve('zaak', id=zaak_id)
-            # assert zaak['status'] == status['url']
+        zaak = zrc_client.create('zaak', data)
 
-            # # assign address information
-            # verblijfsobject = orc_client.create('verblijfsobject', {
-            #     'identificatie': uuid.uuid4().hex,
-            #     'hoofdadres': {
-            #         'straatnaam': 'Keizersgracht',
-            #         'postcode': '1015 CJ',
-            #         'woonplaatsnaam': 'Amsterdam',
-            #         'huisnummer': '117',
-            #     }
-            # })
-            # zaak_object = zrc_client.create('zaakobject', {
-            #     'zaak': zaak['url'],
-            #     'object': verblijfsobject['url'],
-            # })
-            # assert 'url' in zaak_object
+        # zaak_id = zaak['url'].rsplit('/')[-1]
+        # assert 'url' in zaak
 
-            # Maak een document aan in het DMC.
-            if form_data['bijlage']:
-                attachment = form_data['bijlage']
+        # Geef de Zaak een status in het ZRC.
+        status = zrc_client.create('status', {
+            'zaak': zaak['url'],
+            'statusType': status_type['url'],
+            'datumStatusGezet': datetime.datetime.now().isoformat(),
+            'statustoelichting': 'Melding ontvangen',
+        })
 
-                byte_content = form_data['bijlage'].read()
-                base64_bytes = base64.b64encode(byte_content)
-                base64_string = base64_bytes.decode('utf-8')
+        # zaak = zrc_client.retrieve('zaak', id=zaak_id)
+        # assert zaak['status'] == status['url']
 
-                eio = drc_client.create('enkelvoudiginformatieobject', {
-                    # TODO: Dit moet automatisch?
-                    'identificatie': uuid.uuid4().hex,
-                    'bronorganisatie': config.zrc_bronorganisatie,
-                    'creatiedatum': zaak['registratiedatum'],
-                    'titel': attachment.name,
-                    'auteur': 'anoniem',
-                    'formaat': attachment.content_type,
-                    'taal': 'dut',  # TODO: Why?!
-                    'inhoud': base64_string,
-                    'informatieobjecttype': informatieobjecttype['url'],
-                })
+        # # assign address information
+        # verblijfsobject = orc_client.create('verblijfsobject', {
+        #     'identificatie': uuid.uuid4().hex,
+        #     'hoofdadres': {
+        #         'straatnaam': 'Keizersgracht',
+        #         'postcode': '1015 CJ',
+        #         'woonplaatsnaam': 'Amsterdam',
+        #         'huisnummer': '117',
+        #     }
+        # })
+        # zaak_object = zrc_client.create('zaakobject', {
+        #     'zaak': zaak['url'],
+        #     'object': verblijfsobject['url'],
+        # })
+        # assert 'url' in zaak_object
 
-                # Koppel dit document aan de Zaak in het DRC. De omgekeerde
-                # relatie is de verantwoordelijkheid van het DRC.
-                oio = drc_client.create('objectinformatieobject', {
-                    'object': zaak['url'],
-                    'informatieobject': eio['url'],
-                    # TODO: Deze enum moet ergens vandaan komen.
-                    'objectType': 'zaak',
-                })
+        # Maak een document aan in het DMC.
+        if form_data['bijlage']:
+            attachment = form_data['bijlage']
 
-        except ClientError as e:
-            return render_client_error_to_response(self.request, e)
+            byte_content = form_data['bijlage'].read()
+            base64_bytes = base64.b64encode(byte_content)
+            base64_string = base64_bytes.decode('utf-8')
+
+            eio = drc_client.create('enkelvoudiginformatieobject', {
+                # TODO: Dit moet automatisch?
+                'identificatie': uuid.uuid4().hex,
+                'bronorganisatie': config.zrc_bronorganisatie,
+                'creatiedatum': zaak['registratiedatum'],
+                'titel': attachment.name,
+                'auteur': 'anoniem',
+                'formaat': attachment.content_type,
+                'taal': 'dut',  # TODO: Why?!
+                'inhoud': base64_string,
+                'informatieobjecttype': informatieobjecttype['url'],
+            })
+
+            # Koppel dit document aan de Zaak in het DRC. De omgekeerde
+            # relatie is de verantwoordelijkheid van het DRC.
+            oio = drc_client.create('objectinformatieobject', {
+                'object': zaak['url'],
+                'informatieobject': eio['url'],
+                # TODO: Deze enum moet ergens vandaan komen.
+                'objectType': 'zaak',
+            })
 
         return super().form_valid(form)
 

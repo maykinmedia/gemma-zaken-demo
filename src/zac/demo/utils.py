@@ -28,29 +28,32 @@ def exception_to_validation_errors(exc):
     return None
 
 
-def render_client_error_to_response(request, exc, context=None):
+def render_exception_to_response(request, exc, context=None):
     """
     Shortcut function to render a template with the exception nicely formatted.
 
     :param request: The request passed to the view.
-    :param exc: The `ClientError`.
+    :param exc: The `Exception` or `ClientError`.
     :param context: Additional context as a `dict` to pass to the template.
     :return: A stringified response.
     """
     if context is None:
         context = {}
 
-    try:
-        invalid_params = exc.args[0].get('invalid-params', None)
-    except Exception:
-        invalid_params = None
+    error = None
+    if type(exc) is ClientError:
+        try:
+            error = exc.args[0]
+            error.invalid_params = error.get('invalid-params', None)
+        except Exception:
+            pass
 
     context.update({
         'view': {
             'title': _('Foutmelding'),
             'subtitle': _('Er ging iets mis...'),
         },
-        'invalid_params': invalid_params,
+        'error': error,
         'exception': exc,
         'log_entries': Log.entries()
     })
