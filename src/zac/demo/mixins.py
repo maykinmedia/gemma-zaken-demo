@@ -1,3 +1,6 @@
+from requests import HTTPError
+from zds_client import ClientError
+
 from .utils import render_exception_to_response
 
 
@@ -26,7 +29,7 @@ class ExceptionViewMixin:
             result = super().dispatch(request, *args, **kwargs)
 
             self._post_dispatch(request, *args, **kwargs)
-        except Exception as e:
+        except (ClientError, HTTPError) as e:
             return render_exception_to_response(request, e)
 
         return result
