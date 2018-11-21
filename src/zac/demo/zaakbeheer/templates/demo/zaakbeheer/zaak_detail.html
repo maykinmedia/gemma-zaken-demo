@@ -2,10 +2,60 @@
 
 {% block form-submit-label %}Bijwerken{% endblock %}
 
-{% block form-buttons %}
-  {{ block.super }}
+{% block content-after-form %}
 
-  <a href="{% url 'demo:zaakbeheer-index' %}" class="btn btn-secondary">Terug naar overzicht</a>
+  <h2>Status historie</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Datum</th>
+        <th>Statustype</th>
+        <th>Toelichting</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for status in status_list %}
+        <tr>
+          <td>{{ status.datumStatusGezet }}</td>
+          <td>{{ status.statusType_embedded.omschrijving }}</td>
+          <td>{{ status.statustoelichting }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p>
+    <a href="{% url 'demo:zaakbeheer-statuscreate' zaak_uuid %}" class="btn btn-primary">Status toevoegen</a>
+  </p>
+
+  <h2>Documenten</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Datum</th>
+        <th>Titel</th>
+        <th>Auteur</th>
+        <th>Formaat</th>
+        <th>Acties</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for document in document_list %}
+        <tr>
+          <td>{{ document.creatiedatum }}</td>
+          <td>{{ document.titel }}</td>
+          <td>{{ document.auteur }}</td>
+          <td>{{ document.formaat }}</td>
+          <td><a target="_blank" href="{% if document.link %}{{ document.link }}{% else %}{{ document.inhoud }}{% endif %}">Downloaden</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p>
+    <a href="{% url 'demo:zaakbeheer-index' %}" class="btn btn-secondary">Terug naar overzicht</a>
+  </p>
+
 {% endblock %}
 
 
@@ -13,9 +63,17 @@
   <script type="application/javascript">
 
     function initMap() {
-      var location = new google.maps.LatLng($('#id_latitude').val(), $('#id_longitude').val());
-
+      var lat = $('#id_latitude').val();
+      var lng = $('#id_longitude').val();
       var mapDiv = document.getElementById('map-canvas');
+
+      if (lat === '' || lng === '') {
+          $(mapDiv).html('Geen locatie bekend.');
+          return;
+      }
+
+      var location = new google.maps.LatLng(lat, lng);
+
       var map = new google.maps.Map(mapDiv, {
         center: location,
         zoom: 15,
@@ -39,12 +97,6 @@
       });
 
     }
-
-    $(function(){
-      $('#id_statustype_url').on('change', function() {
-          $('#id_status_toelichting').val('');
-      })
-    });
   </script>
 
   {{ block.super }}

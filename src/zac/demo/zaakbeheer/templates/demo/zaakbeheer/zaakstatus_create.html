@@ -1,0 +1,32 @@
+{% extends "demo/form.html" %}
+
+{% block form-submit-label %}Toevoegen{% endblock %}
+
+{% block content-before-form %}
+
+  <h2>Status historie</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Datum</th>
+        <th>Statustype</th>
+        <th>Toelichting</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for status in status_list %}
+        <tr>
+          <td>{{ status.datumStatusGezet }}</td>
+          <td>{{ status.statusType_embedded.omschrijving }}</td>
+          <td>{{ status.statustoelichting }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p>
+    <a href="{% url 'demo:zaakbeheer-detail' zaak_uuid %}" class="btn btn-secondary">Terug naar zaak</a>
+  </p>
+
+  <h2>Status toevoegen</h2>
+{% endblock %}
