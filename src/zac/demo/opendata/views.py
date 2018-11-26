@@ -3,8 +3,8 @@ import json
 from django import forms
 from django.views.generic import FormView
 
+from zac.demo.mixins import ZACViewMixin
 from zac.demo.models import SiteConfiguration
-from zds_client.client import Log
 
 from ..clients import zrc_client, ztc_client
 
@@ -29,16 +29,11 @@ class CoordinatesForm(forms.Form):
         self.fields['zaak_type'].choices = zaaktype_choices
 
 
-class ZaakMapView(FormView):
+class ZaakMapView(ZACViewMixin, FormView):
     title = 'Open data'
     subtitle = 'Toon alle openbare zaak data'
     template_name = 'demo/opendata/zaak_map.html'
     form_class = CoordinatesForm
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        Log.clear()
 
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
@@ -75,12 +70,3 @@ class ZaakMapView(FormView):
                 zaken_json=json.dumps(zaken),
             )
         )
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context.update({
-            'log_entries': Log.entries()
-        })
-
-        return context

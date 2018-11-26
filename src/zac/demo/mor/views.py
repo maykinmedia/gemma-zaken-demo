@@ -7,10 +7,8 @@ from django import forms
 from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
 
-from zds_client.client import Log
-
 from ..clients import drc_client, zrc_client, ztc_client
-from ..mixins import ExceptionViewMixin
+from ..mixins import ZACViewMixin
 from ..models import SiteConfiguration
 
 logger = logging.getLogger(__name__)
@@ -31,18 +29,13 @@ class MORCreateForm(forms.Form):
     bijlage = forms.FileField(required=False, help_text='Foto of andere afbeelding die betrekking heeft op de melding.')
 
 
-class MORCreateView(ExceptionViewMixin, FormView):
+class MORCreateView(ZACViewMixin, FormView):
     title = 'Melding Openbare Ruimte'
     subtitle = 'Maak een nieuwe melding'
 
     template_name = 'demo/mor/mor_create.html'
     form_class = MORCreateForm
     success_url = reverse_lazy('demo:mor-thanks')
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        Log.clear()
 
     def form_valid(self, form):
         config = SiteConfiguration.get_solo()
@@ -159,15 +152,8 @@ class MORCreateView(ExceptionViewMixin, FormView):
         return super().form_valid(form)
 
 
-class MORThanksView(TemplateView):
+class MORThanksView(ZACViewMixin, TemplateView):
     title = 'Melding Openbare Ruimte'
     subtitle = 'Bedankt voor uw melding'
 
     template_name = 'demo/mor/mor_thanks.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update({
-            'log_entries': Log.entries()
-        })
-        return context

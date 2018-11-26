@@ -1,5 +1,6 @@
 from requests import HTTPError
 from zds_client import ClientError
+from zds_client.log import Log
 
 from .utils import render_exception_to_response
 
@@ -34,3 +35,53 @@ class ExceptionViewMixin:
 
         return result
 
+
+class LogViewMixin:
+
+    def get(self, request, *args, **kwargs):
+        """
+        Only clear the log AFTER a GET-request. This way, POST-requests are
+        included in the network logs.
+
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        result = super().get(request, *args, **kwargs)
+
+        Log.clear()
+
+        return result
+
+    def post(self, request, *args, **kwargs):
+        """
+        Clear the logs before a POST-request.
+
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        Log.clear()
+
+        return super().post(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        """
+        Include log entries in the response.
+
+        :param kwargs:
+        :return:
+        """
+        context = super().get_context_data(**kwargs)
+
+        context.update({
+            'log_entries': Log.entries(),
+        })
+
+        return context
+
+
+class ZACViewMixin(LogViewMixin, ExceptionViewMixin):
+    pass

@@ -14,14 +14,14 @@
     </h5>
     <p>
       <strong>{{ entry.request.method }}</strong>
-      <a target="_blank" href="{{ entry.request.url }}" title="{{ entry.request.url }}">
-        {% if entry.request.url|length > 110 %}
-          {{ entry.request.url|shorten_api_url }}
-        {% else %}
-          {{ entry.request.url }}
-        {% endif %}
+      <a target="_blank" href="{{ entry.request.url }}?{{ entry.request.params|urlencode }}" title="{{ entry.request.url }}?{{ entry.request.params|pretty_urlencode }}">
+        {{ entry.request.url|shorten_api_url }}
       </a>
-      <span class="badge badge-{% if entry.response.status < 400 %}success{% else %}warning{% endif %}">HTTP {{ entry.response.status }}</span></p>
+      <span class="badge badge-{% if entry.response.status < 400 %}success{% else %}warning{% endif %}">HTTP {{ entry.response.status }}</span>
+
+      <br>
+      <small>{% if entry.request.params %}?{{ entry.request.params|pretty_urlencode }}{% endif %}</small>
+    </p>
     <p>
       {% if entry.request.data %}
         <a class="btn btn-secondary btn-sm" data-toggle="collapse" href="#request-{{ forloop.counter }}" role="button" aria-expanded="false" aria-controls="request-{{ forloop.counter }}">

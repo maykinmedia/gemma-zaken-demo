@@ -1,4 +1,5 @@
 import re
+import urllib.parse
 
 from django import template
 from django.template.defaultfilters import stringfilter
@@ -19,3 +20,17 @@ def shorten_api_url(url):
     :return: The shortened URL.
     """
     return re.subn(uuid_pattern, '\\1..\\2', url)[0]
+
+
+@register.filter
+def pretty_urlencode(query_params):
+    """
+    Shortens an API URL by replacing all UUIDs with the first and last 3
+    characters.
+
+    :param url: The URL.
+    :return: The shortened URL.
+    """
+    if not query_params:
+        return ''
+    return '&'.join(f'{k}={v}' for k, v in query_params.items())

@@ -8,10 +8,10 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views.generic import FormView, TemplateView
 
-from zds_client.client import Log, ClientError
+from zds_client.client import ClientError
 
 from ..clients import zrc_client, ztc_client, drc_client, brc_client
-from ..mixins import ExceptionViewMixin
+from ..mixins import ZACViewMixin
 from ..models import SiteConfiguration
 from ..utils import api_response_list_to_dict, isodate
 
@@ -22,15 +22,10 @@ def get_uuid(url):
     return url.rsplit('/', 1)[1].strip('/')
 
 
-class ZaakListView(ExceptionViewMixin, TemplateView):
+class ZaakListView(ZACViewMixin, TemplateView):
     title = 'Zaakbeheer'
     subtitle = 'Lijst van Zaken uit het ZRC'
     template_name = 'demo/zaakbeheer/zaak_list.html'
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        Log.clear()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -84,7 +79,6 @@ class ZaakListView(ExceptionViewMixin, TemplateView):
         context.update({
             'header': headers,
             'rows': rows,
-            'log_entries': Log.entries()
         })
 
         return context
@@ -101,16 +95,11 @@ class ZaakForm(forms.Form):
     latitude = forms.FloatField(widget=forms.HiddenInput, required=False)
 
 
-class ZaakDetailView(ExceptionViewMixin, FormView):
+class ZaakDetailView(ZACViewMixin, FormView):
     title = 'Zaakbeheer'
     subtitle = 'Details van een Zaak uit het ZRC'
     template_name = 'demo/zaakbeheer/zaak_detail.html'
     form_class = ZaakForm
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        Log.clear()
 
     def _pre_dispatch(self, request, *args, **kwargs):
         self.config = SiteConfiguration.get_solo()
@@ -205,7 +194,6 @@ class ZaakDetailView(ExceptionViewMixin, FormView):
             'status_list': status_list,
             'document_list': document_list,
             'besluit_list': besluit_list,
-            'log_entries': Log.entries(),
         })
         return context
 
@@ -222,16 +210,11 @@ class StatusForm(forms.Form):
         self.fields['statustype_url'].choices = status_choices
 
 
-class StatusCreateView(ExceptionViewMixin, FormView):
+class StatusCreateView(ZACViewMixin, FormView):
     title = 'Zaakbeheer - Statussen'
     subtitle = 'Status beheren van deze zaak'
     template_name = 'demo/zaakbeheer/zaakstatus_create.html'
     form_class = StatusForm
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        Log.clear()
 
     def _pre_dispatch(self, request, *args, **kwargs):
         self.config = SiteConfiguration.get_solo()
@@ -290,7 +273,6 @@ class StatusCreateView(ExceptionViewMixin, FormView):
         context.update({
             'zaak_uuid': self.zaak_uuid,
             'status_list': status_list,
-            'log_entries': Log.entries(),
         })
         return context
 
@@ -307,16 +289,11 @@ class BesluitForm(forms.Form):
         self.fields['besluittype_url'].choices = besluit_choices
 
 
-class BesluitCreateView(ExceptionViewMixin, FormView):
+class BesluitCreateView(ZACViewMixin, FormView):
     title = 'Zaakbeheer - Besluiten'
     subtitle = 'Besluiten beheren van deze zaak'
     template_name = 'demo/zaakbeheer/besluit_create.html'
     form_class = BesluitForm
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        Log.clear()
 
     def _pre_dispatch(self, request, *args, **kwargs):
         self.config = SiteConfiguration.get_solo()
@@ -399,6 +376,5 @@ class BesluitCreateView(ExceptionViewMixin, FormView):
         context.update({
             'zaak_uuid': self.zaak_uuid,
             'besluit_list': besluit_list,
-            'log_entries': Log.entries(),
         })
         return context
