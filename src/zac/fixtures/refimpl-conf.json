@@ -1,0 +1,31 @@
+[
+{
+  "model": "demo.siteconfiguration",
+  "pk": 1,
+  "fields": {
+    "global_api_client_id": "demo-app-KK2CG69NTrSN",
+    "global_api_secret": "wo1hW8oHsM0U9hSTnMM0jtCbD8GYmf4i",
+    "google_api_key": "AIzaSyCmCFB5-lHyBNENSBaiqiIBN3DcRdygI7E",
+    "zrc_base_url": "https://ref.tst.vng.cloud/zrc/api/v1/",
+    "zrc_client_id": "",
+    "zrc_secret": "",
+    "zrc_bronorganisatie": "509381406",
+    "drc_base_url": "https://ref.tst.vng.cloud/drc/api/v1/",
+    "drc_client_id": "",
+    "drc_secret": "",
+    "ztc_base_url": "https://ref.tst.vng.cloud/ztc/api/v1/",
+    "ztc_client_id": "",
+    "ztc_secret": "",
+    "ztc_catalogus_uuid": "f7afd156-c8f5-4666-b8b5-28a4a9b5dfc7",
+    "brc_base_url": "https://ref.tst.vng.cloud/brc/api/v1/",
+    "brc_client_id": "",
+    "brc_secret": "",
+    "orc_base_url": "",
+    "orc_client_id": "",
+    "orc_secret": "",
+    "ztc_mor_zaaktype_uuid": "0119dd4e-7be9-477e-bccf-75023b1453c1",
+    "ztc_mor_statustype_new_uuid": "TODO",
+    "ztc_mor_informatieobjecttype_image_uuid": "TODO"
+  }
+}
+]
