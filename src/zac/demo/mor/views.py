@@ -7,9 +7,8 @@ from django import forms
 from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
 
-from ..clients import drc_client, zrc_client, ztc_client
 from ..mixins import ZACViewMixin
-from ..models import SiteConfiguration
+from ..models import SiteConfiguration, client
 
 logger = logging.getLogger(__name__)
 
@@ -41,20 +40,20 @@ class MORCreateView(ZACViewMixin, FormView):
         config = SiteConfiguration.get_solo()
 
         # Haal ZaakType:Melding Openbare Ruimte uit het ZTC
-        zaaktype = ztc_client.retrieve(
+        zaaktype = client('ztc').retrieve(
             'zaaktype',
             catalogus_uuid=config.ztc_catalogus_uuid,
             uuid=config.ztc_mor_zaaktype_uuid,
         )
         # Haal StatusType:Nieuw uit het ZTC
-        status_type = ztc_client.retrieve(
+        status_type = client('ztc').retrieve(
             'statustype',
             catalogus_uuid=config.ztc_catalogus_uuid,
             zaaktype_uuid=config.ztc_mor_zaaktype_uuid,
             uuid=config.ztc_mor_statustype_new_uuid,
         )
         # Haal InformationObjectType:Afbeelding uit het ZTC
-        informatieobjecttype = ztc_client.retrieve(
+        informatieobjecttype = client('ztc').retrieve(
             'informatieobjecttype',
             catalogus_uuid=config.ztc_catalogus_uuid,
             uuid=config.ztc_mor_informatieobjecttype_image_uuid
@@ -87,24 +86,24 @@ class MORCreateView(ZACViewMixin, FormView):
                 }
             })
 
-        zaak = zrc_client.create('zaak', data)
+        zaak = client('zrc').create('zaak', data)
 
         # zaak_id = zaak['url'].rsplit('/')[-1]
         # assert 'url' in zaak
 
         # Geef de Zaak een status in het ZRC.
-        status = zrc_client.create('status', {
+        status = client('zrc').create('status', {
             'zaak': zaak['url'],
             'statusType': status_type['url'],
             'datumStatusGezet': datetime.datetime.now().isoformat(),
             'statustoelichting': 'Melding ontvangen',
         })
 
-        # zaak = zrc_client.retrieve('zaak', id=zaak_id)
+        # zaak = client('zrc').retrieve('zaak', id=zaak_id)
         # assert zaak['status'] == status['url']
 
         # # assign address information
-        # verblijfsobject = orc_client.create('verblijfsobject', {
+        # verblijfsobject = client('orc').create('verblijfsobject', {
         #     'identificatie': uuid.uuid4().hex,
         #     'hoofdadres': {
         #         'straatnaam': 'Keizersgracht',
@@ -113,7 +112,7 @@ class MORCreateView(ZACViewMixin, FormView):
         #         'huisnummer': '117',
         #     }
         # })
-        # zaak_object = zrc_client.create('zaakobject', {
+        # zaak_object = client('zrc').create('zaakobject', {
         #     'zaak': zaak['url'],
         #     'object': verblijfsobject['url'],
         # })
@@ -127,7 +126,7 @@ class MORCreateView(ZACViewMixin, FormView):
             base64_bytes = base64.b64encode(byte_content)
             base64_string = base64_bytes.decode('utf-8')
 
-            eio = drc_client.create('enkelvoudiginformatieobject', {
+            eio = client('drc').create('enkelvoudiginformatieobject', {
                 # TODO: Dit moet automatisch?
                 'identificatie': uuid.uuid4().hex,
                 'bronorganisatie': config.zrc_bronorganisatie,
@@ -142,7 +141,7 @@ class MORCreateView(ZACViewMixin, FormView):
 
             # Koppel dit document aan de Zaak in het DRC. De omgekeerde
             # relatie is de verantwoordelijkheid van het DRC.
-            oio = drc_client.create('objectinformatieobject', {
+            oio = client('drc').create('objectinformatieobject', {
                 'object': zaak['url'],
                 'informatieobject': eio['url'],
                 # TODO: Deze enum moet ergens vandaan komen.

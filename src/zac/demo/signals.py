@@ -13,7 +13,7 @@ from .models import SiteConfiguration
 @receiver(post_save, sender=SiteConfiguration)
 def update_settings(sender, instance, **kwargs):
     config = instance.get_zdsclient_config()
-    Client.load_config(django_settings.BASE_DIR, **config)
+    Client.load_config(**config)
 
 
 def initialize_settings():

@@ -4,9 +4,7 @@ from django import forms
 from django.views.generic import FormView
 
 from zac.demo.mixins import ZACViewMixin
-from zac.demo.models import SiteConfiguration
-
-from ..clients import zrc_client, ztc_client
+from zac.demo.models import SiteConfiguration, client
 
 
 def get_uuid(url):
@@ -40,7 +38,7 @@ class ZaakMapView(ZACViewMixin, FormView):
 
         config = SiteConfiguration.get_solo()
 
-        zaak_typen = ztc_client.list('zaaktype', catalogus_uuid=config.ztc_catalogus_uuid)
+        zaak_typen = client('ztc').list('zaaktype', catalogus_uuid=config.ztc_catalogus_uuid)
         form_kwargs.update({
             'zaaktype_choices': [(zaak_type['url'], zaak_type['omschrijving']) for zaak_type in zaak_typen]
         })
@@ -62,7 +60,7 @@ class ZaakMapView(ZACViewMixin, FormView):
         }
 
         # TODO: Filter on public status and type
-        zaken = zrc_client.operation('zaak__zoek', search_data)
+        zaken = client('zrc').operation('zaak__zoek', search_data)
 
         return self.render_to_response(
             self.get_context_data(

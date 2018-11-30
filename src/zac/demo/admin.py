@@ -9,28 +9,48 @@ from .models import SiteConfiguration
 class SiteConfigurationAdmin(SingletonModelAdmin):
     fieldsets = (
         (_('Algemeen'), {
-            'fields': ['google_api_key', ],
+            'fields': [
+                'global_api_client_id',
+                'global_api_secret',
+                'google_api_key',
+            ],
         }),
         (_('Zaak registratie component (ZRC)'), {
             'fields': [
                 'zrc_base_url',
-                'zrc_bronorganisatie'
+                'zrc_client_id',
+                'zrc_secret',
+                'zrc_bronorganisatie',
             ]
         }),
         (_('Document registratie component (DRC)'), {
-            'fields': ['drc_base_url']
+            'fields': [
+                'drc_base_url',
+                'drc_client_id',
+                'drc_secret',
+            ]
         }),
         (_('Zaaktype catalogus (ZTC)'), {
             'fields': [
                 'ztc_base_url',
-                'ztc_catalogus_uuid'
+                'ztc_client_id',
+                'ztc_secret',
+                'ztc_catalogus_uuid',
             ]
         }),
         (_('Besluit registratie component (BRC)'), {
-            'fields': ['brc_base_url']
+            'fields': [
+                'brc_base_url',
+                'brc_client_id',
+                'brc_secret',
+            ]
         }),
         (_('Overige registraties component (ORC)'), {
-            'fields': ['orc_base_url']
+            'fields': [
+                'orc_base_url',
+                'orc_client_id',
+                'orc_secret',
+            ]
         }),
         (_('Demo applicatie: Melding openbare ruimte'), {
             'fields': [
