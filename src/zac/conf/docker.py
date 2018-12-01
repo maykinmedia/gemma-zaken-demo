@@ -57,7 +57,7 @@ if subpath:
 
     FORCE_SCRIPT_NAME = subpath
     STATIC_URL = f"{FORCE_SCRIPT_NAME}{STATIC_URL}"
-    MEDIA_URL = f"{FORCE_SCRIPT_NAME}{MEDIA_URL}"
+    # MEDIA_URL = f"{FORCE_SCRIPT_NAME}{MEDIA_URL}"
 
 # See: docker-compose.yml
 # Optional Docker container usage below:
