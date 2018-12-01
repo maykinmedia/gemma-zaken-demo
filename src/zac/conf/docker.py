@@ -31,13 +31,33 @@ ALLOWED_HOSTS = getenv('ALLOWED_HOSTS', '*', split=True)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'USER': getenv('DATABASE_USER', 'postgres'),
-        'NAME': getenv('DATABASE_NAME', 'postgres'),
-        'PASSWORD': getenv('DATABASE_PASSWORD', ''),
-        'HOST': getenv('DATABASE_USER', 'db'),
-        'PORT': getenv('DATABASE_PORT', '5432'),
+        'USER': getenv('DB_USER', 'postgres'),
+        'NAME': getenv('DB_NAME', 'postgres'),
+        'PASSWORD': getenv('DB_PASSWORD', ''),
+        'HOST': getenv('DB_HOST', 'db'),
+        'PORT': getenv('DB_PORT', '5432'),
     }
 }
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    },
+    # https://github.com/jazzband/django-axes/blob/master/docs/configuration.rst#cache-problems
+    'axes_cache': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}
+
+# Deal with being hosted on a subpath
+subpath = getenv('SUBPATH')
+if subpath:
+    if not subpath.startswith('/'):
+        subpath = f'/{subpath}'
+
+    FORCE_SCRIPT_NAME = subpath
+    STATIC_URL = f"{FORCE_SCRIPT_NAME}{STATIC_URL}"
+    MEDIA_URL = f"{FORCE_SCRIPT_NAME}{MEDIA_URL}"
 
 # See: docker-compose.yml
 # Optional Docker container usage below:
@@ -75,7 +95,6 @@ CSRF_COOKIE_SECURE = getenv('CSRF_COOKIE_SECURE', False)
 #
 # Custom settings
 #
-AXES_BEHIND_REVERSE_PROXY = False
 ENVIRONMENT = 'docker'
 
 # Override settings with local settings.
@@ -88,3 +107,11 @@ except ImportError:
 if missing_environment_vars:
     raise ImproperlyConfigured(
         'These environment variables are required but missing: {}'.format(', '.join(missing_environment_vars)))
+
+#
+# Library settings
+#
+
+# django-axes
+AXES_BEHIND_REVERSE_PROXY = False
+AXES_CACHE = 'axes_cache'
