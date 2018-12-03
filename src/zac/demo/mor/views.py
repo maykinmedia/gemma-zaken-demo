@@ -72,7 +72,7 @@ class MORCreateView(ZACViewMixin, FormView):
             'toelichting': form_data['toelichting'],
             'startdatum': datetime.date.today().isoformat(),
             # TODO: VerantwoordelijkeOrganisatie...
-            'verantwoordelijkeOrganisatie': 'http://www.example.com/api/v1/vo/12345',
+            'verantwoordelijkeOrganisatie': '245122461',
         }
 
         if form_data['longitude'] and form_data['latitude']:
