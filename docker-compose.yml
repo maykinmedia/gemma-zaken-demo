@@ -1,15 +1,15 @@
 # Inspired by https://docs.docker.com/compose/django/
-version: '3'
+version: '3.4'
 
 services:
   db:
-    # NOTE: No persistance storage configured.
-    # See: https://hub.docker.com/_/postgres/
     image: postgres
   web:
     build: .
     environment:
       - DJANGO_SETTINGS_MODULE=zac.conf.docker
+      - SECRET_KEY=${SECRET_KEY}
+      - UWSGI_PORT=8080
     ports:
       - 8080:8080
     depends_on:
