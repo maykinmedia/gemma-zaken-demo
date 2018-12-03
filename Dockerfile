@@ -80,5 +80,8 @@ ARG SECRET_KEY=dummy
 # Run collectstatic, so the result is already included in the image
 RUN python src/manage.py collectstatic --noinput
 
+# Temporary patch for incorrect OAS paths to APIs
+RUN patch env/lib/python3.6/site-packages/zds_client/client.py src/zds_client.patch
+
 EXPOSE 8080
 CMD ["/start.sh"]
