@@ -20,12 +20,12 @@
     "brc_base_url": "https://ref.tst.vng.cloud/brc/api/v1/",
     "brc_client_id": "",
     "brc_secret": "",
-    "orc_base_url": "",
+    "orc_base_url": "https://ref.tst.vng.cloud/orc/api/v1/",
     "orc_client_id": "",
     "orc_secret": "",
     "ztc_mor_zaaktype_uuid": "0119dd4e-7be9-477e-bccf-75023b1453c1",
-    "ztc_mor_statustype_new_uuid": "TODO",
-    "ztc_mor_informatieobjecttype_image_uuid": "TODO"
+    "ztc_mor_statustype_new_uuid": "e53becac-cb4f-4dc7-911b-7d2ca066c041",
+    "ztc_mor_informatieobjecttype_image_uuid": "63a58060-8cd1-4c9d-bcc4-b6954353e758"
   }
 }
 ]
