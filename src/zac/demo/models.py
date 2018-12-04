@@ -22,8 +22,9 @@ class SiteConfiguration(SingletonModel):
         _('Google API-key'), max_length=255, blank=True)
 
     # ZRC-configuratie
-    zrc_base_url = models.URLField(
-        _('ZRC basis URL'), blank=True,default='http://localhost:8000/api/v1/',
+    zrc_base_url = models.CharField(
+        _('ZRC basis URL'), blank=True, default='http://localhost:8000/api/v1/',
+        max_length=255,
         help_text=_('Zaken API van het Zaak registratie component'))
     zrc_client_id = models.CharField(
         _('Client ID'), max_length=255, blank=True)
@@ -32,8 +33,9 @@ class SiteConfiguration(SingletonModel):
     zrc_bronorganisatie = models.CharField(max_length=9, default='517439943')
 
     # DRC-configuratie
-    drc_base_url = models.URLField(
+    drc_base_url = models.CharField(
         _('DRC basis URL'), blank=True, default='http://localhost:8001/api/v1/',
+        max_length=255,
         help_text=_('Documenten API van het Document registratie component'))
     drc_client_id = models.CharField(
         _('Client ID'), max_length=255, blank=True)
@@ -41,8 +43,9 @@ class SiteConfiguration(SingletonModel):
         _('Secret'), max_length=512, blank=True)
 
     # ZTC-configuratie
-    ztc_base_url = models.URLField(
+    ztc_base_url = models.CharField(
         _('ZTC basis URL'), blank=True, default='http://localhost:8002/api/v1/',
+        max_length=255,
         help_text=_('Catalogus API van het Zaaktypecatalogus component'))
     ztc_client_id = models.CharField(
         _('Client ID'), max_length=255, blank=True)
@@ -53,8 +56,9 @@ class SiteConfiguration(SingletonModel):
         help_text=_('Het UUID van de catalogus in het ZTC'))
 
     # BRC-configuratie
-    brc_base_url = models.URLField(
+    brc_base_url = models.CharField(
         _('BRC basis URL'), blank=True, default='http://localhost:8003/api/v1/',
+        max_length=255,
         help_text=_('Besluit API van het Besluit registratie component'))
     brc_client_id = models.CharField(
         _('Client ID'), max_length=255, blank=True)
@@ -62,8 +66,9 @@ class SiteConfiguration(SingletonModel):
         _('Secret'), max_length=512, blank=True)
 
     # ORC-configuratie
-    orc_base_url = models.URLField(
+    orc_base_url = models.CharField(
         _('ORC basis URL'), blank=True, default='http://localhost:8010/api/v1/',
+        max_length=255,
         help_text=_('Zaken API van het Zaak registratie component'))
     orc_client_id = models.CharField(
         _('Client ID'), max_length=255, blank=True)
