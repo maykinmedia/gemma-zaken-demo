@@ -37,6 +37,7 @@ class ExceptionViewMixin:
 
 
 class LogViewMixin:
+    keep_logs = False
 
     def get(self, request, *args, **kwargs):
         """
@@ -48,11 +49,10 @@ class LogViewMixin:
         :param kwargs:
         :return:
         """
-        result = super().get(request, *args, **kwargs)
+        if not self.keep_logs and not request.GET.get('keep-logs', False):
+            Log.clear()
 
-        Log.clear()
-
-        return result
+        return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         """

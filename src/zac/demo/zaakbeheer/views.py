@@ -109,7 +109,9 @@ class ZaakDetailView(ZACViewMixin, FormView):
         self.zaak_uuid = get_uuid(self.zaak['url'])
 
     def get_success_url(self):
-        return reverse('demo:zaakbeheer-detail', kwargs={'uuid': self.kwargs.get('uuid')})
+        return '{}?keep-logs=true'.format(
+            reverse('demo:zaakbeheer-detail', kwargs={'uuid': self.kwargs.get('uuid')})
+        )
 
     def form_valid(self, form):
         form_data = form.cleaned_data
@@ -224,7 +226,9 @@ class StatusCreateView(ZACViewMixin, FormView):
         self.zaak_uuid = get_uuid(self.zaak['url'])
 
     def get_success_url(self):
-        return reverse('demo:zaakbeheer-statuscreate', kwargs={'uuid': self.kwargs.get('uuid')})
+        return '{}?keep-logs=true'.format(
+            reverse('demo:zaakbeheer-statuscreate', kwargs={'uuid': self.kwargs.get('uuid')})
+        )
 
     def form_valid(self, form):
         form_data = form.cleaned_data
@@ -303,7 +307,9 @@ class BesluitCreateView(ZACViewMixin, FormView):
         self.zaak_uuid = get_uuid(self.zaak['url'])
 
     def get_success_url(self):
-        return reverse('demo:zaakbeheer-besluitcreate', kwargs={'uuid': self.kwargs.get('uuid')})
+        return '{}?keep-logs=true'.format(
+            reverse('demo:zaakbeheer-besluitcreate', kwargs={'uuid': self.kwargs.get('uuid')})
+        )
 
     def form_valid(self, form):
         form_data = form.cleaned_data

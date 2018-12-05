@@ -156,3 +156,5 @@ class MORThanksView(ZACViewMixin, TemplateView):
     subtitle = 'Bedankt voor uw melding'
 
     template_name = 'demo/mor/mor_thanks.html'
+
+    keep_logs = True
