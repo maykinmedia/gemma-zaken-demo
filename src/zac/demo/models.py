@@ -9,6 +9,7 @@ from zds_client import Client
 
 class SiteConfiguration(SingletonModel):
     SERVICES = ['zrc', 'drc', 'ztc', 'orc', 'brc']
+    CLIENTS = {}
 
     global_api_client_id = models.CharField(
         _('Client ID'), max_length=255, blank=True,
@@ -30,7 +31,6 @@ class SiteConfiguration(SingletonModel):
         _('Client ID'), max_length=255, blank=True)
     zrc_secret = models.CharField(
         _('Secret'), max_length=512, blank=True)
-    zrc_bronorganisatie = models.CharField(max_length=9, default='517439943')
 
     # DRC-configuratie
     drc_base_url = models.CharField(
@@ -76,6 +76,8 @@ class SiteConfiguration(SingletonModel):
         _('Secret'), max_length=512, blank=True)
 
     # MOR-configuratie
+    zrc_bronorganisatie = models.CharField(max_length=9, default='517439943')
+
     ztc_mor_zaaktype_uuid = models.CharField(
         _('Zaaktype "Melding Openbare Ruimte" UUID'), max_length=36, blank=True)
     ztc_mor_statustype_new_uuid = models.CharField(
@@ -85,6 +87,12 @@ class SiteConfiguration(SingletonModel):
 
     class Meta:
         verbose_name = _('Configuratie')
+
+    def reload_config(self):
+        self.__class__.CLIENTS.clear()
+
+        config = self.get_zdsclient_config()
+        Client.load_config(**config)
 
     def get_zdsclient_config(self):
         """
@@ -169,7 +177,8 @@ def client(service):
     :param service: The service key for this client.
     :return: A `Client` instance.
     """
-    # TODO: Cache all this.
+    if service not in SiteConfiguration.CLIENTS:
+        config = SiteConfiguration.get_solo()
+        SiteConfiguration.CLIENTS[service] = config.get_client(service)
 
-    config = SiteConfiguration.get_solo()
-    return config.get_client(service)
+    return SiteConfiguration.CLIENTS[service]

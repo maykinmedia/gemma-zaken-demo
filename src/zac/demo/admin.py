@@ -20,7 +20,6 @@ class SiteConfigurationAdmin(SingletonModelAdmin):
                 'zrc_base_url',
                 'zrc_client_id',
                 'zrc_secret',
-                'zrc_bronorganisatie',
             ]
         }),
         (_('Document registratie component (DRC)'), {
@@ -54,6 +53,7 @@ class SiteConfigurationAdmin(SingletonModelAdmin):
         }),
         (_('Demo applicatie: Melding openbare ruimte'), {
             'fields': [
+                'zrc_bronorganisatie',
                 'ztc_mor_zaaktype_uuid',
                 'ztc_mor_statustype_new_uuid',
                 'ztc_mor_informatieobjecttype_image_uuid',

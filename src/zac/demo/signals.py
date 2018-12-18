@@ -5,15 +5,12 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from zds_client import Client
-
 from .models import SiteConfiguration
 
 
 @receiver(post_save, sender=SiteConfiguration)
 def update_settings(sender, instance, **kwargs):
-    config = instance.get_zdsclient_config()
-    Client.load_config(**config)
+    instance.reload_config()
 
 
 def initialize_settings():
@@ -28,7 +25,7 @@ def initialize_settings():
         site_config = SiteConfiguration.get_solo()
     except Exception as e:
         warnings.warn(
-            'SiteConfiguration could not be loaded. This happens when the '
+            'SiteConfiguration could not be loaded. This happens when there '
             'are pending migrations. If this message occurs in any other '
             'situation, something went wrong: {}'.format(e))
         return
