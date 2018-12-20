@@ -9,7 +9,7 @@ db_user=${DB_USER:-postgres}
 db_password=${DB_PASSWORD}
 db_port=${DB_PORT:-5432}
 
-uwsgi_port=${UWSGI_PORT:-8000}
+uwsgi_port=${UWSGI_PORT:-8080}
 
 until PGPORT=$db_port PGPASSWORD=$db_password psql -h "$db_host" -U "$db_user" -c '\q'; do
   >&2 echo "Waiting for database connection..."
