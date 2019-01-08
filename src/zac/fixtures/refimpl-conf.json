@@ -5,7 +5,9 @@
   "fields": {
     "global_api_client_id": "demo-app-KK2CG69NTrSN",
     "global_api_secret": "wo1hW8oHsM0U9hSTnMM0jtCbD8GYmf4i",
-    "google_api_key": "AIzaSyA1fl_5ChJEHYi0Vn1r7IOu2kAP3hQTLlE",
+    "google_maps_api_key": "AIzaSyA1fl_5ChJEHYi0Vn1r7IOu2kAP3hQTLlE",
+    "google_maps_lat": 52.36991896035238,
+    "google_maps_long": 4.897787135976614,
     "zrc_base_url": "https://ref.tst.vng.cloud/zrc/api/v1/",
     "zrc_client_id": "",
     "zrc_secret": "",

@@ -12,7 +12,9 @@ class SiteConfigurationAdmin(SingletonModelAdmin):
             'fields': [
                 'global_api_client_id',
                 'global_api_secret',
-                'google_api_key',
+                'google_maps_api_key',
+                'google_maps_lat',
+                'google_maps_long',
             ],
         }),
         (_('Zaak registratie component (ZRC)'), {

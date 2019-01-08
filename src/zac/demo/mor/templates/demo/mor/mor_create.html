@@ -1,14 +1,17 @@
 {% extends "demo/form_with_map.html" %}
+{% load l10n %}
+{% load solo_tags %}
 
 {% block form-submit-label %}Indienen{% endblock %}
 
 {% block extra_scripts %}
+  {% get_solo 'demo.SiteConfiguration' as site_config %}
   <script type="application/javascript">
 
     function initMap() {
       var mapDiv = document.getElementById('map-canvas');
       var map = new google.maps.Map(mapDiv, {
-        center: new google.maps.LatLng(52.36991896035238, 4.897787135976614),
+        center: new google.maps.LatLng({{ site_config.google_maps_lat|unlocalize }},{{ site_config.google_maps_long|unlocalize }}),
         zoom: 15,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         styles: [
