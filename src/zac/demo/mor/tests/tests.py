@@ -80,16 +80,17 @@ class TestViews(WebTest):
         self.config.brc_base_url = ''
         self.config.drc_base_url = ''
         self.config.save()
+        self.config.reload_config()
 
     def test_create_view(self):
         call = self.app.get(reverse('demo:mor-index'))
         form = call.forms[0]
         form['toelichting'] = 'Test text'
         resp = form.submit(status=[302])
-        requests.get(
-            '{}/api/v1/stop-session/{}'.format(self.test_url, self.session_id),
-            headers=self.json_header
-        )
+#        requests.get(
+#            '{}/api/v1/stop-session/{}'.format(self.test_url, self.session_id),
+#            headers=self.json_header
+#        )
         res = requests.get(
             '{}/api/v1/result-session/{}'.format(self.test_url, self.session_id),
             headers=self.json_header

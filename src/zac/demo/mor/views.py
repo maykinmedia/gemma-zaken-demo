@@ -94,7 +94,7 @@ class MORCreateView(ZACViewMixin, FormView):
 
         # Geef de Zaak een status in het ZRC.
         status = client('zrc').create('status', {
-            'zaak': zaak[0]['url'],
+            'zaak': zaak['url'],
             'statusType': status_type[0]['url'],
             'datumStatusGezet': datetime.datetime.now().isoformat(),
             'statustoelichting': 'Melding ontvangen',
