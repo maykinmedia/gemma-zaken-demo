@@ -16,7 +16,7 @@ from django.urls import reverse_lazy
 from .local_example import *
 
 
-TEST_PLATFORM_URL = 'http://localhost:9000'
+TEST_PLATFORM_URL = 'https://vng-staging.maykin.nl'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 DJANGO_PROJECT_DIR = os.path.abspath(
