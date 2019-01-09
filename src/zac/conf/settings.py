@@ -13,10 +13,16 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 
 from django.urls import reverse_lazy
+from .local_example import *
+
+
+TEST_PLATFORM_URL = 'http://localhost:9000'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-DJANGO_PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
-BASE_DIR = os.path.abspath(os.path.join(DJANGO_PROJECT_DIR, os.path.pardir, os.path.pardir))
+DJANGO_PROJECT_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), os.path.pardir))
+BASE_DIR = os.path.abspath(os.path.join(
+    DJANGO_PROJECT_DIR, os.path.pardir, os.path.pardir))
 
 
 # Quick-start development settings - unsuitable for production
@@ -26,7 +32,7 @@ BASE_DIR = os.path.abspath(os.path.join(DJANGO_PROJECT_DIR, os.path.pardir, os.p
 SECRET_KEY = 'o(je41k00h8cz*x36@6uyq&c3mz(3*w()z&hlb017@xeikc&x5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -126,7 +132,7 @@ LOGOUT_REDIRECT_URL = reverse_lazy('index')
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'nl-nl'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'UTC'
 

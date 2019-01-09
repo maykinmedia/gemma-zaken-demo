@@ -25,7 +25,8 @@ class MORCreateForm(forms.Form):
                             help_text='Adres of omschrijving van de locatie waar de melding over gaat.')
     toelichting = forms.CharField(widget=forms.Textarea)
 
-    bijlage = forms.FileField(required=False, help_text='Foto of andere afbeelding die betrekking heeft op de melding.')
+    bijlage = forms.FileField(
+        required=False, help_text='Foto of andere afbeelding die betrekking heeft op de melding.')
 
 
 class MORCreateView(ZACViewMixin, FormView):
@@ -38,7 +39,7 @@ class MORCreateView(ZACViewMixin, FormView):
 
     def form_valid(self, form):
         config = SiteConfiguration.get_solo()
-
+        # import pdb; pdb.set_trace()
         # Haal ZaakType:Melding Openbare Ruimte uit het ZTC
         zaaktype = client('ztc').retrieve(
             'zaaktype',
@@ -46,17 +47,17 @@ class MORCreateView(ZACViewMixin, FormView):
             uuid=config.ztc_mor_zaaktype_uuid,
         )
         # Haal StatusType:Nieuw uit het ZTC
-        status_type = client('ztc').retrieve(
+        status_type = client('ztc').list(
             'statustype',
             catalogus_uuid=config.ztc_catalogus_uuid,
             zaaktype_uuid=config.ztc_mor_zaaktype_uuid,
-            uuid=config.ztc_mor_statustype_new_uuid,
+            # uuid=config.ztc_mor_statustype_new_uuid,
         )
         # Haal InformationObjectType:Afbeelding uit het ZTC
-        informatieobjecttype = client('ztc').retrieve(
+        informatieobjecttype = client('ztc').list(
             'informatieobjecttype',
             catalogus_uuid=config.ztc_catalogus_uuid,
-            uuid=config.ztc_mor_informatieobjecttype_image_uuid
+            # uuid=config.ztc_mor_informatieobjecttype_image_uuid
         )
 
         # assert status_type['url'] in zaaktype['statustypen']
@@ -94,7 +95,7 @@ class MORCreateView(ZACViewMixin, FormView):
         # Geef de Zaak een status in het ZRC.
         status = client('zrc').create('status', {
             'zaak': zaak['url'],
-            'statusType': status_type['url'],
+            'statusType': status_type[0]['url'],
             'datumStatusGezet': datetime.datetime.now().isoformat(),
             'statustoelichting': 'Melding ontvangen',
         })
