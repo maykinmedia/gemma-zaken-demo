@@ -39,7 +39,7 @@ class MORCreateView(ZACViewMixin, FormView):
 
     def form_valid(self, form):
         config = SiteConfiguration.get_solo()
-        # import pdb; pdb.set_trace()
+
         # Haal ZaakType:Melding Openbare Ruimte uit het ZTC
         zaaktype = client('ztc').retrieve(
             'zaaktype',
@@ -94,7 +94,7 @@ class MORCreateView(ZACViewMixin, FormView):
 
         # Geef de Zaak een status in het ZRC.
         status = client('zrc').create('status', {
-            'zaak': zaak['url'],
+            'zaak': zaak[0]['url'],
             'statusType': status_type[0]['url'],
             'datumStatusGezet': datetime.datetime.now().isoformat(),
             'statustoelichting': 'Melding ontvangen',

@@ -14,7 +14,6 @@ from ...models import SiteConfiguration
 from .factories import *
 
 
-test_url = settings.TEST_PLATFORM_URL
 api_scope = 'api/v1/'
 
 
@@ -45,28 +44,29 @@ class TestViews(WebTest):
         })
 
     def setUp(self):
+        self.test_url = settings.TEST_PLATFORM_URL
         self.config = SiteConfigurationFactory()
         self.user = UserFactory()
 
         # getting the key for the authentication
         self.key = requests.post(
-            f'{test_url}/api/auth/login/',
+            '{}/api/auth/login/'.format(self.test_url),
             data=get_user_json(self.user),
             headers=self.json_header)\
             .json()['key']
 
-        self.json_header['Authorization'] = f'Token {self.key}'
+        self.json_header['Authorization'] = 'Token {}'.format(self.key)
 
         # create a new session
         create_session = requests.post(
-            f'{test_url}/api/v1/testsessions/',
+            '{}/api/v1/testsessions/'.format(self.test_url),
             data=json.dumps({
-                'session_type': 1
+                'session_type': 2 # FIXME: MOR sessie, use a natural_key?
             }),
             headers=self.json_header
         ).json()
         self.session_id = create_session['id']
-
+        print("Started session id " + str(self.session_id))
         # save the urls just created
         for i in create_session['exposedurl_set']:
             if i['vng_endpoint'] == 'ZRC':
@@ -76,7 +76,9 @@ class TestViews(WebTest):
             else:
                 pass
                 # TODO: for the other cases
-
+        self.config.orc_base_url = ''
+        self.config.brc_base_url = ''
+        self.config.drc_base_url = ''
         self.config.save()
 
     def test_create_view(self):
@@ -85,15 +87,13 @@ class TestViews(WebTest):
         form['toelichting'] = 'Test text'
         resp = form.submit(status=[302])
         requests.get(
-            f'{test_url}/api/v1/stop-session/{self.session_id}',
+            '{}/api/v1/stop-session/{}'.format(self.test_url, self.session_id),
             headers=self.json_header
         )
         res = requests.get(
-            f'{test_url}/api/v1/result-session/{self.session_id}',
+            '{}/api/v1/result-session/{}'.format(self.test_url, self.session_id),
             headers=self.json_header
         )
-        import pdb
-        pdb.set_trace()
         res = res.json()['result']
         self.assertEqual(res, 'success')
 

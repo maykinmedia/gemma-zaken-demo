@@ -33,4 +33,4 @@ def pretty_urlencode(query_params):
     """
     if not query_params:
         return ''
-    return '&'.join(f'{k}={v}' for k, v in query_params.items())
+    return '&'.join('{}={}'.format(k, v) for k, v in query_params.items())
