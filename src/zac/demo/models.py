@@ -23,10 +23,10 @@ class SiteConfiguration(SingletonModel):
         _('Google maps API-key'), max_length=255, blank=True)
     google_maps_lat = models.DecimalField(
         _('Google maps latitude'), max_digits=9, decimal_places=6, blank=True,
-        default='52.36991896035238')
+        default='52.369918')
     google_maps_long = models.DecimalField(
         _('Google maps longitude'), max_digits=9, decimal_places=6, blank=True,
-        default='4.897787135976614',
+        default='4.897787',
         help_text=_('Deze coördinaten worden standaard op de kaart weergegeven'))
 
     # ZRC-configuratie
