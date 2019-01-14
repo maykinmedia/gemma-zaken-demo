@@ -1,8 +1,8 @@
-import requests
-
-from django.views.generic import TemplateView
 from django.utils.translation import ugettext_lazy as _
-from djchoices import DjangoChoices, ChoiceItem
+from django.views.generic import TemplateView
+
+import requests
+from djchoices import ChoiceItem, DjangoChoices
 
 from zac.demo.models import SiteConfiguration
 
