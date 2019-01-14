@@ -13,16 +13,11 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 
 from django.urls import reverse_lazy
-from .local_example import *
 
-
-TEST_PLATFORM_URL = 'https://vng-staging.maykin.nl'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-DJANGO_PROJECT_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.path.pardir))
-BASE_DIR = os.path.abspath(os.path.join(
-    DJANGO_PROJECT_DIR, os.path.pardir, os.path.pardir))
+DJANGO_PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
+BASE_DIR = os.path.abspath(os.path.join(DJANGO_PROJECT_DIR, os.path.pardir, os.path.pardir))
 
 
 # Quick-start development settings - unsuitable for production
@@ -132,7 +127,7 @@ LOGOUT_REDIRECT_URL = reverse_lazy('index')
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'en'
+LANGUAGE_CODE = 'nl-nl'
 
 TIME_ZONE = 'UTC'
 

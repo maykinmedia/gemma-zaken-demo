@@ -4,11 +4,10 @@ Any machine specific settings when using development settings.
 
 import os
 
+TEST_PLATFORM_URL = 'https://vng-staging.maykin.nl'
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-DJANGO_PROJECT_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.path.pardir))
-BASE_DIR = os.path.abspath(os.path.join(
-    DJANGO_PROJECT_DIR, os.path.pardir, os.path.pardir))
+DJANGO_PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
+BASE_DIR = os.path.abspath(os.path.join(DJANGO_PROJECT_DIR, os.path.pardir, os.path.pardir))
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
