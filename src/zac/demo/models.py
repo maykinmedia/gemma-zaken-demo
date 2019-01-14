@@ -19,8 +19,15 @@ class SiteConfiguration(SingletonModel):
         _('Secret'), max_length=512, blank=True,
         help_text=_('Dit Secret wordt voor alle APIs gebruikt, tenzij een '
                     'API specifiek Secret is opgegeven'))
-    google_api_key = models.CharField(
-        _('Google API-key'), max_length=255, blank=True)
+    google_maps_api_key = models.CharField(
+        _('Google maps API-key'), max_length=255, blank=True)
+    google_maps_lat = models.DecimalField(
+        _('Google maps latitude'), max_digits=9, decimal_places=6, blank=True,
+        default='52.369918')
+    google_maps_long = models.DecimalField(
+        _('Google maps longitude'), max_digits=9, decimal_places=6, blank=True,
+        default='4.897787',
+        help_text=_('Deze coördinaten worden standaard op de kaart weergegeven'))
 
     # ZRC-configuratie
     zrc_base_url = models.CharField(
