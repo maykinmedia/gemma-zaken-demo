@@ -27,7 +27,7 @@ BASE_DIR = os.path.abspath(os.path.join(DJANGO_PROJECT_DIR, os.path.pardir, os.p
 SECRET_KEY = 'o(je41k00h8cz*x36@6uyq&c3mz(3*w()z&hlb017@xeikc&x5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -167,6 +167,6 @@ HIJACK_ALLOW_GET_REQUESTS = True
 
 # Override settings with local settings.
 try:
-    from .local import *
+    from .local_example import *
 except ImportError:
     pass
