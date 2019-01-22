@@ -156,7 +156,7 @@ class SiteConfiguration(SingletonModel):
         """
         result = {}
         for service in self.SERVICES:
-            base_url = getattr(self, '{}_base_url'.format(service))
+            base_url = getattr(self, f'{service}_base_url')
             result[service] = base_url
 
         return result
@@ -177,15 +177,55 @@ class SiteConfiguration(SingletonModel):
         return Client(service, base_path)
 
 
-def client(service):
+class OtherZTC(models.Model):
+    config = models.ForeignKey('demo.SiteConfiguration', on_delete=models.CASCADE)
+
+    base_url = models.CharField(
+        _('ZTC basis URL'), blank=True, max_length=255,
+        help_text=_('Catalogus API van het Zaaktypecatalogus component'))
+    client_id = models.CharField(
+        _('Client ID'), max_length=255, blank=True)
+    secret = models.CharField(
+        _('Secret'), max_length=512, blank=True)
+
+    def get_client(self):
+        """
+        Return a properly configured `Client` instance.
+
+        :return: A `Client` instance.
+        """
+        base_path = ''
+        if self.base_url:
+            o = urlparse(self.base_url)
+            base_path = o.path
+
+        return Client('ztc', base_path)
+
+
+def client(service, url=None):
     """
     Helper function to grab the properly configured `Client` instance.
 
     :param service: The service key for this client.
+    :param url: The url to request, to get a matching client.
     :return: A `Client` instance.
     """
     if service not in SiteConfiguration.CLIENTS:
         config = SiteConfiguration.get_solo()
-        SiteConfiguration.CLIENTS[service] = config.get_client(service)
+        SiteConfiguration.CLIENTS[service] = {
+            'DEFAULT': config.get_client(service)
+        }
 
-    return SiteConfiguration.CLIENTS[service]
+        attr = f'other{service}_set'
+        if hasattr(config, attr):
+            other_config_set = getattr(config, attr).all()
+            for other_config in other_config_set:
+                SiteConfiguration.CLIENTS[service][other_config.base_url] = \
+                    other_config.get_client()
+
+    if url:
+        for base_url, client in SiteConfiguration.CLIENTS[service].items():
+            if url.startswith(base_url):
+                return client
+
+    return SiteConfiguration.CLIENTS[service]['DEFAULT']

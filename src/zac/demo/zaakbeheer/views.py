@@ -2,13 +2,14 @@ import copy
 import datetime
 import logging
 
+import requests
 from django import forms
 from django.contrib import messages
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views.generic import FormView, TemplateView
 
-from zds_client.client import ClientError
+from zds_client.client import ClientError, Client
 
 from ..mixins import ZACViewMixin
 from ..models import SiteConfiguration, client
@@ -17,8 +18,8 @@ from ..utils import api_response_list_to_dict, isodate
 logger = logging.getLogger(__name__)
 
 
-def get_uuid(url):
-    return url.rsplit('/', 1)[1].strip('/')
+def get_uuid(url, index=-1):
+    return url.split('/')[index]
 
 
 class ZaakListView(ZACViewMixin, TemplateView):
@@ -40,10 +41,11 @@ class ZaakListView(ZACViewMixin, TemplateView):
             client('zrc').list('status')
         )
 
-        # Retrieve a list of all ZaakTypen from the ZTC
+        # Retrieve a list of all ZaakTypen from the "main" ZTC
         zaaktypen = client('ztc').list('zaaktype', catalogus_uuid=config.ztc_catalogus_uuid)
         zaaktypes_by_url = api_response_list_to_dict(zaaktypen)
 
+        # Retrieve a list of StatusTypen from the "main" ZTC.
         # TODO: Workaround: We cannot get a full list of all StatusTypes, so we
         # make a call for each Zaaktype, to get the available Statustypes.
         statustypen = []
@@ -55,14 +57,35 @@ class ZaakListView(ZACViewMixin, TemplateView):
         ])
 
         # Construct template vars.
-        headers = ['#', 'Bronorganisatie', 'Type', 'Status (type)', 'Status toelichting', 'Registratiedatum']
+        headers = [
+            '#',
+            'Bronorganisatie',
+            'Type',
+            'Status (type)',
+            'Status toelichting',
+            'Registratiedatum'
+        ]
         rows = []
         for index, zaak in enumerate(zaken):
             zaaktype = zaaktypes_by_url.get(zaak['zaaktype'])
+
+            # If the ZaakType is not in the "main" ZTC, retrieve it manually.
+            if zaaktype is None:
+                zaaktype = client('ztc', url=zaak['zaaktype']).retrieve('zaaktype', url=zaak['zaaktype'])
+
+                # Skip over Zaak with unknown Zaaktype.
+                if zaaktype is None:
+                    continue
+
             status = statusses_by_url.get(zaak['status'])
             statustype = None
             if status:
                 statustype = statustypen_by_url.get(status['statusType'])
+
+                # If the StatusType is not in the "main" ZTC, retrieve it
+                # manually.
+                if statustype is None:
+                    statustype = client('ztc', url=status['statusType']).retrieve('statustype', url=status['statusType'])
 
             detail_url = reverse('demo:zaakbeheer-detail', kwargs={'uuid': get_uuid(zaak['url'])})
 
@@ -108,6 +131,11 @@ class ZaakDetailView(ZACViewMixin, FormView):
         self.zaak = zaak
         self.zaak_uuid = get_uuid(self.zaak['url'])
 
+        # Work with any configured ZTC.
+        self.ztc_client = client('ztc', url=self.zaak['zaaktype'])
+        # TODO: Make a nicer way to get the catalogus UUID.
+        self.catalogus_uuid = get_uuid(self.zaak['zaaktype'], -3)
+
     def get_success_url(self):
         return '{}?keep-logs=true'.format(
             reverse('demo:zaakbeheer-detail', kwargs={'uuid': self.kwargs.get('uuid')})
@@ -131,7 +159,7 @@ class ZaakDetailView(ZACViewMixin, FormView):
         # Haal Zaaktype op.
         zaaktype = None
         if self.zaak['zaaktype']:
-            zaaktype = client('ztc').retrieve('zaaktype', catalogus_uuid=self.config.ztc_catalogus_uuid, uuid=get_uuid(self.zaak['zaaktype']))
+            zaaktype = self.ztc_client.retrieve('zaaktype', url=self.zaak['zaaktype'])
 
         if 'initial' in form_kwargs:
             extra_initial = copy.deepcopy(self.zaak)
@@ -160,7 +188,7 @@ class ZaakDetailView(ZACViewMixin, FormView):
         # for just this Zaak of a certain ZaakType).
         status_list = client('zrc').list('status', query_params={'zaak': self.zaak['url']})
         statustypes_by_url = api_response_list_to_dict(
-            client('ztc').list('statustype', catalogus_uuid=self.config.ztc_catalogus_uuid, zaaktype_uuid=get_uuid(self.zaak['zaaktype']))
+            self.ztc_client.list('statustype', catalogus_uuid=self.catalogus_uuid, zaaktype_uuid=get_uuid(self.zaak['zaaktype']))
         )
         # Amend the resulting besluiten with their respective type.
         for status in status_list:
@@ -184,7 +212,7 @@ class ZaakDetailView(ZACViewMixin, FormView):
         # Retrieve a list of Besluiten
         besluit_list = client('brc').list('besluit', query_params={'zaak': self.zaak['url']})
         besluittypes_by_url = api_response_list_to_dict(
-            client('ztc').list('besluittype', catalogus_uuid=self.config.ztc_catalogus_uuid)
+            self.ztc_client.list('besluittype', catalogus_uuid=self.catalogus_uuid)
         )
         # Amend the resulting besluiten with their respective type.
         for besluit in besluit_list:
@@ -225,6 +253,11 @@ class StatusCreateView(ZACViewMixin, FormView):
         self.zaak = zaak
         self.zaak_uuid = get_uuid(self.zaak['url'])
 
+        # Work with any configured ZTC.
+        self.ztc_client = client('ztc', url=self.zaak['zaaktype'])
+        # TODO: Make a nicer way to get the catalogus UUID.
+        self.catalogus_uuid = get_uuid(self.zaak['zaaktype'], -3)
+
     def get_success_url(self):
         return '{}?keep-logs=true'.format(
             reverse('demo:zaakbeheer-statuscreate', kwargs={'uuid': self.kwargs.get('uuid')})
@@ -250,9 +283,9 @@ class StatusCreateView(ZACViewMixin, FormView):
 
         # Retrieve available StatusTypes of this ZaakType in the ZTC
         statustypes_by_url = api_response_list_to_dict(
-            client('ztc').list('statustype', catalogus_uuid=self.config.ztc_catalogus_uuid, zaaktype_uuid=get_uuid(self.zaak['zaaktype']))
+            self.ztc_client.list('statustype', catalogus_uuid=self.catalogus_uuid, zaaktype_uuid=get_uuid(self.zaak['zaaktype']))
         )
-        statustype_choices = statustypes_by_url.items()
+        statustype_choices = [(url, obj['omschrijving']) for url, obj in statustypes_by_url.items()]
 
         form_kwargs.update({
             'status_choices': statustype_choices
@@ -267,7 +300,7 @@ class StatusCreateView(ZACViewMixin, FormView):
         # for just this Zaak of a certain ZaakType).
         status_list = client('zrc').list('status', query_params={'zaak': self.zaak['url']})
         statustypes_by_url = api_response_list_to_dict(
-            client('ztc').list('statustype', catalogus_uuid=self.config.ztc_catalogus_uuid, zaaktype_uuid=get_uuid(self.zaak['zaaktype']))
+            self.ztc_client.list('statustype', catalogus_uuid=self.catalogus_uuid, zaaktype_uuid=get_uuid(self.zaak['zaaktype']))
         )
         # Amend the resulting besluiten with their respective type.
         for status in status_list:
@@ -305,6 +338,11 @@ class BesluitCreateView(ZACViewMixin, FormView):
         zaak = client('zrc').retrieve('zaak', uuid=self.kwargs.get('uuid'))
         self.zaak = zaak
         self.zaak_uuid = get_uuid(self.zaak['url'])
+
+        # Work with any configured ZTC.
+        self.ztc_client = client('ztc', url=self.zaak['zaaktype'])
+        # TODO: Make a nicer way to get the catalogus UUID.
+        self.catalogus_uuid = get_uuid(self.zaak['zaaktype'], -3)
 
     def get_success_url(self):
         return '{}?keep-logs=true'.format(
@@ -345,11 +383,11 @@ class BesluitCreateView(ZACViewMixin, FormView):
         # besluittypes_by_url = api_response_list_to_dict(
         #     client('ztc').list('besluittype', catalogus_uuid=self.config.ztc_catalogus_uuid, query_params={'zaaktype': self.zaak['zaaktype']})
         # )
-        # besluittype_choices = besluittypes_by_url.items()
+        # besluittype_choices = [(url, obj['omschrijving']) for url, obj in besluittypes_by_url.items()]
 
         # TODO: Workaround: The reverse relation exists: Each besluittype has 0
         # or more zaaktypes but we need to list ALL besluittypes.
-        besluittype_list = client('ztc').list('besluittype', catalogus_uuid=self.config.ztc_catalogus_uuid)
+        besluittype_list = self.ztc_client.list('besluittype', catalogus_uuid=self.catalogus_uuid)
         besluittype_choices = []
         for besluittype in besluittype_list:
             # TODO (in the workaround): Enable filtering, but this can only be
@@ -372,7 +410,7 @@ class BesluitCreateView(ZACViewMixin, FormView):
         # Retrieve a list of Besluiten
         besluit_list = client('brc').list('besluit', query_params={'zaak': self.zaak['url']})
         besluittypes_by_url = api_response_list_to_dict(
-            client('ztc').list('besluittype', catalogus_uuid=self.config.ztc_catalogus_uuid)
+            self.ztc_client.list('besluittype', catalogus_uuid=self.catalogus_uuid)
         )
         # Amend the resulting besluiten with their respective type.
         for besluit in besluit_list:

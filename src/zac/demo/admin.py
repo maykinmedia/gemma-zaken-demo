@@ -3,7 +3,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from solo.admin import SingletonModelAdmin
 
-from .models import SiteConfiguration
+from .models import SiteConfiguration, OtherZTC
+
+
+class OtherZTCInline(admin.TabularInline):
+    model = OtherZTC
 
 
 @admin.register(SiteConfiguration)
@@ -63,3 +67,4 @@ class SiteConfigurationAdmin(SingletonModelAdmin):
             ]
         }),
     )
+    inlines = [OtherZTCInline, ]
