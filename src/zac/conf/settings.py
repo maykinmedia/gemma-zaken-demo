@@ -167,6 +167,6 @@ HIJACK_ALLOW_GET_REQUESTS = True
 
 # Override settings with local settings.
 try:
-    from .local_example import *
+    from .local import *
 except ImportError:
     pass
