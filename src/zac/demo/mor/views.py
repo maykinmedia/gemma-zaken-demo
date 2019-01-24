@@ -25,8 +25,7 @@ class MORCreateForm(forms.Form):
                             help_text='Adres of omschrijving van de locatie waar de melding over gaat.')
     toelichting = forms.CharField(widget=forms.Textarea)
 
-    bijlage = forms.FileField(
-        required=False, help_text='Foto of andere afbeelding die betrekking heeft op de melding.')
+    bijlage = forms.FileField(required=False, help_text='Foto of andere afbeelding die betrekking heeft op de melding.')
 
 
 class MORCreateView(ZACViewMixin, FormView):
@@ -47,14 +46,14 @@ class MORCreateView(ZACViewMixin, FormView):
             uuid=config.ztc_mor_zaaktype_uuid,
         )
         # Haal StatusType:Nieuw uit het ZTC
-        status_type = client('ztc').list(
+        status_type = client('ztc').retrieve(
             'statustype',
             catalogus_uuid=config.ztc_catalogus_uuid,
             zaaktype_uuid=config.ztc_mor_zaaktype_uuid,
             # uuid=config.ztc_mor_statustype_new_uuid,
         )
         # Haal InformationObjectType:Afbeelding uit het ZTC
-        informatieobjecttype = client('ztc').list(
+        informatieobjecttype = client('ztc').retrieve(
             'informatieobjecttype',
             catalogus_uuid=config.ztc_catalogus_uuid,
             # uuid=config.ztc_mor_informatieobjecttype_image_uuid
