@@ -53,6 +53,7 @@ class TestViews(WebTest):
             global_api_client_id='demo-app-KK2CG69NTrSN',
             global_api_secret='wo1hW8oHsM0U9hSTnMM0jtCbD8GYmf4i',
             ztc_mor_zaaktype_uuid='0119dd4e-7be9-477e-bccf-75023b1453c1',
+            ztc_mor_informatieobjecttype_image_uuid='63a58060-8cd1-4c9d-bcc4-b6954353e758',
         )
         self.config.save()
         self.user = user
@@ -71,7 +72,7 @@ class TestViews(WebTest):
         create_session = requests.post(
             '{}/api/v1/testsessions/'.format(self.test_url),
             data=json.dumps({
-                'session_type': self.session_type  # FIXME: MOR sessie, use a natural_key?
+                'session_type': self.session_type
             }),
             headers=self.json_header
         ).json()
@@ -109,4 +110,4 @@ class TestViews(WebTest):
         call = self.app.get(reverse('demo:mor-index'))
         form = call.forms[0]
         resp = form.submit()
-        self.assertContains(resp, 'This field is required')
+        self.assertContains(resp.text, 'This field is required')

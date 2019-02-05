@@ -38,7 +38,6 @@ class MORCreateView(ZACViewMixin, FormView):
 
     def form_valid(self, form):
         config = SiteConfiguration.get_solo()
-
         # Haal ZaakType:Melding Openbare Ruimte uit het ZTC
         zaaktype = client('ztc').retrieve(
             'zaaktype',
@@ -46,7 +45,8 @@ class MORCreateView(ZACViewMixin, FormView):
             uuid=config.ztc_mor_zaaktype_uuid,
         )
         # Haal StatusType:Nieuw uit het ZTC
-        status_type = client('ztc').retrieve(
+
+        status_type = client('ztc').list(
             'statustype',
             catalogus_uuid=config.ztc_catalogus_uuid,
             zaaktype_uuid=config.ztc_mor_zaaktype_uuid,
@@ -56,7 +56,7 @@ class MORCreateView(ZACViewMixin, FormView):
         informatieobjecttype = client('ztc').retrieve(
             'informatieobjecttype',
             catalogus_uuid=config.ztc_catalogus_uuid,
-            # uuid=config.ztc_mor_informatieobjecttype_image_uuid
+            uuid=config.ztc_mor_informatieobjecttype_image_uuid
         )
 
         # assert status_type['url'] in zaaktype['statustypen']
