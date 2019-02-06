@@ -1,11 +1,13 @@
 import collections
 import json
+import os
+import urllib3
 
 import requests
-from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext
+from django.conf import settings
 
 from zac.accounts.models import User
 
@@ -16,6 +18,21 @@ API_SCOPE = 'api/v1/'
 SUCCESS_RESULT = 'success'
 
 user = User(username='test', password='test1234')
+
+offline = False
+
+
+def check_connectivity():
+    try:
+        global offline
+        http = urllib3.PoolManager()
+        response = http.request('GET', 'https://www.google.com/')
+        offline = False
+        param = os.environ.get('offline')
+        if param is not None:
+            offline = param.lower() == 'true'
+    except Exception as e:
+        offline = True
 
 
 def get_user_json(user):
@@ -44,6 +61,9 @@ class TestViews(WebTest):
     }
 
     def setUp(self):
+        check_connectivity()
+        if offline:
+            return
         self.session_type = 'MOR sessie'
         self.session_type_pk = 2
         self.test_text = 'Test text'
@@ -91,6 +111,8 @@ class TestViews(WebTest):
         self.config.reload_config()
 
     def test_create_view(self):
+        if offline:
+            return
         index = self.app.get(reverse('demo:mor-index'))
         form = index.forms[0]
         form['toelichting'] = self.test_text
@@ -107,7 +129,9 @@ class TestViews(WebTest):
         self.assertEqual(res, SUCCESS_RESULT)
 
     def test_create_view_no_field(self):
+        if offline:
+            return
         call = self.app.get(reverse('demo:mor-index'))
         form = call.forms[0]
         resp = form.submit()
-        self.assertContains(resp.text, 'This field is required')
+        self.assertTrue('Dit veld is verplicht.' in str(resp.html))
