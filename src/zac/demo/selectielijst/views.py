@@ -11,12 +11,6 @@ class SelectieLijstProcestypenView(ZACViewMixin, TemplateView):
     subtitle = 'Procestypen/resultaten ter ondersteuning van ZTC'
 
     def _pre_dispatch(self, request, *args, **kwargs):
-        Client.load_config(vrl={
-            'scheme': 'https',
-            'host': 'ref.tst.vng.cloud',
-            'port': 443,
-            'auth': None,
-        })
         self.vrl_client = Client('vrl', base_path='/referentielijsten/api/v1/')
 
     def get_context_data(self, **kwargs):
