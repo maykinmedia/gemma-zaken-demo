@@ -1,0 +1,28 @@
+{% extends "demo/base.html" %}
+
+{% block content %}
+<div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Naam</th>
+                <th scope="col">Omschrijving</th>
+                <th scope="col">Procesobject</th>
+                <th scope="col">URL</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                <td>{{ row.nummer }}</td>
+                <td>{{ row.naam }}</td>
+                <td>{{ row.omschrijving }}</td>
+                <td>{{ row.procesobject }}</td>
+                <td><code>{{ row.url }}</code></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

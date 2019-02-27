@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'zac.demo.zaakbeheer',
     'zac.demo.opendata',
     'zac.demo.archiveren',
+    'zac.demo.selectielijst',
 ]
 
 MIDDLEWARE = [
