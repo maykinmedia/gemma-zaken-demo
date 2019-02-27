@@ -19,6 +19,12 @@
     <a href="{% url 'demo:zaakbeheer-besluitcreate' zaak_uuid %}" class="btn btn-primary">Besluit toevoegen</a>
   </p>
 
+  <h2>Resultaat</h2>
+  {% include "demo/zaakbeheer/includes/resultaat_detail.html" with resultaat=resultaat resultaat_type=resultaat.resultaattype_embedded %}
+  <p>
+    <a href="{% url 'demo:zaakbeheer-resultaatedit' zaak_uuid %}" class="btn btn-primary">Resultaat opgeven of wijzigen</a>
+  </p>
+
   <p>
     <a href="{% url 'demo:zaakbeheer-index' %}" class="btn btn-secondary">Terug naar overzicht</a>
   </p>

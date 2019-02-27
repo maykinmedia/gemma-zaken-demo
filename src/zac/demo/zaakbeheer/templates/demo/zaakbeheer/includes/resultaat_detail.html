@@ -1,0 +1,11 @@
+{% if resultaat_type %}
+    <p>
+        <strong>{{ resultaat_type.omschrijving }}</strong>
+    </p>
+    <p>
+        {{ resultaat.toelichting }}
+    </p>
+{% else %}
+    <p>(geen)</p>
+{% endif %}
+

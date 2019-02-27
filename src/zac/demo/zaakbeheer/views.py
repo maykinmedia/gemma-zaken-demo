@@ -112,6 +112,7 @@ class ZaakForm(forms.Form):
     identificatie = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
     bronorganisatie = forms.CharField()
     registratiedatum = forms.DateField()
+    einddatum = forms.DateField(widget=forms.DateInput(attrs={'readonly': 'readonly'}))
     toelichting = forms.CharField(widget=forms.Textarea, required=False)
     longitude = forms.FloatField(widget=forms.HiddenInput, required=False)
     latitude = forms.FloatField(widget=forms.HiddenInput, required=False)
@@ -127,7 +128,8 @@ class ZaakDetailView(ZACViewMixin, FormView):
         self.config = SiteConfiguration.get_solo()
 
         # Haal Zaak op uit ZRC
-        zaak = client('zrc').retrieve('zaak', uuid=self.kwargs.get('uuid'))
+        self.zrc_client = client('zrc')
+        zaak = self.zrc_client.retrieve('zaak', uuid=self.kwargs.get('uuid'))
         self.zaak = zaak
         self.zaak_uuid = get_uuid(self.zaak['url'])
 
@@ -145,7 +147,7 @@ class ZaakDetailView(ZACViewMixin, FormView):
         form_data = form.cleaned_data
 
         # Update the Zaak in the ZRC
-        client('zrc').partial_update('zaak', uuid=self.zaak_uuid, data={
+        self.zrc_client.partial_update('zaak', uuid=self.zaak_uuid, data={
             'toelichting': form_data['toelichting']
         })
 
@@ -186,7 +188,7 @@ class ZaakDetailView(ZACViewMixin, FormView):
 
         # Retrieve a list of Status (this is possible because we need the types
         # for just this Zaak of a certain ZaakType).
-        status_list = client('zrc').list('status', query_params={'zaak': self.zaak['url']})
+        status_list = self.zrc_client.list('status', query_params={'zaak': self.zaak['url']})
         statustypes_by_url = api_response_list_to_dict(
             self.ztc_client.list('statustype', catalogus_uuid=self.catalogus_uuid, zaaktype_uuid=get_uuid(self.zaak['zaaktype']))
         )
@@ -218,11 +220,24 @@ class ZaakDetailView(ZACViewMixin, FormView):
         for besluit in besluit_list:
             besluit['besluittype_embedded'] = besluittypes_by_url.get(besluit['besluittype'], None)
 
+        # Retrieve the Resultaat and ResultaatType
+        resultaat = None
+        resultaat_type = None
+
+        if self.zaak['resultaat']:
+            resultaat = self.zrc_client.retrieve('resultaat', url=self.zaak['resultaat'])
+            try:
+                resultaat_type = self.ztc_client.retrieve('resultaattype', url=resultaat['resultaatType'])
+            except ClientError as e:
+                logger.exception(e)
+            resultaat['resultaattype_embedded'] = resultaat_type
+
         context.update({
             'zaak_uuid': self.zaak_uuid,
             'status_list': status_list,
             'document_list': document_list,
             'besluit_list': besluit_list,
+            'resultaat': resultaat,
         })
         return context
 
@@ -419,5 +434,98 @@ class BesluitCreateView(ZACViewMixin, FormView):
         context.update({
             'zaak_uuid': self.zaak_uuid,
             'besluit_list': besluit_list,
+        })
+        return context
+
+
+class ResultaatForm(forms.Form):
+    resultaattype_url = forms.ChoiceField(label='Resultaat')
+    toelichting = forms.CharField()
+
+    def __init__(self, *args, **kwargs):
+        resultaat_choices = kwargs.pop('resultaat_choices')
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['resultaattype_url'].choices = resultaat_choices
+
+
+class ResultaatEditView(ZACViewMixin, FormView):
+    title = 'Zaakbeheer - Resultaat'
+    subtitle = 'Resultaat beheren van deze zaak'
+    template_name = 'demo/zaakbeheer/resultaat_edit.html'
+    form_class = ResultaatForm
+
+    def _pre_dispatch(self, request, *args, **kwargs):
+        self.config = SiteConfiguration.get_solo()
+
+        # Retrieve Zaak from ZRC
+        self.zrc_client = client('zrc')
+        self.zaak = self.zrc_client.retrieve('zaak', uuid=self.kwargs.get('uuid'))
+        self.zaak_uuid = get_uuid(self.zaak['url'])
+
+        # Work with any configured ZTC.
+        self.ztc_client = client('ztc', url=self.zaak['zaaktype'])
+        # TODO: Make a nicer way to get the catalogus UUID.
+        self.catalogus_uuid = get_uuid(self.zaak['zaaktype'], -3)
+
+    def get_success_url(self):
+        return '{}?keep-logs=true'.format(
+            reverse('demo:zaakbeheer-resultaatedit', kwargs={'uuid': self.kwargs.get('uuid')})
+        )
+
+    def form_valid(self, form):
+        form_data = form.cleaned_data
+
+        # Create the Resultaat in the ZRC
+        data = {
+            'resultaatType': form_data['resultaattype_url'],
+            'zaak': self.zaak['url'],
+            'toelichting': form_data['toelichting'],
+        }
+
+        if not self.zaak['resultaat']:
+            self.zrc_client.create('resultaat', data)
+            messages.add_message(self.request, messages.SUCCESS, 'Resultaat succesvol toegevoegd.')
+        else:
+            self.zrc_client.update('resultaat', data, url=self.zaak['resultaat'])
+            messages.add_message(self.request, messages.SUCCESS, 'Resultaat succesvol gewijzigd.')
+
+        return super().form_valid(form)
+
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+
+        resultaattype_list = self.ztc_client.list(
+            'resultaattype',
+            catalogus_uuid=self.catalogus_uuid,
+            query_params={'zaaktype': self.zaak['zaaktype']}
+        )
+        resultaattype_choices = []
+        for resultaattype in resultaattype_list:
+            resultaattype_choices.append(
+                (resultaattype['url'], resultaattype['omschrijving'])
+            )
+
+        form_kwargs.update({
+            'resultaat_choices': resultaattype_choices
+        })
+
+        return form_kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        resultaat = None
+        resultaat_type = None
+
+        if self.zaak['resultaat']:
+            resultaat = self.zrc_client.retrieve('resultaat', url=self.zaak['resultaat'])
+            resultaat_type = self.ztc_client.retrieve('resultaattype', url=resultaat['resultaatType'])
+
+        context.update({
+            'zaak_uuid': self.zaak_uuid,
+            'resultaat_type': resultaat_type,
+            'resultaat': resultaat,
         })
         return context

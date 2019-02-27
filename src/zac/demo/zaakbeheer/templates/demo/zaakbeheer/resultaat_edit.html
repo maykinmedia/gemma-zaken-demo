@@ -1,0 +1,14 @@
+{% extends "demo/form.html" %}
+
+{% block form-submit-label %}Wijzigen{% endblock %}
+
+{% block content-before-form %}
+
+  <h2>Resultaat</h2>
+  {% include "demo/zaakbeheer/includes/resultaat_detail.html" with resultaat_type=resultaat_type resultaat=resultaat %}
+  <p>
+    <a href="{% url 'demo:zaakbeheer-detail' zaak_uuid %}" class="btn btn-secondary">Terug naar zaak</a>
+  </p>
+
+  <h2>Resultaat wijzigen</h2>
+{% endblock %}

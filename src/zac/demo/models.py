@@ -140,8 +140,11 @@ class SiteConfiguration(SingletonModel):
                         'scopes': [
                             'zds.scopes.zaken.lezen',
                             'zds.scopes.zaken.aanmaken',
+                            'zds.scopes.zaken.bijwerken',
                             'zds.scopes.statussen.toevoegen',
                             'zds.scopes.zaaktypes.lezen',
+                            'scopes.besluiten.verwijderen',
+                            'scopes.documenten.verwijderen',
                         ],
                         'zaaktypes': [
                             '*',
