@@ -10,6 +10,7 @@
                 <th scope="col">Omschrijving</th>
                 <th scope="col">Procesobject</th>
                 <th scope="col">URL</th>
+                <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
@@ -20,6 +21,11 @@
                 <td>{{ row.omschrijving }}</td>
                 <td>{{ row.procesobject }}</td>
                 <td><code>{{ row.url }}</code></td>
+                <td>
+                    <a href="{% url 'demo:selectielijst-resultaten' %}?proces_type={{ row.url|urlencode }}">
+                        Toon resultaten
+                    </a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

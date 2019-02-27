@@ -1,7 +1,8 @@
 from django.urls import path
 
-from .views import SelectieLijstProcestypenView
+from .views import ResultatenListView, SelectieLijstProcestypenListView
 
 urlpatterns = [
-    path('procestypen', SelectieLijstProcestypenView.as_view(), name='selectielijst-index'),
+    path('procestypen', SelectieLijstProcestypenListView.as_view(), name='selectielijst-index'),
+    path('resultaten', ResultatenListView.as_view(), name='selectielijst-resultaten'),
 ]

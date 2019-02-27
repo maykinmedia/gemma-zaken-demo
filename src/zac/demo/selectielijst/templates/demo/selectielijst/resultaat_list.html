@@ -1,0 +1,56 @@
+{% extends "demo/base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <form action="{% url 'demo:selectielijst-resultaten' %}" method="get">
+
+        <a href="{% url 'demo:selectielijst-index' %}" class="btn btn-info">
+            Terug naar procestypen
+        </a>
+
+        <div class="row" style="margin-bottom: 25px;">
+
+            <div class="col-sm-11">
+                <input type="text" name="proces_type"
+                       value="{{ request.GET.proces_type }}" class="form-control"
+                       placeholder="procestype URL">
+            </div>
+
+            <div class="col-sm-1">
+                <button type="submit" class="btn btn-info">Filter</button>
+            </div>
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Naam</th>
+                    <th scope="col">Generiek</th>
+                    <th scope="col">Waardering</th>
+                    <th scope="col">Procestermijn</th>
+                    <th scope="col">Procestermijn weergave</th>
+                    <th scope="col">Bewaartermijn</th>
+                    <th scope="col">URL</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                    <td>{{ row.volledigNummer }}</td>
+                    <td>{{ row.naam }}</td>
+                    <td>{{ row.generiek|yesno:"V,X" }}</td>
+                    <td><code>{{ row.waardering }}</code></td>
+                    <td><code>{{ row.procestermijn }}</code></td>
+                    <td>{{ row.procestermijnWeergave }}</td>
+                    <td><code>{{ row.bewaartermijn|default:"-" }}</code></td>
+                    <td><code>{{ row.url }}</code></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+
+</div>
+{% endblock %}
