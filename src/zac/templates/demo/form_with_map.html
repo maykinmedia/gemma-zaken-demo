@@ -15,7 +15,7 @@
 
     {% block content-before-form %}{% endblock %}
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" action="?">
       {% csrf_token %}
 
       {% if form.errors %}
@@ -45,6 +45,8 @@
       </div>
 
     </form>
+
+    <br>
 
     {% block content-after-form %}{% endblock %}
 

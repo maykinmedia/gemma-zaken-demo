@@ -6,7 +6,7 @@
 
     {% block content-before-form %}{% endblock %}
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" action="?">
       {% csrf_token %}
 
       {% if form.errors %}
@@ -23,6 +23,8 @@
         <button type="submit" class="btn btn-primary">{% block form-submit-label %}Versturen{% endblock %}</button>
       {% endblock %}
     </form>
+
+    <br>
 
     {% block content-after-form %}{% endblock %}
 

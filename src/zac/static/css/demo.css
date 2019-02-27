@@ -1,3 +1,7 @@
+html {
+  overflow-y:scroll;
+}
+
 label.required {
   font-weight: bold;
 }
