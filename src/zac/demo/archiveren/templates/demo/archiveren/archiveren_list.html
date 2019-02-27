@@ -1,0 +1,78 @@
+{% extends "demo/base.html" %}
+
+{% block content %}
+
+  <div class="container">
+
+    <p>
+      <ul class="nav nav-pills">
+        <li class="nav-item">
+          <span class="nav-link">Filter</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if not filter %}active{% endif %}" href="?">Alles</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if filter == 'vernietigingslijst' %}active{% endif %}" href="?filter=vernietigingslijst">Vernietigingslijst</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if filter == 'overbrenglijst' %}active{% endif %}" href="?filter=overbrenglijst">Overbrenglijst</a>
+        </li>
+      </ul>
+    </p>
+
+    <form method="post" action="?">
+      {% csrf_token %}
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col"><input type="checkbox" class="select-all" /></th>
+            <th scope="col">#</th>
+            <th scope="col">Registratiedatum</th>
+            <th scope="col">Einddatum</th>
+            <th scope="col">Archiefactiedatum</th>
+            <th scope="col">Archiefnominatie</th>
+            <th scope="col">Archiefstatus</th>
+            <th scope="col">Verwijzingen</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            <tr>
+              <td>
+                  <input type="checkbox" name="zaak" value="{{ row.url }}" />
+              </td>
+              <td><a href="{{ row.detail_url }}">{{ forloop.counter }}</a></td>
+              <td>{{ row.registratiedatum }}</td>
+              <td>{{ row.einddatum }}</td>
+              <td>{{ row.archiefactiedatum }}</td>
+              <td>{{ row.archiefnominatie }}</td>
+              <td>{{ row.archiefstatus }}</td>
+              <td>{% if row.zaak_detail_url %}<a href="{{ row.zaak_detail_url }}">Ga naar zaak details</a>{% endif %}</td>
+{#              <td>{% for badge in row.badges %}<span class="badge badge-{{ badge }}">{{ nominatie }}</span>{% endfor %}</td>#}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <p>
+        <button name="delete-selected" class="btn btn-danger">Selectie vernietigen</button>
+      </p>
+
+    </form>
+
+  </div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+    $(function() {
+        $('.select-all').on('click', function(e) {
+            var checkboxes = $('input[name="zaak"]');
+            checkboxes.prop('checked', $(this).is(':checked'));
+        });
+    });
+    </script>
+{% endblock %}

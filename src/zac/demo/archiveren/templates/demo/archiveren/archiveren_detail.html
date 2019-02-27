@@ -1,0 +1,11 @@
+{% extends "demo/form.html" %}
+
+{% block form-submit-label %}Bijwerken{% endblock %}
+
+{% block content-after-form %}
+
+  <p>
+    <a href="{% url 'demo:archiveren-index' %}" class="btn btn-secondary">Terug naar overzicht</a>
+  </p>
+
+{% endblock %}
