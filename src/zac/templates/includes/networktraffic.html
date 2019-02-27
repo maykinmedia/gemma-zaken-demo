@@ -35,12 +35,12 @@
 
     <div class="collapse" id="request-{{ forloop.counter }}">
       <h6>Verzoek</h6>
-      <pre class="card card-body pre-scrollable">{{ entry.request.data|pprint }}</pre>
+      <pre class="card card-body pre-scrollable">{{ entry.request.headers|headers }}<br><br>{{ entry.request.data|pprint }}</pre>
     </div>
 
     <div class="collapse" id="response-{{ forloop.counter }}">
       <h6>Antwoord</h6>
-      <pre class="card card-body pre-scrollable">{{ entry.response.data|pprint }}</pre>
+      <pre class="card card-body pre-scrollable">{{ entry.response.headers|headers }}<br><br>{{ entry.response.data|pprint }}</pre>
     </div>
   {% endfor %}
 

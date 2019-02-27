@@ -34,3 +34,17 @@ def pretty_urlencode(query_params):
     if not query_params:
         return ''
     return '&'.join(f'{k}={v}' for k, v in query_params.items())
+
+
+@register.filter
+def headers(dct):
+    """
+    Shortens an API URL by replacing all UUIDs with the first and last 3
+    characters.
+
+    :param url: The URL.
+    :return: The shortened URL.
+    """
+    if dct is None:
+        return ''
+    return '\n'.join([f'{k}: {v}' for k, v in dct.items()])
