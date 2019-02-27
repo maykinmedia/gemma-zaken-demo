@@ -2,14 +2,14 @@ import copy
 import datetime
 import logging
 
-import requests
 from django import forms
 from django.contrib import messages
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views.generic import FormView, TemplateView
 
-from zds_client.client import ClientError, Client
+import requests
+from zds_client.client import Client, ClientError
 
 from ..mixins import ZACViewMixin
 from ..models import SiteConfiguration, client
