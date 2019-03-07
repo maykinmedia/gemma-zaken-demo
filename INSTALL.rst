@@ -21,6 +21,7 @@ You need the following libraries and/or programs:
 * `Python`_ 3.4 or above
 * Python `Virtualenv`_ and `Pip`_
 * `PostgreSQL`_ 9.1 or above
+* `Redis`_ 3.0 or above
 * `Node.js`_
 * `npm`_
 
@@ -30,6 +31,7 @@ You need the following libraries and/or programs:
 .. _PostgreSQL: https://www.postgresql.org
 .. _Node.js: http://nodejs.org/
 .. _npm: https://www.npmjs.com/
+.. _Redis: https://redis.io/
 
 
 Getting started
@@ -54,6 +56,12 @@ development machine.
        $ virtualenv env
        $ source env/bin/activate
        $ pip install -r requirements.txt
+
+   **Windows users**
+
+   .. code-block:: bash
+
+       $ pip install pypiwin32
 
 4. Install the `npm`_ package if you've never installed them before and
    install the frontend libraries:
@@ -152,11 +160,12 @@ The easiest way to get the project started is by using `Docker Compose`_.
 
        $ cd gemma-zaken-demo
 
-2. Start the database and web services:
+2. Start the database, redis and web-application:
 
    .. code-block:: bash
 
-       $ docker-compose up -d
+       $ docker-compose up --build -d
+       Starting gemmazakendemo_redis_1 ... done
        Starting gemmazakendemo_db_1 ... done
        Starting gemmazakendemo_web_1 ... done
 
@@ -183,15 +192,8 @@ The easiest way to get the project started is by using `Docker Compose`_.
 
    If you are using ``Docker Machine``, you need to point your browser to the
    Docker VM IP address. You can get the IP address by doing
-   ``docker-machine ls`` and point your browser to
-   ``http://<ip>:8080/`` instead (where the ``<ip>`` is shown below the URL
-   column):
-
-   .. code-block:: bash
-
-       $ docker-machine ls
-       NAME      ACTIVE   DRIVER       STATE     URL
-       default   *        virtualbox   Running   tcp://<ip>:<port>
+   ``docker-machine ip`` and point your browser to
+   ``http://<ip>:8080/`` instead
 
 5. Continue to the configuration section.
 
@@ -216,10 +218,13 @@ all settings.
     $ docker build -t vngr/gemma-zaken-demo .
     $ docker run \
         -p 8000:8000 \
+        -e UWSGI_PORT=8000 \
         -e DJANGO_SETTINGS_MODULE=zac.conf.docker \
         -e DATABASE_USERNAME=... \
         -e DATABASE_PASSWORD=... \
         -e DATABASE_HOST=... \
+        -e REDIS_HOST=... \
+        -e REDIS_PORT=... \
         --name gemma-zaken-demo \
         vngr/gemma-zaken-demo
 

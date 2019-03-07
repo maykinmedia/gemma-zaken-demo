@@ -39,8 +39,13 @@ DATABASES = {
     }
 }
 
+REDIS_HOST = getenv('REDIS_HOST', 'redis')
+REDIS_PORT = int(getenv('REDIS_PORT', 6379))
+REDIS_DB_CACHE =  getenv('REDIS_DB_CACHE', 1)
+
 CACHES = {
     'default': {
+        # 'LOCATION': getenv('CACHE_LOCATION', f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB_CACHE}'),
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     },
     # https://github.com/jazzband/django-axes/blob/master/docs/configuration.rst#cache-problems
@@ -48,6 +53,16 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     }
 }
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(REDIS_HOST, REDIS_PORT)],
+        },
+    },
+}
+
 
 # Deal with being hosted on a subpath
 subpath = getenv('SUBPATH')
@@ -58,30 +73,6 @@ if subpath:
     FORCE_SCRIPT_NAME = subpath
     STATIC_URL = f"{FORCE_SCRIPT_NAME}{STATIC_URL}"
     # MEDIA_URL = f"{FORCE_SCRIPT_NAME}{MEDIA_URL}"
-
-# See: docker-compose.yml
-# Optional Docker container usage below:
-#
-# # Elasticsearch
-# HAYSTACK_CONNECTIONS = {
-#     'default': {
-#         'ENGINE': 'haystack.backends.elasticsearch2_backend.Elasticsearch2SearchEngine',
-#         'URL': getenv('ELASTICSEARCH_URL', 'http://elasticsearch:9200/'),
-#         'INDEX_NAME': 'zac',
-#     },
-# }
-#
-# # Caching
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django_redis.cache.RedisCache',
-#         'LOCATION': getenv('CACHE_LOCATION', 'redis://redis:6379/1'),
-#         'OPTIONS': {
-#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-#             'IGNORE_EXCEPTIONS': True,
-#         }
-#     }
-# }
 
 #
 # Additional Django settings
@@ -115,3 +106,5 @@ if missing_environment_vars:
 # django-axes
 AXES_BEHIND_REVERSE_PROXY = False
 AXES_CACHE = 'axes_cache'
+
+assert AXES_CACHE in CACHES

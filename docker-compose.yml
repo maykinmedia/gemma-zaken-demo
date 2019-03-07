@@ -2,6 +2,8 @@
 version: '3.4'
 
 services:
+  redis:
+    image: redis
   db:
     image: postgres
   web:
@@ -9,7 +11,9 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=zac.conf.docker
       - SECRET_KEY=${SECRET_KEY}
+      - UWSGI_PORT=8080
     ports:
       - 8080:8080
     depends_on:
       - db
+      - redis
