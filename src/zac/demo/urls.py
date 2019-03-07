@@ -9,4 +9,5 @@ urlpatterns = [
     path('opendata/', include('zac.demo.opendata.urls')),
     path('archiveren/', include('zac.demo.archiveren.urls')),
     path('selectielijst/', include('zac.demo.selectielijst.urls')),
+    path('mijngemeente/', include('zac.demo.mijngemeente.urls')),
 ]

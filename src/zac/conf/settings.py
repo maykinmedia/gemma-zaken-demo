@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,6 +57,7 @@ INSTALLED_APPS = [
     'zac.demo.opendata',
     'zac.demo.archiveren',
     'zac.demo.selectielijst',
+    'zac.demo.mijngemeente',
 ]
 
 MIDDLEWARE = [
@@ -161,7 +163,16 @@ HIJACK_REGISTER_ADMIN = False
 # See: http://django-hijack.readthedocs.io/en/latest/configuration/#allowing-get-method-for-hijack-views
 HIJACK_ALLOW_GET_REQUESTS = True
 
-
+# Channels
+ASGI_APPLICATION = 'zac.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 #
 # Project specific settings
 #

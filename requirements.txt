@@ -12,3 +12,8 @@ django-hijack-admin==2.1.9
 django-solo==1.1.3
 gemma-zds-client==0.9.1
 django-betterforms==1.2
+channels==2.1.7
+channels-redis==2.3.3
+
+# Windows users:
+# pypiwin32

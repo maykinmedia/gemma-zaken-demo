@@ -1,0 +1,107 @@
+{% extends "demo/base.html" %}
+
+{% block content %}
+
+  <div class="container">
+
+    <div class="row">
+      <div class="col-sm">
+        <h3>Mijn Zaken</h3>
+      </div>
+      <div class="col-sm">
+        <h3>Mijn Notificaties</h3>
+
+        {% if not unread_messages %}
+          <p id="no-new-messages">Geen nieuwe/ongelezen notificaties</p>
+        {% endif %}
+
+        <!-- NEW MESSAGES -->
+        <div id="message-list" class="list-group">
+        </div>
+
+        <!-- UNREAD MESSAGES -->
+        <div id="unread-message-list" class="list-group">
+          {% for message in unread_messages %}
+            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+              <h5 class="mb-1">{{ message.title }} <span class="float-right badge badge-info">Ongelezen</span></h5>
+              <p class="mb-1">{% if message.body %}{{ message.body }}{% endif %}</p>
+              <div class="d-flex w-100 justify-content-between">
+                <small class="text-muted">Referentie: {{ message.reference }}</small>
+                <small class="text-muted">{{ message.date }}</small>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+
+        <br>
+
+        <p>
+          <a class="btn btn-secondary" data-toggle="collapse" href="#read-message-list" role="button" aria-expanded="false" aria-controls="read-message-list">
+            Toon gelezen notificaties ({{ read_messages|length }})
+          </a>
+        </p>
+
+        <!-- READ MESSAGES -->
+        <div id="read-message-list" class="collapse list-group">
+          {% for message in read_messages %}
+            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+              <h5 class="mb-1">{{ message.title }} <span class="float-right badge badge-secondary">Gelezen</span></h5>
+              <p class="mb-1">{% if message.body %}{{ message.body }}{% endif %}</p>
+              <div class="d-flex w-100 justify-content-between">
+                <small class="text-muted">Referentie: {{ message.reference }}</small>
+                <small class="text-muted">{{ message.date }}</small>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+  {{ block.super }}
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.js" crossorigin="anonymous"></script>
+  <script id="notification-template" type="x-tmpl-mustache">{% verbatim %}
+    <a href="{{ message.url }}" class="list-group-item list-group-item-action flex-column align-items-start">
+      <h5 class="mb-1">{{ message.title }} <span class="float-right badge badge-success">Nieuw</span></h5>
+      <p class="mb-1">{{ message.body }}</p>
+      <div class="d-flex w-100 justify-content-between">
+        <small class="text-muted">Referentie: {{ message.reference }}</small>
+        <small class="text-muted">{{ message.date }}</small>
+      </div>
+    </a>
+  {% endverbatim %}</script>
+
+  <script>
+    function addMessage(message) {
+      var template = $('#notification-template').html();
+      Mustache.parse(template);   // optional, speeds up future uses
+      var rendered = Mustache.render(template, {message: message});
+      $('#message-list').prepend(rendered);
+    }
+
+    var username = 'everyone';
+
+    var webSocket = new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/notifications/' + username + '/');
+
+    webSocket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        var message = data['message'];
+
+        $('#no-new-messages').hide();
+
+        addMessage(message);
+    };
+
+    webSocket.onclose = function(e) {
+        console.error('WebSocket closed unexpectedly');
+    };
+
+  </script>
+{% endblock %}

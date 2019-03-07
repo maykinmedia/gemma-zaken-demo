@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 from django.views.generic import FormView, TemplateView
 
 from djchoices import ChoiceItem, DjangoChoices
@@ -44,8 +45,8 @@ class ArchiverenListView(ZACViewMixin, TemplateView):
         #
         # for zaak_url in zaak_url_list:
         #     self.zrc_client.delete('zaak', url=zaak_url)
-        messages.add_message(self.request, messages.WARNING, 'DELETE ...\n\n{}'.format(
-            '\n'.join(zaak_url_list)
+        messages.add_message(self.request, messages.WARNING, mark_safe('DELETE {}<br>'.format(
+            '\n'.join(zaak_url_list))
         ))
 
         success_url = self.get_success_url()
