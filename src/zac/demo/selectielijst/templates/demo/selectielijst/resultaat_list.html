@@ -4,10 +4,11 @@
 <div class="container">
 
     <form action="{% url 'demo:selectielijst-resultaten' %}" method="get">
-
-        <a href="{% url 'demo:selectielijst-index' %}" class="btn btn-info">
+        <p>
+        <a href="{% url 'demo:selectielijst-index' %}" class="btn btn-secondary">
             Terug naar procestypen
         </a>
+        </p>
 
         <div class="row" style="margin-bottom: 25px;">
 
@@ -18,7 +19,7 @@
             </div>
 
             <div class="col-sm-1">
-                <button type="submit" class="btn btn-info">Filter</button>
+                <button type="submit" class="btn btn-primary">Filter</button>
             </div>
         </div>
 
