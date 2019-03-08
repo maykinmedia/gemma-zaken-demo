@@ -8,8 +8,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views.generic import FormView, TemplateView
 
-import requests
-from zds_client.client import Client, ClientError
+from zds_client.client import ClientError
 
 from ..mixins import ZACViewMixin
 from ..models import SiteConfiguration, client
@@ -33,7 +32,7 @@ class ZaakListView(ZACViewMixin, TemplateView):
         config = SiteConfiguration.get_solo()
 
         # Retrieve all Zaken
-        zaken = client('zrc').list('zaak')
+        zaken_response = client('zrc').list('zaak')
 
         # TODO: Workaround: The status should be done with embedding when
         # requesting a list of Zaken.
@@ -51,7 +50,14 @@ class ZaakListView(ZACViewMixin, TemplateView):
         statustypen = []
         for zaaktype in zaaktypen:
             # Workaround: UUID is not part of the serialiser yet, otherwise it was simply: zaaktype['uuid']
-            statustypen += client('ztc').list('statustype', catalogus_uuid=config.ztc_catalogus_uuid, zaaktype_uuid=get_uuid(zaaktype['url']))
+            statustypen += (
+                client('ztc')
+                .list(
+                    'statustype',
+                    catalogus_uuid=config.ztc_catalogus_uuid,
+                    zaaktype_uuid=get_uuid(zaaktype['url'])
+                )
+            )
         statustypen_by_url = dict([
             (statustype['url'], statustype) for statustype in statustypen
         ])
@@ -66,7 +72,8 @@ class ZaakListView(ZACViewMixin, TemplateView):
             'Registratiedatum'
         ]
         rows = []
-        for index, zaak in enumerate(zaken):
+
+        for index, zaak in enumerate(zaken_response['results']):
             zaaktype = zaaktypes_by_url.get(zaak['zaaktype'])
 
             # If the ZaakType is not in the "main" ZTC, retrieve it manually.
@@ -85,7 +92,10 @@ class ZaakListView(ZACViewMixin, TemplateView):
                 # If the StatusType is not in the "main" ZTC, retrieve it
                 # manually.
                 if statustype is None:
-                    statustype = client('ztc', url=status['statusType']).retrieve('statustype', url=status['statusType'])
+                    statustype = (
+                        client('ztc', url=status['statusType'])
+                        .retrieve('statustype', url=status['statusType'])
+                    )
 
             detail_url = reverse('demo:zaakbeheer-detail', kwargs={'uuid': get_uuid(zaak['url'])})
 
