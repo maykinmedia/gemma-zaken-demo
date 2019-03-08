@@ -1,4 +1,5 @@
 from datetime import datetime
+from urllib.parse import parse_qs, urlparse
 
 from django.core.exceptions import ValidationError
 from django.shortcuts import render
@@ -92,3 +93,27 @@ def isodate(dt=None):
     if dt is None:
         dt = datetime.now()
     return dt.strftime('%Y-%m-%d')
+
+
+def extract_page_from_url(url: str, page_param='page') -> int:
+    querystring = urlparse(url).query
+    return int(parse_qs(querystring)[page_param][0])
+
+
+def extract_pagination_info(response: dict, page_param='page') -> dict:
+    url_next = response.get('next')
+    url_previous = response.get('previous')
+
+    pagination = {
+        'count': response['count'],
+        'next': url_next,
+        'previous': url_previous,
+        'page_nr': 1,
+    }
+
+    if url_next:
+        pagination['page_nr'] = extract_page_from_url(url_next) - 1
+    elif url_previous:
+        pagination['page_nr'] = extract_page_from_url(url_previous) + 1
+
+    return pagination

@@ -12,7 +12,7 @@ from zds_client.client import ClientError
 
 from ..mixins import ZACViewMixin
 from ..models import SiteConfiguration, client
-from ..utils import api_response_list_to_dict, isodate
+from ..utils import api_response_list_to_dict, extract_pagination_info, isodate
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,12 @@ class ZaakListView(ZACViewMixin, TemplateView):
         config = SiteConfiguration.get_solo()
 
         # Retrieve all Zaken
-        zaken_response = client('zrc').list('zaak')
+        query_params = None
+        page = self.request.GET.get('page')
+        if page:
+            query_params = {'page': page}
+
+        zaken_response = client('zrc').list('zaak', query_params=query_params)
 
         # TODO: Workaround: The status should be done with embedding when
         # requesting a list of Zaken.
@@ -111,6 +116,7 @@ class ZaakListView(ZACViewMixin, TemplateView):
         context.update({
             'header': headers,
             'rows': rows,
+            'pagination': extract_pagination_info(zaken_response),
         })
 
         return context

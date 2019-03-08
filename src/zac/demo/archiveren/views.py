@@ -14,7 +14,7 @@ from djchoices import ChoiceItem, DjangoChoices
 
 from ..mixins import ZACViewMixin
 from ..models import SiteConfiguration, client
-from ..utils import isodate
+from ..utils import extract_pagination_info, isodate
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +76,15 @@ class ArchiverenListView(ZACViewMixin, TemplateView):
         else:
             query_params = None
 
-        zaken = client('zrc').list('zaak', query_params=query_params)
+        page = self.request.GET.get('page')
+        if page:
+            if query_params:
+                query_params['page'] = page
+            else:
+                query_params = {'page': page}
+
+        zaken_response = client('zrc').list('zaak', query_params=query_params)
+        zaken = zaken_response['results']
 
         rows = []
         for index, zaak in enumerate(zaken):
@@ -101,6 +109,7 @@ class ArchiverenListView(ZACViewMixin, TemplateView):
         context.update({
             'filter': filter,
             'rows': rows,
+            'pagination': extract_pagination_info(zaken_response),
         })
 
         return context
