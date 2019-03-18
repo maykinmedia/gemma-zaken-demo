@@ -14,13 +14,9 @@ from djchoices import ChoiceItem, DjangoChoices
 
 from ..mixins import ZACViewMixin
 from ..models import SiteConfiguration, client
-from ..utils import extract_pagination_info, isodate
+from ..utils import extract_pagination_info, get_uuid, isodate
 
 logger = logging.getLogger(__name__)
-
-
-def get_uuid(url, index=-1):
-    return url.split('/')[index]
 
 
 def prettify_enum_value(val):

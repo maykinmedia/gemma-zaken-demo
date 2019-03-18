@@ -5,10 +5,7 @@ from django.views.generic import FormView
 
 from zac.demo.mixins import ZACViewMixin
 from zac.demo.models import SiteConfiguration, client
-
-
-def get_uuid(url):
-    return url.rsplit('/', 1)[1].strip('/')
+from zac.demo.utils import get_uuid
 
 
 class CoordinatesForm(forms.Form):

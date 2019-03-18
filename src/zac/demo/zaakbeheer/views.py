@@ -12,13 +12,11 @@ from zds_client.client import ClientError
 
 from ..mixins import ZACViewMixin
 from ..models import SiteConfiguration, client
-from ..utils import api_response_list_to_dict, extract_pagination_info, isodate
+from ..utils import (
+    api_response_list_to_dict, extract_pagination_info, get_uuid, isodate
+)
 
 logger = logging.getLogger(__name__)
-
-
-def get_uuid(url, index=-1):
-    return url.split('/')[index]
 
 
 class ZaakListView(ZACViewMixin, TemplateView):

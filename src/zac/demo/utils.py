@@ -117,3 +117,7 @@ def extract_pagination_info(response: dict, page_param='page') -> dict:
         pagination['page_nr'] = extract_page_from_url(url_previous) + 1
 
     return pagination
+
+
+def get_uuid(url, index=-1):
+    return url.split('/')[index]
