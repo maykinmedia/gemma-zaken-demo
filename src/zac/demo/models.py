@@ -1,14 +1,25 @@
+import base64
+import json
 from urllib.parse import urlparse
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from djchoices import ChoiceItem, DjangoChoices
 from solo.models import SingletonModel
+from vng_api_common.models import JWTSecret
+from vng_api_common.notifications.models import NotificationsConfig, Subscription
 from zds_client import Client
 
 
+class NotifyMethod(DjangoChoices):
+    # amqp_server = ChoiceItem('amqp_server', _('AMQP-server'))
+    webhook = ChoiceItem('webhook', _('REST API callback (webhook)'))
+
+
 class SiteConfiguration(SingletonModel):
-    SERVICES = ['zrc', 'drc', 'ztc', 'orc', 'brc']
+    SERVICES = ['zrc', 'drc', 'ztc', 'brc', 'nc', 'vrl', 'orc', ]
     CLIENTS = {}
 
     global_api_client_id = models.CharField(
@@ -72,6 +83,44 @@ class SiteConfiguration(SingletonModel):
     brc_secret = models.CharField(
         _('Secret'), max_length=512, blank=True)
 
+    # NC-configuratie
+    callback_client_id = models.CharField(
+        _('Callback Client ID'), max_length=255, blank=True,
+        help_text=_('De Client ID van de webhook API van deze demo applicatie')
+    )
+    callback_secret = models.CharField(
+        _('Callback Secret'), max_length=512, blank=True,
+        help_text=_('De Secret van de webhook API van deze demo applicatie')
+    )
+    callback_url = models.URLField(
+        _('Callback URL'), blank=True,
+        help_text=_('De URL van deze demo applicatie waar het NC berichten naar toe kan sturen.')
+    )
+
+    nc_method = models.CharField(
+        _('Notificatie methode'), max_length=20, default=NotifyMethod.webhook)
+    nc_base_url = models.CharField(
+        _('NC basis URL'), blank=True, default='http://localhost:8004/api/v1/', max_length=255,
+        help_text=_('Notificatie API van het Notificatie component'))
+
+    nc_client_id = models.CharField(
+        _('Client ID'), max_length=255, blank=True)
+    nc_secret = models.CharField(
+        _('Secret'), max_length=512, blank=True)
+
+    nc_amqp_host = models.CharField(
+        _('AMQP-host'), blank=True, max_length=255,
+        help_text=_('Verbind direct met AMQP-server via deze host.'))
+    nc_amqp_port = models.CharField(
+        _('AMQP-port'), blank=True, default='', max_length=255,
+        help_text=_('Verbind direct met AMQP-server via deze port.'))
+
+    # VRL-configuratie
+    vrl_base_url = models.CharField(
+        _('VRL basis URL'), blank=True, default='https://ref.tst.vng.cloud/referentielijsten/api/v1/',
+        max_length=255,
+        help_text=_('VNG Referentielijsten API: Typisch de landelijke API URL en niet een eigen installatie.'))
+
     # ORC-configuratie
     orc_base_url = models.CharField(
         _('ORC basis URL'), blank=True, default='http://localhost:8010/api/v1/',
@@ -95,11 +144,55 @@ class SiteConfiguration(SingletonModel):
     class Meta:
         verbose_name = _('Configuratie')
 
+    def clean(self):
+        if self.nc_method == NotifyMethod.webhook:
+            if not self.nc_base_url:
+                raise ValidationError(_('Bij "webhook" als notificatie methode moet de "NC basis URL" ingevuld zijn.'))
+        else:
+            if not self.nc_amqp_host:
+                raise ValidationError(_('Bij "AMQP-server" als notificatie methode moet de "AMQP-host" ingevuld zijn.'))
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # To use the mechanics in vng-api-common, we create a JWTSecret object
+        # so we don't need to implement our own authentication layer for the
+        # notification callback API.
+        if self.callback_client_id and self.callback_secret:
+            JWTSecret.objects.update_or_create(
+                identifier=self.callback_client_id,
+                defaults={
+                    'secret': self.callback_secret,
+                }
+            )
+
+        # Create NotificationConfig to store the NC.
+        notifications_config = NotificationsConfig.get_solo()
+        if self.callback_url:
+            notifications_config.location = self.nc_base_url
+            notifications_config.save()
+
+        # Create Subscription based on details here with default channel and
+        # topics.
+        Subscription.objects.update_or_create(
+            config=notifications_config,
+            defaults={
+                'callback_url': self.callback_url,
+                'client_id': self.callback_client_id,
+                'secret': self.callback_secret,
+                'channels': ['zaken', ]
+            }
+        )
+
     def reload_config(self):
         self.__class__.CLIENTS.clear()
 
         config = self.get_zdsclient_config()
         Client.load_config(**config)
+
+    def get_nc_channels_and_filters(self):
+        # return [(ex.name, ex.get_filters()) for ex in self.exchange_set.all()]
+        return ['zaken', [{'foo.bar'}, {'bar.foo'}, ]]
 
     def get_zdsclient_config(self):
         """
@@ -191,6 +284,10 @@ class OtherZTC(models.Model):
     secret = models.CharField(
         _('Secret'), max_length=512, blank=True)
 
+    class Meta:
+        verbose_name = 'Overige ZTC'
+        verbose_name_plural = 'Overige ZTC\'s'
+
     def get_client(self):
         """
         Return a properly configured `Client` instance.
@@ -203,6 +300,29 @@ class OtherZTC(models.Model):
             base_path = o.path
 
         return Client('ztc', base_path)
+
+
+def validate_filters(value):
+    if not value:
+        return
+
+    try:
+        data = json.loads(value)
+    except ValueError:
+        raise ValidationError(
+            _('Ongeldig JSON formaat'),
+        )
+
+    if not isinstance(data, list):
+        raise ValidationError(
+            _('Filters moeten worden opgegeven als "objecten" in een "lijst".'),
+        )
+
+    for element in data:
+        if not isinstance(element, dict):
+            raise ValidationError(
+                _('Filters moeten worden opgegeven als "objecten" in een "lijst".'),
+            )
 
 
 def client(service, url=None):

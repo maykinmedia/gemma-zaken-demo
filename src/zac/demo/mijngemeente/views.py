@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView
 
 from ..mixins import ZACViewMixin
-from .models import Notification
+from .models import UserNotification
 
 
 class ZaakListView(ZACViewMixin, TemplateView):
@@ -13,7 +13,7 @@ class ZaakListView(ZACViewMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         # FAKE: Filter relevant notifications for user
-        notifications = Notification.objects.all()
+        notifications = UserNotification.objects.all()
 
         # Querysets are lazy, so we cast to list to force the database request
         # here, to prevent all notifications from being marked as read before

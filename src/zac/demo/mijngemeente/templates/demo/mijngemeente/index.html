@@ -4,6 +4,12 @@
 
   <div class="container">
 
+    {% if invalid_config %}
+      <div class="alert alert-danger">
+        {{ invalid_config }}
+      </div>
+    {% endif %}
+
     <div class="row">
       <div class="col-sm">
         <h3>Mijn Zaken</h3>

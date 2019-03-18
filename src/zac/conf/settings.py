@@ -14,6 +14,8 @@ import os
 
 from django.urls import reverse_lazy
 
+from rest_framework.settings import DEFAULTS as DEFAULT_REST_FRAMEWORK
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 DJANGO_PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
 BASE_DIR = os.path.abspath(os.path.join(DJANGO_PROJECT_DIR, os.path.pardir, os.path.pardir))
@@ -46,7 +48,13 @@ INSTALLED_APPS = [
     'compat',  # Part of hijack
     'hijack_admin',
     'solo',
+    'rest_framework',
 
+    # Convenience
+    'vng_api_common',
+    'vng_api_common.notifications',
+
+    # Apps rondom de demo
     'zac.accounts',
     'zac.demo',
     'zac.status',
@@ -66,6 +74,9 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+
+    'vng_api_common.middleware.AuthMiddleware',
+
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -173,9 +184,30 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+# Django-REST-Framework
+REST_FRAMEWORK = DEFAULT_REST_FRAMEWORK.copy()
+REST_FRAMEWORK.update({
+    'DEFAULT_RENDERER_CLASSES': (
+        'djangorestframework_camel_case.render.CamelCaseJSONRenderer',
+    ),
+    'DEFAULT_PARSER_CLASSES': (
+        'djangorestframework_camel_case.parser.CamelCaseJSONParser',
+    ),
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
+    # Versioning
+    'DEFAULT_VERSION': '1',  # NOT to be confused with API_VERSION - it's the major version part
+    'ALLOWED_VERSIONS': ('1', ),
+    'VERSION_PARAM': 'version',
+
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+})
+
 #
 # Project specific settings
 #
+DEFAULT_NOTIFICATIONS_HANDLER = 'zac.demo.mijngemeente.api.handlers.default'
+
 
 # Override settings with local settings.
 try:
