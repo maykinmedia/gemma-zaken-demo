@@ -16,7 +16,7 @@ django-betterforms==1.2
 channels==2.1.7
 channels-redis==2.3.3
 gemma-zds-client
-vng-api-common==0.31.0
+vng-api-common==0.31.1
 
 # Windows users:
 # pypiwin32

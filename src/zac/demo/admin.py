@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from solo.admin import SingletonModelAdmin
 from vng_api_common.models import APICredential, JWTSecret
-from vng_api_common.notifications.api.scopes import SCOPE_NOTIFICATIES_STUREN
+from vng_api_common.notifications.constants import SCOPE_NOTIFICATIES_CONSUMEREN_LABEL
 from vng_api_common.notifications.models import NotificationsConfig, Subscription
 from zds_client import ClientAuth
 
@@ -114,7 +114,7 @@ class SiteConfigurationAdmin(SingletonModelAdmin):
             client_id=obj.callback_client_id,
             secret=obj.callback_secret,
             scopes=[
-                SCOPE_NOTIFICATIES_STUREN.label
+                SCOPE_NOTIFICATIES_CONSUMEREN_LABEL
             ]
         )
         return auth.credentials()['Authorization']
@@ -126,10 +126,10 @@ class SiteConfigurationAdmin(SingletonModelAdmin):
         extra_context = extra_context or {}
 
         subscription = Subscription.objects.first()
-        if subscription and not subscription._subscription:
+        if subscription and not subscription._subscription and request.method == 'GET':
             messages.warning(request, mark_safe(_(
                 'Notificaties zijn nog niet volledig geconfigureerd: <a href="{}">Registreer de webhook bij het NC</a>.'
-            ).format(reverse('admin:notifications_subscription_change', args=(subscription.pk, )))))
+            ).format(reverse('admin:notifications_subscription_changelist'))))
 
         return super().change_view(request, object_id, form_url, extra_context)
 

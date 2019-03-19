@@ -4,6 +4,7 @@ from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from vng_api_common.notifications.models import Subscription
 
 from .models import SiteConfiguration
 
@@ -31,3 +32,23 @@ def initialize_settings():
         return
 
     update_settings(None, site_config)
+
+
+@receiver(post_save, sender=Subscription)
+def sync_config(sender, instance, **kwargs):
+    """
+    Keep the config in sync with what comes from VNG-API-Common.
+
+    Use an update to prevent and endless back and forth sync. Does the job for
+    now without making a real config UI effort.
+
+    :param sender:
+    :param instance:
+    :param kwargs:
+    :return:
+    """
+    SiteConfiguration.objects.all().update(
+        callback_url=instance.callback_url,
+        callback_client_id=instance.client_id,
+        callback_secret=instance.secret,
+    )

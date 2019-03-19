@@ -66,8 +66,8 @@ txaio==18.8.1             # via autobahn
 unidecode==1.0.23         # via vng-api-common
 uritemplate==3.0.0        # via coreapi, drf-yasg
 urllib3==1.22             # via requests
-# uwsgi==2.0.15
-vng-api-common==0.31.0
+uwsgi==2.0.15
+vng-api-common==0.31.1
 waitress==1.2.1           # via webtest
 webob==1.8.5              # via webtest
 webtest==2.0.33           # via django-webtest

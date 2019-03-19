@@ -168,8 +168,10 @@ class SiteConfiguration(SingletonModel):
 
         # Create NotificationConfig to store the NC.
         notifications_config = NotificationsConfig.get_solo()
-        if self.callback_url:
-            notifications_config.location = self.nc_base_url
+        if self.nc_base_url:
+            notifications_config.api_root = self.nc_base_url
+            notifications_config.client_id = self.nc_client_id
+            notifications_config.secret = self.nc_secret
             notifications_config.save()
 
         # Create Subscription based on details here with default channel and
