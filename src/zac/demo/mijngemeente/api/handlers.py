@@ -1,5 +1,6 @@
 import logging
 
+import isodate
 from django.urls import reverse
 
 from zac.demo.models import client
@@ -45,15 +46,22 @@ class StoreAndPublishHandler:
     
             msg_reference = zaak['identificatie']
             msg_url = reverse('demo:zaakbeheer-detail', kwargs={'uuid': zaak_uuid})
-    
+
             # 1. Zaak aanmaken
             if resource == 'zaak':
-                msg_title = 'Zaak {} aangemaakt.'.format(zaak_type['onderwerp'])
-                msg_body = 'Naar aanleiding van uw {} gaat de behandelaar deze zaak {}. U kunt binnen {} een opvolging ' \
-                       'verwachten. Bedankt voor het {}.'.format(
+                try:
+                    _doorlooptijd_dagen = isodate.parse_duration(zaak_type['doorlooptijd']).days
+                    doorlooptijd = 'binnen {} dagen'.format(_doorlooptijd_dagen)
+                except:
+                    doorlooptijd = 'binnenkort'
+
+                msg_title = 'Zaak <strong>{}</strong> aangemaakt.'.format(zaak_type['onderwerp'])
+                msg_body = 'Naar aanleiding van uw <strong>{}</strong> gaat de behandelaar deze zaak <strong>{}' \
+                           '</strong>. U kunt <strong>{}</strong> een opvolging ' \
+                       'verwachten. Bedankt voor het <strong>{}</strong>.'.format(
                             zaak_type['aanleiding'].lower(),
                             zaak_type['handelingBehandelaar'].lower(),
-                            '{} dagen'.format(zaak_type['doorlooptijd']),
+                            doorlooptijd,
                             zaak_type['handelingInitiator'].lower(),
                         )
     
@@ -107,6 +115,7 @@ class StoreAndPublishHandler:
             action_mapping = {
                 'create': 'aangemaakt',
                 'update': 'gewijzigd',
+                'partial_update': 'gewijzigd',
                 'destroy': 'verwijderd',
     
                 # These will probably not exist.

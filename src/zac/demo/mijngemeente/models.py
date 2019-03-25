@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from django.utils.safestring import mark_safe
 
 
 class UserNotification(models.Model):
@@ -41,9 +42,9 @@ class UserNotification(models.Model):
             topic = 'notifications_everyone'
 
         data = {
-            'title': title,
+            'title': mark_safe(title),
             'date': datetime.datetime.now().strftime('%Y-%m-%d %H:%M'),
-            'body': body,
+            'body': mark_safe(body),
             'reference': reference,
             'url': url,
         }
