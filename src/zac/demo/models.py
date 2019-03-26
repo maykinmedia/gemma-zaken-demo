@@ -170,8 +170,8 @@ class SiteConfiguration(SingletonModel):
         notifications_config = NotificationsConfig.get_solo()
         if self.nc_base_url:
             notifications_config.api_root = self.nc_base_url
-            notifications_config.client_id = self.nc_client_id
-            notifications_config.secret = self.nc_secret
+            notifications_config.client_id = self.nc_client_id or self.global_api_client_id
+            notifications_config.secret = self.nc_secret or self.global_api_secret
             notifications_config.save()
 
         # Create Subscription based on details here with default channel and
