@@ -1,9 +1,10 @@
 import collections
 import json
 import os
-import urllib3
-
+import urllib
 import requests
+
+from unittest import skipIf
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext
@@ -19,18 +20,20 @@ SUCCESS_RESULT = 'success'
 
 user = User(username='test', password='test1234')
 
-offline = False
+offline, connected = False, False
 
 
+@skipIf(connected, 'check the connectivity just once')
 def check_connectivity():
     try:
-        global offline
+        global offline, connected
         http = urllib3.PoolManager()
         response = http.request('GET', 'https://www.google.com/')
         offline = False
         param = os.environ.get('offline')
         if param is not None:
             offline = param.lower() == 'true'
+        connected = True
     except Exception as e:
         offline = True
 
@@ -103,12 +106,6 @@ class TestViews(WebTest):
                 self.config.zrc_base_url = f'{i["exposed_url"]}{API_SCOPE}'
             elif i['vng_endpoint'] == 'ZTC':
                 self.config.ztc_base_url = f'{i["exposed_url"]}{API_SCOPE}'
-
-        self.config.orc_base_url = ''
-        self.config.brc_base_url = ''
-        self.config.drc_base_url = ''
-        self.config.save()
-        self.config.reload_config()
 
     def test_create_view(self):
         if offline:
