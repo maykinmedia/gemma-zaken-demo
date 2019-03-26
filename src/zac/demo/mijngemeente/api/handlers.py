@@ -3,7 +3,7 @@ import logging
 import isodate
 from django.urls import reverse
 
-from zac.demo.models import client
+from zac.demo.models import client, SiteConfiguration
 from zac.demo.utils import get_uuid
 
 from ..models import UserNotification
@@ -58,12 +58,12 @@ class StoreAndPublishHandler:
                 msg_title = 'Zaak <strong>{}</strong> aangemaakt.'.format(zaak_type['onderwerp'])
                 msg_body = 'Naar aanleiding van uw <strong>{}</strong> gaat de behandelaar deze zaak <strong>{}' \
                            '</strong>. U kunt <strong>{}</strong> een opvolging ' \
-                       'verwachten. Bedankt voor het <strong>{}</strong>.'.format(
-                            zaak_type['aanleiding'].lower(),
-                            zaak_type['handelingBehandelaar'].lower(),
-                            doorlooptijd,
-                            zaak_type['handelingInitiator'].lower(),
-                        )
+                           'verwachten. Bedankt voor het <strong>{}</strong>.'.format(
+                    zaak_type['aanleiding'].lower(),
+                    zaak_type['handelingBehandelaar'].lower(),
+                    doorlooptijd,
+                    zaak_type['handelingInitiator'].lower()
+                )
     
             # 2. Status wijziging bij Zaak
             elif resource == 'status':
@@ -71,15 +71,24 @@ class StoreAndPublishHandler:
                 # assert zaak['status'] == resource_url
     
                 status = zrc_client.retrieve('status', url=resource_url)
-                status_type = ztc_client.retrieve('statustype', url=status['statustype'])
-    
+
+                # TODO: Remove when "informeren" of StatusType works. See below.
+                # The idea is to *not* show the initial status, since we
+                # already notified the creation of Zaak.
+                config = SiteConfiguration.get_solo()
+                if status['statusType'].endswith(config.ztc_mor_statustype_new_uuid):
+                    return
+
+                status_type = ztc_client.retrieve('statustype', url=status['statusType'])
+
                 # TODO: Attribute "informeren" is not part of the ZTC API yet...
                 if not status_type.get('informeren', True):
                     logger.info('Statustype should not be communicated to initiator.')
                     return
-    
-                msg_title = 'Zaak {} gewijzigd.'.format(zaak_type['onderwerp'])
-                msg_body = 'De status van uw zaak is gewijzigd naar: {}. {} {}'.format(
+
+                msg_title = 'Zaak <strong>{}</strong> gewijzigd.'.format(zaak_type['onderwerp'])
+                msg_body = 'De status van uw zaak is gewijzigd naar: <strong>{}</strong>. <strong>{}</strong> ' \
+                           '<strong>{}</strong>'.format(
                     status_type['omschrijving'],
                     status_type['statustekst'],
                     'Toelichting: {}'.format(status['statustoelichting'])if status['statustoelichting'] else ''
