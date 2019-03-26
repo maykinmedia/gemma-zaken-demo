@@ -46,7 +46,7 @@ class MORCreateView(ZACViewMixin, FormView):
         )
         # Haal StatusType:Nieuw uit het ZTC
 
-        status_type = client('ztc').list(
+        status_type = client('ztc').retrieve(
             'statustype',
             catalogus_uuid=config.ztc_catalogus_uuid,
             zaaktype_uuid=config.ztc_mor_zaaktype_uuid,
