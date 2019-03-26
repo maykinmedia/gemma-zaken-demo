@@ -9,7 +9,13 @@ from vng_api_common.notifications.constants import SCOPE_NOTIFICATIES_CONSUMEREN
 from vng_api_common.notifications.models import NotificationsConfig, Subscription
 from zds_client import ClientAuth
 
+from zac.demo.mijngemeente.models import UserNotification
 from .models import OtherZTC, SiteConfiguration
+
+
+@admin.register(UserNotification)
+class UserNotificationAdmin(admin.ModelAdmin):
+    pass
 
 
 class OtherZTCInline(admin.TabularInline):
