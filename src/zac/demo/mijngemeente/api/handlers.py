@@ -88,10 +88,10 @@ class StoreAndPublishHandler:
 
                 msg_title = 'Zaak <strong>{}</strong> gewijzigd.'.format(zaak_type['onderwerp'])
                 msg_body = 'De status van uw zaak is gewijzigd naar: <strong>{}</strong>. <strong>{}</strong> ' \
-                           '<strong>{}</strong>'.format(
+                           '{}'.format(
                     status_type['omschrijving'],
                     status_type['statustekst'],
-                    'Toelichting: {}'.format(status['statustoelichting'])if status['statustoelichting'] else ''
+                    'Toelichting: <strong>{}</strong>'.format(status['statustoelichting']) if status['statustoelichting'] else ''
                 )
     
             # 3. Document toegevoegd aan Zaak
