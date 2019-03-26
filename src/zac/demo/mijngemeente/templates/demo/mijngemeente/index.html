@@ -30,7 +30,7 @@
           {% for message in unread_messages %}
             <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
               <h5 class="mb-1">{{ message.title|safe }} <span class="float-right badge badge-info">Ongelezen</span></h5>
-              <p class="mb-1">{% if message.body|safe %}{{ message.body }}{% endif %}</p>
+              <p class="mb-1">{% if message.body %}{{ message.body|safe }}{% endif %}</p>
               <div class="d-flex w-100 justify-content-between">
                 <small class="text-muted">Referentie: {{ message.reference }}</small>
                 <small class="text-muted">{{ message.date }}</small>
@@ -52,7 +52,7 @@
           {% for message in read_messages %}
             <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
               <h5 class="mb-1">{{ message.title|safe }} <span class="float-right badge badge-secondary">Gelezen</span></h5>
-              <p class="mb-1">{% if message.body|safe %}{{ message.body }}{% endif %}</p>
+              <p class="mb-1">{% if message.body %}{{ message.body|safe }}{% endif %}</p>
               <div class="d-flex w-100 justify-content-between">
                 <small class="text-muted">Referentie: {{ message.reference }}</small>
                 <small class="text-muted">{{ message.date }}</small>
@@ -72,12 +72,12 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.js" crossorigin="anonymous"></script>
   <script id="notification-template" type="x-tmpl-mustache">{% verbatim %}
-    <a href="{{{ message.url }}}" class="list-group-item list-group-item-action flex-column align-items-start">
+    <a href="{{ message.url }}" class="list-group-item list-group-item-action flex-column align-items-start">
       <h5 class="mb-1">{{{ message.title }}} <span class="float-right badge badge-success">Nieuw</span></h5>
       <p class="mb-1">{{{ message.body }}}</p>
       <div class="d-flex w-100 justify-content-between">
-        <small class="text-muted">Referentie: {{{ message.reference }}}</small>
-        <small class="text-muted">{{{ message.date }}}</small>
+        <small class="text-muted">Referentie: {{ message.reference }}</small>
+        <small class="text-muted">{{ message.date }}</small>
       </div>
     </a>
   {% endverbatim %}</script>
