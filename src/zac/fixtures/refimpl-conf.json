@@ -6,8 +6,8 @@
     "global_api_client_id": "demo-app-KK2CG69NTrSN",
     "global_api_secret": "wo1hW8oHsM0U9hSTnMM0jtCbD8GYmf4i",
     "google_maps_api_key": "AIzaSyA1fl_5ChJEHYi0Vn1r7IOu2kAP3hQTLlE",
-    "google_maps_lat": 52.369918,
-    "google_maps_long": 4.897787,
+    "google_maps_lat": "52.369918",
+    "google_maps_long": "4.897787",
     "zrc_base_url": "https://ref.tst.vng.cloud/zrc/api/v1/",
     "zrc_client_id": "",
     "zrc_secret": "",
@@ -22,12 +22,51 @@
     "brc_base_url": "https://ref.tst.vng.cloud/brc/api/v1/",
     "brc_client_id": "",
     "brc_secret": "",
+    "callback_client_id": "nc",
+    "callback_secret": "bar",
+    "callback_url": "http://localhost:8080/demo/mijngemeente/api/callbacks",
+    "nc_method": "",
+    "nc_base_url": "https://ref.tst.vng.cloud/nc/api/v1/",
+    "nc_client_id": "",
+    "nc_secret": "",
+    "nc_amqp_host": "",
+    "nc_amqp_port": "",
+    "vrl_base_url": "https://ref.tst.vng.cloud/referentielijsten/api/v1/",
     "orc_base_url": "",
     "orc_client_id": "",
     "orc_secret": "",
     "ztc_mor_zaaktype_uuid": "0119dd4e-7be9-477e-bccf-75023b1453c1",
-    "ztc_mor_statustype_new_uuid": "TODO",
-    "ztc_mor_informatieobjecttype_image_uuid": "TODO"
+    "ztc_mor_statustype_new_uuid": "e53becac-cb4f-4dc7-911b-7d2ca066c041",
+    "ztc_mor_informatieobjecttype_image_uuid": "63a58060-8cd1-4c9d-bcc4-b6954353e758"
+  }
+},
+{
+  "model": "notifications.subscription",
+  "pk": 2,
+  "fields": {
+    "config": 1,
+    "callback_url": "http://localhost:8080/demo/mijngemeente/api/callbacks",
+    "client_id": "nc",
+    "secret": "bar",
+    "channels": "[\"zaken\"]",
+    "_subscription": ""
+  }
+},
+{
+  "model": "notifications.notificationsconfig",
+  "pk": 1,
+  "fields": {
+    "api_root": "https://ref.tst.vng.cloud/nc/api/v1/",
+    "client_id": "demo-app-KK2CG69NTrSN",
+    "secret": "wo1hW8oHsM0U9hSTnMM0jtCbD8GYmf4i"
+  }
+},
+{
+  "model": "vng_api_common.jwtsecret",
+  "pk": 1,
+  "fields": {
+    "identifier": "nc",
+    "secret": "bar"
   }
 }
 ]
