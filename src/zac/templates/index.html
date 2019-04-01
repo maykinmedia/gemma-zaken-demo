@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block body %}
-  <main role="main">
+  <main role="main" class="index">
     <section class="jumbotron text-center">
       <div class="container">
         <h1 class="jumbotron-heading">Demo applicaties</h1>
@@ -14,7 +14,7 @@
               <th colspan="7">Componenten</th>
             </tr>
             <tr>
-              <th>Applicatie</th>
+              <th class="app-index-col">Burger Applicatie</th>
               <th><span data-toggle="tooltip" data-placement="top" title="Zaken API (Zaak registratie component)">ZRC</span></th>
               <th><span data-toggle="tooltip" data-placement="top" title="Zaaktypen API (Zaaktype catalogus)">ZTC</span></th>
               <th><span data-toggle="tooltip" data-placement="top" title="Documenten API (Document registratie component)">DRC</span></th>
@@ -36,21 +36,52 @@
               <td><i class="far fa-square"></i></td>
             </tr>
             <tr>
-              <td><a href="{% url 'demo:zaakbeheer-index' %}">Zaakbeheer</a></td>
-              <td><i class="far fa-check-square"></i></td>
-              <td><i class="far fa-check-square"></i></td>
-              <td><i class="far fa-check-square"></i></td>
-              <td><i class="far fa-check-square"></i></td>
-              <td><i class="far fa-square"></i></td>
-              <td><i class="far fa-square"></i></td>
-              <td><i class="far fa-square"></i></td>
-            </tr>
-            <tr>
               <td><a href="{% url 'demo:opendata-index' %}">Open data</a></td>
               <td><i class="far fa-check-square"></i></td>
               <td><i class="far fa-check-square"></i></td>
               <td><i class="far fa-square"></i></td>
               <td><i class="far fa-square"></i></td>
+              <td><i class="far fa-square"></i></td>
+              <td><i class="far fa-square"></i></td>
+              <td><i class="far fa-square"></i></td>
+            </tr>
+            <tr>
+              <td><a href="{% url 'demo:mijngemeente-index' %}">Mijn Gemeente</a></td>
+              <td><i class="far fa-check-square"></i></td>
+              <td><i class="far fa-check-square"></i></td>
+              <td><i class="far fa-square"></i></td>
+              <td><i class="far fa-square"></i></td>
+              <td><i class="far fa-check-square"></i></td>
+              <td><i class="far fa-square"></i></td>
+              <td><i class="far fa-square"></i></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>&nbsp;</th>
+              <th colspan="7">Componenten</th>
+            </tr>
+            <tr>
+              <th class="app-index-col">Gemeente Applicatie</th>
+              <th><span data-toggle="tooltip" data-placement="top" title="Zaken API (Zaak registratie component)">ZRC</span></th>
+              <th><span data-toggle="tooltip" data-placement="top" title="Zaaktypen API (Zaaktype catalogus)">ZTC</span></th>
+              <th><span data-toggle="tooltip" data-placement="top" title="Documenten API (Document registratie component)">DRC</span></th>
+              <th><span data-toggle="tooltip" data-placement="top" title="Besluiten API (Besluit registratie component)">BRC</span></th>
+              <th><span data-toggle="tooltip" data-placement="top" title="Notificatie API (Notificatie component)">NC</span></th>
+              <th><span data-toggle="tooltip" data-placement="top" title="VNG Referentielijsten API">VRL</span></th>
+              <th><span data-toggle="tooltip" data-placement="top" title="Overige registraties componenent"><i>ORC</i></span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="{% url 'demo:zaakbeheer-index' %}">Zaakafhandelcomponent (ZAC)</a></td>
+              <td><i class="far fa-check-square"></i></td>
+              <td><i class="far fa-check-square"></i></td>
+              <td><i class="far fa-check-square"></i></td>
+              <td><i class="far fa-check-square"></i></td>
               <td><i class="far fa-square"></i></td>
               <td><i class="far fa-square"></i></td>
               <td><i class="far fa-square"></i></td>
@@ -66,23 +97,13 @@
               <td><i class="far fa-square"></i></td>
             </tr>
             <tr>
-              <td><a href="{% url 'demo:selectielijst-index' %}">Selectielijst<a></td>
+              <td><a href="{% url 'demo:selectielijst-index' %}">Selectielijst</a></td>
               <td><i class="far fa-square"></i></td>
               <td><i class="far fa-square"></i></td>
               <td><i class="far fa-square"></i></td>
               <td><i class="far fa-square"></i></td>
               <td><i class="far fa-square"></i></td>
               <td><i class="far fa-check-square"></i></td>
-              <td><i class="far fa-square"></i></td>
-            </tr>
-            <tr>
-              <td><a href="{% url 'demo:mijngemeente-index' %}">Mijn Gemeente</a></td>
-              <td><i class="far fa-square"></i></td>
-              <td><i class="far fa-square"></i></td>
-              <td><i class="far fa-square"></i></td>
-              <td><i class="far fa-square"></i></td>
-              <td><i class="far fa-check-square"></i></td>
-              <td><i class="far fa-square"></i></td>
               <td><i class="far fa-square"></i></td>
             </tr>
           </tbody>

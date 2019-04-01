@@ -1,5 +1,5 @@
 html {
-  overflow-y:scroll;
+  overflow-y: scroll;
 }
 
 label.required {
@@ -10,4 +10,9 @@ label.required {
   background: repeating-linear-gradient(45deg, #FFFAFA, #FFFAFA 10px, #FFE1E1 10px, #FFE1E1 20px);
   padding: 10px;
   margin: 0 -10px 1rem -10px;
+}
+
+.index th.app-index-col {
+  min-width: 250px;
+  width: 33%;
 }

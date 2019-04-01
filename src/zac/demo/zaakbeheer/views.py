@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 class ZaakListView(ZACViewMixin, TemplateView):
-    title = 'Zaakbeheer'
+    title = 'Zaakafhandelcomponent (ZAC)'
     subtitle = 'Lijst van Zaken uit het ZRC'
     template_name = 'demo/zaakbeheer/zaak_list.html'
 
@@ -133,7 +133,7 @@ class ZaakForm(forms.Form):
 
 
 class ZaakDetailView(ZACViewMixin, FormView):
-    title = 'Zaakbeheer'
+    title = 'Zaakafhandelcomponent (ZAC)'
     subtitle = 'Details van een Zaak uit het ZRC'
     template_name = 'demo/zaakbeheer/zaak_detail.html'
     form_class = ZaakForm
@@ -269,7 +269,7 @@ class StatusForm(forms.Form):
 
 
 class StatusCreateView(ZACViewMixin, FormView):
-    title = 'Zaakbeheer - Statussen'
+    title = 'ZAC - Statussen'
     subtitle = 'Status beheren van deze zaak'
     template_name = 'demo/zaakbeheer/zaakstatus_create.html'
     form_class = StatusForm
@@ -355,7 +355,7 @@ class BesluitForm(forms.Form):
 
 
 class BesluitCreateView(ZACViewMixin, FormView):
-    title = 'Zaakbeheer - Besluiten'
+    title = 'ZAC - Besluiten'
     subtitle = 'Besluiten beheren van deze zaak'
     template_name = 'demo/zaakbeheer/besluit_create.html'
     form_class = BesluitForm
@@ -465,7 +465,7 @@ class ResultaatForm(forms.Form):
 
 
 class ResultaatEditView(ZACViewMixin, FormView):
-    title = 'Zaakbeheer - Resultaat'
+    title = 'ZAC - Resultaat'
     subtitle = 'Resultaat beheren van deze zaak'
     template_name = 'demo/zaakbeheer/resultaat_edit.html'
     form_class = ResultaatForm
