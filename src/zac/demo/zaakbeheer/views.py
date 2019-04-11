@@ -74,6 +74,8 @@ class ZaakListView(ZACViewMixin, TemplateView):
             'Status toelichting',
             'Registratiedatum'
         ]
+
+        zaaktypes = {}
         rows = []
 
         for index, zaak in enumerate(zaken_response['results']):
@@ -81,11 +83,15 @@ class ZaakListView(ZACViewMixin, TemplateView):
 
             # If the ZaakType is not in the "main" ZTC, retrieve it manually.
             if zaaktype is None:
-                zaaktype = client('ztc', url=zaak['zaaktype']).retrieve('zaaktype', url=zaak['zaaktype'])
+                try:
+                    zaaktype = zaaktypes[zaak['zaaktype']]
+                except:
+                    zaaktype = client('ztc', url=zaak['zaaktype']).retrieve('zaaktype', url=zaak['zaaktype'])
 
                 # Skip over Zaak with unknown Zaaktype.
                 if zaaktype is None:
                     continue
+                zaaktypes[zaak['zaaktype']] = zaaktype
 
             status = statusses_by_url.get(zaak['status'])
             statustype = None
