@@ -9,7 +9,9 @@ from django.utils.translation import ugettext_lazy as _
 from djchoices import ChoiceItem, DjangoChoices
 from solo.models import SingletonModel
 from vng_api_common.models import JWTSecret
-from vng_api_common.notifications.models import NotificationsConfig, Subscription
+from vng_api_common.notifications.models import (
+    NotificationsConfig, Subscription
+)
 from zds_client import Client
 
 
@@ -228,22 +230,8 @@ class SiteConfiguration(SingletonModel):
                     result[service]['auth'] = {
                         'client_id': client_id,
                         'secret': secret,
-                        # Normally, you want to grab the scopes and claims from
-                        # a role/scope mapping-service based on who is logged
-                        # in. For demo purposes, we map anonymous (you don't
-                        # have to login) to have all scopes and claims.
-                        'scopes': [
-                            'zds.scopes.zaken.lezen',
-                            'zds.scopes.zaken.aanmaken',
-                            'zds.scopes.zaken.bijwerken',
-                            'zds.scopes.statussen.toevoegen',
-                            'zds.scopes.zaaktypes.lezen',
-                            'scopes.besluiten.verwijderen',
-                            'scopes.documenten.verwijderen',
-                        ],
-                        'zaaktypes': [
-                            '*',
-                        ]
+                        'user_id': None,
+                        'user_representation': None
                     }
 
         return result
@@ -327,7 +315,7 @@ def validate_filters(value):
             )
 
 
-def client(service, url=None):
+def client(service, url=None, request=None):
     """
     Helper function to grab the properly configured `Client` instance.
 
@@ -335,6 +323,7 @@ def client(service, url=None):
     :param url: The url to request, to get a matching client.
     :return: A `Client` instance.
     """
+
     if service not in SiteConfiguration.CLIENTS:
         config = SiteConfiguration.get_solo()
         SiteConfiguration.CLIENTS[service] = {
@@ -348,9 +337,22 @@ def client(service, url=None):
                 SiteConfiguration.CLIENTS[service][other_config.base_url] = \
                     other_config.get_client()
 
+    client_res = None
     if url:
         for base_url, client in SiteConfiguration.CLIENTS[service].items():
             if url.startswith(base_url):
-                return client
+                client_res = client
+                break
 
-    return SiteConfiguration.CLIENTS[service]['DEFAULT']
+    client_res = client_res or SiteConfiguration.CLIENTS[service]['DEFAULT']
+    if not request:
+        return client_res
+
+    # add user_id and user_representation from request
+    if request.user.is_authenticated:
+        client_res.auth.user_id = request.user.username
+        client_res.auth.user_representation = request.user.get_full_name()
+    else:
+        client_res.auth.user_id = 'anonymous'
+        client_res.auth.user_representation = 'anonymous'
+    return client_res

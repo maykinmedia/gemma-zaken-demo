@@ -1,13 +1,13 @@
-from django.views.generic import TemplateView
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.views.generic import TemplateView
 
 from ..mixins import ZACViewMixin
-from .models import UserNotification
 from ..models import SiteConfiguration, client
 from ..utils import (
     api_response_list_to_dict, extract_pagination_info, get_uuid, isodate
 )
+from .models import UserNotification
 
 
 class ZaakListView(ZACViewMixin, TemplateView):

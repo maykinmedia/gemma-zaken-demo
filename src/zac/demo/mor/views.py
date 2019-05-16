@@ -40,20 +40,20 @@ class MORCreateView(ZACViewMixin, FormView):
         config = SiteConfiguration.get_solo()
 
         # Haal ZaakType:Melding Openbare Ruimte uit het ZTC
-        zaaktype = client('ztc').retrieve(
+        zaaktype = client('ztc', request=self.request).retrieve(
             'zaaktype',
             catalogus_uuid=config.ztc_catalogus_uuid,
             uuid=config.ztc_mor_zaaktype_uuid,
         )
         # Haal StatusType:Nieuw uit het ZTC
-        status_type = client('ztc').retrieve(
+        status_type = client('ztc', request=self.request).retrieve(
             'statustype',
             catalogus_uuid=config.ztc_catalogus_uuid,
             zaaktype_uuid=config.ztc_mor_zaaktype_uuid,
             uuid=config.ztc_mor_statustype_new_uuid,
         )
         # Haal InformationObjectType:Afbeelding uit het ZTC
-        informatieobjecttype = client('ztc').retrieve(
+        informatieobjecttype = client('ztc', request=self.request).retrieve(
             'informatieobjecttype',
             catalogus_uuid=config.ztc_catalogus_uuid,
             uuid=config.ztc_mor_informatieobjecttype_image_uuid
@@ -86,13 +86,13 @@ class MORCreateView(ZACViewMixin, FormView):
                 }
             })
 
-        zaak = client('zrc').create('zaak', data)
+        zaak = client('zrc', request=self.request).create('zaak', data)
 
         # zaak_id = zaak['url'].rsplit('/')[-1]
         # assert 'url' in zaak
 
         # Geef de Zaak een status in het ZRC.
-        status = client('zrc').create('status', {
+        status = client('zrc', request=self.request).create('status', {
             'zaak': zaak['url'],
             'statusType': status_type['url'],
             'datumStatusGezet': datetime.datetime.now().isoformat(),
@@ -126,7 +126,7 @@ class MORCreateView(ZACViewMixin, FormView):
             base64_bytes = base64.b64encode(byte_content)
             base64_string = base64_bytes.decode('utf-8')
 
-            eio = client('drc').create('enkelvoudiginformatieobject', {
+            eio = client('drc', request=self.request).create('enkelvoudiginformatieobject', {
                 # TODO: Dit moet automatisch?
                 'identificatie': uuid.uuid4().hex,
                 'bronorganisatie': config.zrc_bronorganisatie,
@@ -141,7 +141,7 @@ class MORCreateView(ZACViewMixin, FormView):
 
             # Koppel dit document aan de Zaak in het DRC. De omgekeerde
             # relatie is de verantwoordelijkheid van het DRC.
-            oio = client('drc').create('objectinformatieobject', {
+            oio = client('drc', request=self.request).create('objectinformatieobject', {
                 'object': zaak['url'],
                 'informatieobject': eio['url'],
                 # TODO: Deze enum moet ergens vandaan komen.
