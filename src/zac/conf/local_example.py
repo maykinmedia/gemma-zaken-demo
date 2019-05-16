@@ -1,7 +1,7 @@
 """
 Any machine specific settings when using development settings.
 """
-
+from .settings import *
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -12,13 +12,12 @@ BASE_DIR = os.path.abspath(os.path.join(DJANGO_PROJECT_DIR, os.path.pardir, os.p
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.postgresql',
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',  # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',  # Set to empty string for default.
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'zac'),
+        'USER': os.getenv('DB_USER', 'zac'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'zac'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', 5432),
     }
 }
 
