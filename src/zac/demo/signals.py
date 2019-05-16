@@ -4,6 +4,7 @@ from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
 from vng_api_common.notifications.models import Subscription
 
 from .models import SiteConfiguration

@@ -1,8 +1,9 @@
 """
 Any machine specific settings when using development settings.
 """
-from .settings import *
 import os
+
+from .settings import *
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 DJANGO_PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))

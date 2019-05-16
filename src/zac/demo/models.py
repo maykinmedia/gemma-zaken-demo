@@ -9,7 +9,9 @@ from django.utils.translation import ugettext_lazy as _
 from djchoices import ChoiceItem, DjangoChoices
 from solo.models import SingletonModel
 from vng_api_common.models import JWTSecret
-from vng_api_common.notifications.models import NotificationsConfig, Subscription
+from vng_api_common.notifications.models import (
+    NotificationsConfig, Subscription
+)
 from zds_client import Client
 
 

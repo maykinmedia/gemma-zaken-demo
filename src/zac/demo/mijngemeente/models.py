@@ -3,10 +3,10 @@ import json
 
 from django.db import models
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from django.utils.safestring import mark_safe
 
 
 class UserNotification(models.Model):

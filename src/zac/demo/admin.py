@@ -5,11 +5,16 @@ from django.utils.translation import ugettext_lazy as _
 
 from solo.admin import SingletonModelAdmin
 from vng_api_common.models import APICredential, JWTSecret
-from vng_api_common.notifications.constants import SCOPE_NOTIFICATIES_CONSUMEREN_LABEL
-from vng_api_common.notifications.models import NotificationsConfig, Subscription
+from vng_api_common.notifications.constants import (
+    SCOPE_NOTIFICATIES_CONSUMEREN_LABEL
+)
+from vng_api_common.notifications.models import (
+    NotificationsConfig, Subscription
+)
 from zds_client import ClientAuth
 
 from zac.demo.mijngemeente.models import UserNotification
+
 from .models import OtherZTC, SiteConfiguration
 
 

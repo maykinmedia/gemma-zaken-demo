@@ -1,9 +1,10 @@
 import logging
 
-import isodate
 from django.urls import reverse
 
-from zac.demo.models import client, SiteConfiguration
+import isodate
+
+from zac.demo.models import SiteConfiguration, client
 from zac.demo.utils import get_uuid
 
 from ..models import UserNotification
