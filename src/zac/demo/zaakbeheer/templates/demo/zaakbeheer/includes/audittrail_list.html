@@ -1,0 +1,69 @@
+<table class="table">
+    <tbody>
+      {% for audittrail in audittrail_list %}
+        <tr>
+            <td>{{ audittrail.aanmaakdatum}}</td>
+            <td>
+                <b>{{ audittrail.resource|capfirst }}</b> {{ audittrail.resourceWeergave }}
+                is {{ audittrail.actieWeergave }} in {{ audittrail.bron }} door {{ audittrail.gebruikersWeergave}}
+                ({{ audittrail.gebruikersId }}) via {{ audittrail.applicatieWeergave }} ({{ audittrail.applicatieId }})
+                <button class="btn btn-default float-right" data-toggle="modal" data-target="#myModal-{{forloop.counter}}">Toon wijzigingen</button>
+            </td>
+        </tr>
+        <div class="modal hide fade" tabindex="-1" id="myModal-{{forloop.counter}}" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Gewijzigde velden</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container bordered">
+                            <div class="row">
+                                <div class="col">
+                                    <h6>Veld</h6>
+                                </div>
+                                <div class="col">
+                                    <h6>Oud</h6>
+                                </div>
+                                <div class="col">
+                                    <h6>Nieuw</h6>
+                                </div>
+                            </div>
+                            {% for change in audittrail.wijzigingen %}
+                                {% if change.0 == 'add' %}
+                                    {% for field, diff in change.1.items %}
+                                        <div class="row">
+                                            <div class="col">{{ field }}</div>
+                                            <div class="col"></div>
+                                            <div class="col">{{ diff }}</div>
+                                        </div>
+                                    {% endfor %}
+                                {% elif change.0 == 'change' %}
+                                    {% for field, diff in change.1.items %}
+                                        <div class="row">
+                                            <div class="col">{{ field }}</div>
+                                            <div class="col">{{ diff.0 }}</div>
+                                            <div class="col lg-2">{{ diff.1 }}</div>
+                                        </div>
+                                    {% endfor %}
+                                {% elif change.0 == 'remove' %}
+                                    {% for field, diff in change.1.items %}
+                                        <div class="row">
+                                            <div class="col">{{ field }}</div>
+                                            <div class="col">{{ diff }}</div>
+                                            <div class="col lg-2"></div>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      {% endfor %}
+    </tbody>
+  </table>
