@@ -257,18 +257,15 @@ class ZaakDetailView(ZACViewMixin, FormView):
         # Retrieve list of AuditTrails associated with this Zaak
         zrc_audittrail_list = client('zrc').list('audittrail', zaak_uuid=get_uuid(self.zaak['url']))
 
-        objectinformatieobjecten = client('drc').list('objectinformatieobject', query_params={'object': self.zaak['url']})
         drc_audittrail_list = []
-        for oio in objectinformatieobjecten:
+        for oio in document_relation_list:
             drc_audittrail_list += client('drc').list(
                 'audittrail',
                 enkelvoudiginformatieobject_uuid=get_uuid(oio['informatieobject'])
             )
 
-        related_besluiten = client('brc').list('besluit', query_params={'zaak': self.zaak['url']})
-
         brc_audittrail_list = []
-        for besluit in related_besluiten:
+        for besluit in besluit_list:
             brc_audittrail_list += client('brc').list('audittrail', besluit_uuid=get_uuid(besluit['url']))
 
         audittrail_list = zrc_audittrail_list + drc_audittrail_list + brc_audittrail_list
@@ -279,6 +276,7 @@ class ZaakDetailView(ZACViewMixin, FormView):
 
             changes = list(diff(oud, nieuw))
             audit['wijzigingen'] = format_dict_diff(changes)
+            audit['aanmaakdatum'] = datetime.datetime.strptime(audit['aanmaakdatum'], "%Y-%m-%dT%H:%M:%S.%fZ")
 
         context.update({
             'zaak_uuid': self.zaak_uuid,

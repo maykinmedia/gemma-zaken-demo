@@ -5,8 +5,9 @@
             <td>{{ audittrail.aanmaakdatum}}</td>
             <td>
                 <b>{{ audittrail.resource|capfirst }}</b> {{ audittrail.resourceWeergave }}
-                is {{ audittrail.actieWeergave }} in {{ audittrail.bron }} door {{ audittrail.gebruikersWeergave}}
-                ({{ audittrail.gebruikersId }}) via {{ audittrail.applicatieWeergave }} ({{ audittrail.applicatieId }})
+                is {{ audittrail.actieWeergave }} in {{ audittrail.bron }} door
+                <b><a class="tooltip-element" data-toggle="tooltip" title="{{ audittrail.gebruikersId }}">{{ audittrail.gebruikersWeergave }}</a></b>
+                via <b><a class="tooltip-element" data-toggle="tooltip" title="{{ audittrail.applicatieId }}">{{ audittrail.applicatieWeergave }}</a></b>
                 <button class="btn btn-default float-right" data-toggle="modal" data-target="#myModal-{{forloop.counter}}">Toon wijzigingen</button>
             </td>
         </tr>
@@ -36,26 +37,29 @@
                                 {% if change.0 == 'add' %}
                                     {% for field, diff in change.1.items %}
                                         <div class="row">
-                                            <div class="col">{{ field }}</div>
+                                            <div class="col">{{ field|capfirst }}</div>
                                             <div class="col"></div>
-                                            <div class="col">{{ diff }}</div>
+                                            <div class="col"><p>{{ diff }}</p></div>
                                         </div>
+                                        <hr/>
                                     {% endfor %}
                                 {% elif change.0 == 'change' %}
                                     {% for field, diff in change.1.items %}
                                         <div class="row">
-                                            <div class="col">{{ field }}</div>
+                                            <div class="col">{{ field|capfirst }}</div>
                                             <div class="col">{{ diff.0 }}</div>
                                             <div class="col lg-2">{{ diff.1 }}</div>
                                         </div>
+                                        <hr/>
                                     {% endfor %}
                                 {% elif change.0 == 'remove' %}
                                     {% for field, diff in change.1.items %}
                                         <div class="row">
-                                            <div class="col">{{ field }}</div>
+                                            <div class="col">{{ field|capfirst }}</div>
                                             <div class="col">{{ diff }}</div>
                                             <div class="col lg-2"></div>
                                         </div>
+                                        <hr/>
                                     {% endfor %}
                                 {% endif %}
                             {% endfor %}
