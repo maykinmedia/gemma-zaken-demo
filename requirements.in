@@ -16,7 +16,7 @@ django-betterforms==1.2
 channels==2.1.7
 channels-redis==2.3.3
 gemma-zds-client
-vng-api-common==0.31.1
+vng-api-common
 dictdiffer==0.8.0
 
 # Windows users:

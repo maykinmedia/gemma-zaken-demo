@@ -37,7 +37,7 @@ drf-nested-routers==0.91  # via vng-api-common
 drf-yasg==1.14.0          # via vng-api-common
 factory_boy==2.10.0
 faker==1.0.2              # via factory-boy
-gemma-zds-client==0.9.3
+gemma-zds-client==0.11.0
 hiredis==1.0.0            # via aioredis
 hyperlink==18.0.0         # via twisted
 idna==2.6                 # via hyperlink, requests
@@ -50,7 +50,7 @@ jinja2==2.10              # via coreschema
 markupsafe==1.1.1         # via jinja2
 msgpack==0.6.1            # via channels-redis
 oyaml==0.7                # via vng-api-common
-pip-tools==3.4.0
+pip-tools==3.7.0
 psycopg2-binary==2.7.5
 pyhamcrest==1.9.0         # via twisted
 pyjwt==1.7.1              # via gemma-zds-client, vng-api-common
@@ -68,7 +68,7 @@ unidecode==1.0.23         # via vng-api-common
 uritemplate==3.0.0        # via coreapi, drf-yasg
 urllib3==1.22             # via requests
 uwsgi==2.0.15
-vng-api-common==0.31.1
+vng-api-common==0.50.0
 waitress==1.2.1           # via webtest
 webob==1.8.5              # via webtest
 webtest==2.0.33           # via django-webtest
