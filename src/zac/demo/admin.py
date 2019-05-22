@@ -147,5 +147,4 @@ class SiteConfigurationAdmin(SingletonModelAdmin):
 
 admin.site.unregister(NotificationsConfig)
 # admin.site.unregister(Subscription)
-admin.site.unregister(APICredential)
-admin.site.unregister(JWTSecret)
+# admin.site.unregister(APICredential)
