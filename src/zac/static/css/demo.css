@@ -16,3 +16,15 @@ label.required {
   min-width: 250px;
   width: 33%;
 }
+
+.col {
+    overflow: auto;
+}
+
+.tooltip-inner {
+    max-width: 200%;
+}
+
+.tooltip-element {
+    border-bottom: 1px dotted;
+}

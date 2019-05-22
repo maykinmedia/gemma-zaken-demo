@@ -29,6 +29,9 @@
     <a href="{% url 'demo:zaakbeheer-index' %}" class="btn btn-secondary">Terug naar overzicht</a>
   </p>
 
+  <h2>Audit trail</h2>
+  {% include "demo/zaakbeheer/includes/audittrail_list.html" with audittrail_list=audittrail_list %}
+
 {% endblock %}
 
 

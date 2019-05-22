@@ -17,6 +17,7 @@ channels==2.1.7
 channels-redis==2.3.3
 gemma-zds-client
 vng-api-common==0.31.1
+dictdiffer==0.8.0
 
 # Windows users:
 # pypiwin32

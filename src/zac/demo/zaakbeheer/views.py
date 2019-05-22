@@ -8,12 +8,14 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views.generic import FormView, TemplateView
 
+from dictdiffer import diff
 from zds_client.client import ClientError
 
 from ..mixins import ZACViewMixin
 from ..models import SiteConfiguration, client
 from ..utils import (
-    api_response_list_to_dict, extract_pagination_info, get_uuid, isodate
+    api_response_list_to_dict, extract_pagination_info, format_dict_diff,
+    get_uuid, isodate
 )
 
 logger = logging.getLogger(__name__)
@@ -252,12 +254,37 @@ class ZaakDetailView(ZACViewMixin, FormView):
                 logger.exception(e)
             resultaat['resultaattype_embedded'] = resultaat_type
 
+        # Retrieve list of AuditTrails associated with this Zaak
+        zrc_audittrail_list = client('zrc').list('audittrail', zaak_uuid=get_uuid(self.zaak['url']))
+
+        drc_audittrail_list = []
+        for oio in document_relation_list:
+            drc_audittrail_list += client('drc').list(
+                'audittrail',
+                enkelvoudiginformatieobject_uuid=get_uuid(oio['informatieobject'])
+            )
+
+        brc_audittrail_list = []
+        for besluit in besluit_list:
+            brc_audittrail_list += client('brc').list('audittrail', besluit_uuid=get_uuid(besluit['url']))
+
+        audittrail_list = zrc_audittrail_list + drc_audittrail_list + brc_audittrail_list
+
+        for audit in audittrail_list:
+            oud = audit['wijzigingen']['oud'] or {}
+            nieuw = audit['wijzigingen']['nieuw'] or {}
+
+            changes = list(diff(oud, nieuw))
+            audit['wijzigingen'] = format_dict_diff(changes)
+            audit['aanmaakdatum'] = datetime.datetime.strptime(audit['aanmaakdatum'], "%Y-%m-%dT%H:%M:%S.%fZ")
+
         context.update({
             'zaak_uuid': self.zaak_uuid,
             'status_list': status_list,
             'document_list': document_list,
             'besluit_list': besluit_list,
             'resultaat': resultaat,
+            'audittrail_list': sorted(audittrail_list, key=lambda x: x['aanmaakdatum'])
         })
         return context
 
