@@ -24,12 +24,15 @@ python src/manage.py migrate
 
 # Start server
 >&2 echo "Starting server"
-uwsgi \
-    --http :$uwsgi_port \
-    --module zac.wsgi \
-    --static-map /static=/app/static \
-    --static-map /media=/app/media  \
-    --chdir src \
-    --processes 2 \
-    --threads 2
-    # processes & threads are needed for concurrency without nginx sitting inbetween
+cd src
+daphne -p $uwsgi_port -b 0.0.0.0 zac.asgi:application
+
+#uwsgi \
+#    --http :$uwsgi_port \
+#    --module zac.wsgi \
+#    --static-map /static=/app/static \
+#    --static-map /media=/app/media  \
+#    --chdir src \
+#    --processes 2 \
+#    --threads 2
+#     processes & threads are needed for concurrency without nginx sitting inbetween
