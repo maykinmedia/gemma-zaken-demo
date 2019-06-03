@@ -9,7 +9,7 @@ db_user=${DB_USER:-postgres}
 db_password=${DB_PASSWORD}
 db_port=${DB_PORT:-5432}
 
-uwsgi_port=${UWSGI_PORT:-8080}
+asgi_port=${ASGI_PORT:-8000}
 
 until PGPORT=$db_port PGPASSWORD=$db_password psql -h "$db_host" -U "$db_user" -c '\q'; do
   >&2 echo "Waiting for database connection..."
@@ -25,7 +25,7 @@ python src/manage.py migrate
 # Start server
 >&2 echo "Starting server"
 cd src
-daphne -p $uwsgi_port -b 0.0.0.0 zac.asgi:application
+daphne -p $asgi_port -b 0.0.0.0 zac.asgi:application
 
 #uwsgi \
 #    --http :$uwsgi_port \

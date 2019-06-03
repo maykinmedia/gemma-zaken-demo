@@ -11,9 +11,14 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=zac.conf.docker
       - SECRET_KEY=${SECRET_KEY}
-      - UWSGI_PORT=8080
-    ports:
-      - 8080:8080
     depends_on:
       - db
       - redis
+  nginx:
+    image: nginx:1.15
+    ports:
+      - 8080:80
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - web

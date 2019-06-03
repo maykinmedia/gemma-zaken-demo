@@ -18,7 +18,7 @@ def getenv(key, default=None, required=False, split=False):
 #
 # Standard Django settings.
 #
-DEBUG = getenv('DEBUG', True)
+DEBUG = getenv('DEBUG', False)
 
 ADMINS = getenv('ADMINS', split=True)
 MANAGERS = ADMINS
