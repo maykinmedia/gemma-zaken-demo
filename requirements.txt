@@ -19,7 +19,7 @@ click==7.0                # via pip-tools
 constantly==15.1.0        # via twisted
 coreapi==2.3.3            # via drf-yasg
 coreschema==0.0.4         # via coreapi, drf-yasg
-daphne==2.2.5             # via channels
+daphne==2.2.5
 dictdiffer==0.8.0
 django-betterforms==1.2
 django-choices==1.6.0

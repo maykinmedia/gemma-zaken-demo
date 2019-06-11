@@ -26,13 +26,3 @@ python src/manage.py migrate
 >&2 echo "Starting server"
 cd src
 daphne -p $asgi_port -b 0.0.0.0 zac.asgi:application
-
-#uwsgi \
-#    --http :$uwsgi_port \
-#    --module zac.wsgi \
-#    --static-map /static=/app/static \
-#    --static-map /media=/app/media  \
-#    --chdir src \
-#    --processes 2 \
-#    --threads 2
-#     processes & threads are needed for concurrency without nginx sitting inbetween
