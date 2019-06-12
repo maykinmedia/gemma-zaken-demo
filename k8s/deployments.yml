@@ -96,6 +96,8 @@ spec:
             value: redis-demo
           - name: SECRET_KEY
             value: '07-@clb=*(uqsrn1gdvrb/k&wvtgd!mw=gv6ku4ol%7il*k4@g'
+          - name: IS_HTTPS
+            value: yes
           volumeMounts:
             - name: demo-staticfiles
               mountPath: /app/static/

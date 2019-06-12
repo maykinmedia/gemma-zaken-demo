@@ -343,6 +343,10 @@ if SENTRY_DSN:
 #
 DEFAULT_NOTIFICATIONS_HANDLER = 'zac.demo.mijngemeente.api.handlers.default'
 
+#
+# SSL or not?
+#
+IS_HTTPS = os.getenv('IS_HTTPS', '0').lower() in ['true', '1', 'yes']
 
 # Override settings with local settings.
 try:

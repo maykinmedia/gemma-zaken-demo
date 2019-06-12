@@ -3,7 +3,7 @@ from django.conf import settings as django_settings
 
 def settings(request):
     public_settings = ('GOOGLE_ANALYTICS_ID', 'GOOGLE_API_KEY', 'ENVIRONMENT',
-                       'SHOW_ALERT', 'PROJECT_NAME', 'FORCE_SCRIPT_NAME')
+                       'SHOW_ALERT', 'PROJECT_NAME', 'FORCE_SCRIPT_NAME', 'IS_HTTPS')
 
     context = {
         'settings': dict([
