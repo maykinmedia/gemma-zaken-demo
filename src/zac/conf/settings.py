@@ -56,7 +56,7 @@ DATABASES = {
 SECRET_KEY = getenv('SECRET_KEY', 'o(je41k00h8cz*x36@6uyq&c3mz(3*w()z&hlb017@xeikc&x5')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', 'False').lower() in ['yes', '1', 'true']
 
 ALLOWED_HOSTS = getenv('ALLOWED_HOSTS', '', split=True)
 

@@ -23,6 +23,6 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html'), name='index'),
     path('admin/', admin.site.urls),
     path('hijack/', include('hijack.urls', namespace='hijack')),
-    path('demo/', include('zac.demo.urls')),
+    path('apps/', include('zac.demo.urls')),
     path('status/', include('zac.status.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
