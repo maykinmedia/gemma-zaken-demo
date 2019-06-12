@@ -1,0 +1,98 @@
+---
+
+# Database
+
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: postgres-demo
+  labels:
+    k8s-app: postgres-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: postgres-demo
+  template:
+    metadata:
+      name: postgres-demo
+      labels:
+        k8s-app: postgres-demo
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:10
+        env:
+        - name: POSTGRES_PASSWORD
+          value: u9PjMS%D?Q6Y4,w"
+        volumeMounts:
+        - name: data
+          mountPath: "/var/lib/postgresql/data"
+      volumes:
+      - name: data
+        hostPath:
+          path: "/storage/gemma-postgres-demo"
+
+---
+
+# Redis message broker
+
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: redis-demo
+  labels:
+    k8s-app: redis-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: redis-demo
+  template:
+    metadata:
+      name: redis-demo
+      labels:
+        k8s-app: redis-demo
+    spec:
+      containers:
+      - name: redis
+        image: redis:5-alpine
+
+---
+
+# Django app
+
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: demo
+  labels:
+    k8s-app: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: demo
+  template:
+    metadata:
+      name: demo
+      labels:
+        k8s-app: demo
+    spec:
+      containers:
+      - name: demo
+        image: vngr/gemma-zaken-demo:latest
+        imagePullPolicy: Always
+        env:
+        - name: DJANGO_SETTINGS_MODULE
+          value: zac.conf.docker
+        - name: SUBPATH
+          value: "/demo"
+        - name: DB_HOST
+          value: postgres-demo
+        - name: DB_PASSWORD
+          value: u9PjMS%D?Q6Y4,w"
+        - name: REDIS_HOST
+          value: redis-demo
+        - name: SECRET_KEY
+          value: '07$@clb=*(uqsrn1gdvrb%k&wvtgd!mw$gv6ku4ol%7il*k4@g'
