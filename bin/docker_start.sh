@@ -45,4 +45,4 @@ daphne \
     -p $asgi_port \
     -b 0.0.0.0 \
     $cmd_opts \
-    zac.routing:application
+    zac.asgi:application
