@@ -8,6 +8,7 @@ db_host=${DB_HOST:-db}
 db_user=${DB_USER:-postgres}
 db_password=${DB_PASSWORD}
 db_port=${DB_PORT:-5432}
+root_path=${SUBPATH:-/}
 
 asgi_port=${ASGI_PORT:-8000}
 
@@ -33,4 +34,8 @@ fi
 # Start server
 >&2 echo "Starting server"
 cd src
-daphne -p $asgi_port -b 0.0.0.0 zac.asgi:application
+daphne \
+    -p $asgi_port \
+    -b 0.0.0.0 \
+    --root-path $root_path \
+    zac.asgi:application
