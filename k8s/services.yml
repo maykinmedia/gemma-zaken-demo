@@ -1,0 +1,71 @@
+---
+
+# Database
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: postgres-demo
+  labels:
+    k8s-app: postgres-demo
+spec:
+  selector:
+    k8s-app: postgres-demo
+  ports:
+  - protocol: TCP
+    port: 5432
+    targetPort: 5432
+
+---
+
+# Redis message broker
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: redis-demo
+  labels:
+    k8s-app: redis-demo
+spec:
+  selector:
+    k8s-app: redis-demo
+  ports:
+  - protocol: TCP
+    port: 6379
+    targetPort: 6379
+
+---
+
+# Django app
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: demo
+  labels:
+    k8s-app: demo
+spec:
+  selector:
+    k8s-app: demo
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000
+
+---
+
+# Nginx reverse proxy
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: demo-nginx
+  labels:
+    k8s-app: demo-nginx
+spec:
+  selector:
+    k8s-app: demo-nginx
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
