@@ -317,6 +317,27 @@ REST_FRAMEWORK.update({
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 })
 
+# Raven
+SENTRY_DSN = os.getenv('SENTRY_DSN')
+
+if SENTRY_DSN:
+    INSTALLED_APPS = INSTALLED_APPS + [
+        'raven.contrib.django.raven_compat',
+    ]
+
+    RAVEN_CONFIG = {
+        'dsn': SENTRY_DSN,
+        # 'release': raven.fetch_git_sha(BASE_DIR), doesn't work in Docker
+    }
+    LOGGING['handlers'].update({
+        'sentry': {
+            'level': 'WARNING',
+            'class': 'raven.handlers.logging.SentryHandler',
+            'dsn': RAVEN_CONFIG['dsn']
+        },
+    })
+
+
 #
 # Project specific settings
 #

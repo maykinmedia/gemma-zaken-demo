@@ -20,5 +20,4 @@ gemma-zds-client
 vng-api-common
 dictdiffer==0.8.0
 
-# Windows users:
-# pypiwin32
+raven

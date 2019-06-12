@@ -57,6 +57,7 @@ pyjwt==1.7.1              # via gemma-zds-client, vng-api-common
 python-dateutil==2.8.0    # via faker
 pytz==2018.9              # via django
 pyyaml==3.13
+raven==6.10.0
 requests==2.18.4
 ruamel.yaml==0.15.89      # via drf-yasg
 six==1.12.0               # via autobahn, automat, django-compat, drf-yasg, faker, isodate, pip-tools, pyhamcrest, python-dateutil, txaio, webtest
