@@ -24,7 +24,6 @@ WORKDIR /app
 
 COPY ./requirements.txt /app/
 RUN /app/env/bin/pip install -r requirements.txt
-RUN /app/env/bin/pip install uwsgi
 
 # Stage 1.2 - Compile needed frontend dependencies
 RUN apk --no-cache add \

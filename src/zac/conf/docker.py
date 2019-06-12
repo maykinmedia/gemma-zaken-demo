@@ -1,47 +1,26 @@
+import os
+
 from django.core.exceptions import ImproperlyConfigured
 
-from .settings import *
+os.environ.setdefault('DB_USER', 'postgres')
+os.environ.setdefault('DB_NAME', 'postgres')
+os.environ.setdefault('DB_PASSWORD', '')
+os.environ.setdefault('DB_HOST', 'db')
+os.environ.setdefault('DB_PORT', '5432')
 
-# Helper function
-missing_environment_vars = []
+os.environ.setdefault('ALLOWED_HOSTS', '*')
 
+os.environ.setdefault('REDIS_HOST', 'redis')
 
-def getenv(key, default=None, required=False, split=False):
-    val = os.getenv(key, default)
-    if required and val is None:
-        missing_environment_vars.append(key)
-    if split and val:
-        val = val.split(',')
-    return val
-
+from .settings import *  # noqa isort:skip
 
 #
 # Standard Django settings.
 #
-DEBUG = getenv('DEBUG', False)
 
-ADMINS = getenv('ADMINS', split=True)
-MANAGERS = ADMINS
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = getenv('ALLOWED_HOSTS', '*', split=True)
-
-# Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'USER': getenv('DB_USER', 'postgres'),
-        'NAME': getenv('DB_NAME', 'postgres'),
-        'PASSWORD': getenv('DB_PASSWORD', ''),
-        'HOST': getenv('DB_HOST', 'db'),
-        'PORT': getenv('DB_PORT', '5432'),
-    }
-}
-
-REDIS_HOST = getenv('REDIS_HOST', 'redis')
-REDIS_PORT = int(getenv('REDIS_PORT', 6379))
-REDIS_DB_CACHE =  getenv('REDIS_DB_CACHE', 1)
 
 CACHES = {
     'default': {
@@ -53,16 +32,6 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     }
 }
-
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [(REDIS_HOST, REDIS_PORT)],
-        },
-    },
-}
-
 
 # Deal with being hosted on a subpath
 subpath = getenv('SUBPATH')
@@ -90,7 +59,7 @@ ENVIRONMENT = 'docker'
 
 # Override settings with local settings.
 try:
-    from .local import *
+    from .local import *  # noqa
 except ImportError:
     pass
 

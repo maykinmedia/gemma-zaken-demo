@@ -16,20 +16,36 @@ from django.urls import reverse_lazy
 
 from rest_framework.settings import DEFAULTS as DEFAULT_REST_FRAMEWORK
 
+# Helper function
+missing_environment_vars = []
+
+
+def getenv(key, default=None, required=False, split=False):
+    val = os.getenv(key, default)
+    if required and val is None:
+        missing_environment_vars.append(key)
+    if split and val:
+        val = val.split(',')
+    return val
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 DJANGO_PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
 BASE_DIR = os.path.abspath(os.path.join(DJANGO_PROJECT_DIR, os.path.pardir, os.path.pardir))
+
+ADMINS = getenv('ADMINS', split=True)
+MANAGERS = ADMINS
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'zac'),
-        'USER': os.getenv('DB_USER', 'zac'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'zac'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', 5432),
+        'NAME': getenv('DB_NAME', 'zac'),
+        'USER': getenv('DB_USER', 'zac'),
+        'PASSWORD': getenv('DB_PASSWORD', 'zac'),
+        'HOST': getenv('DB_HOST', 'localhost'),
+        'PORT': getenv('DB_PORT', 5432),
     }
 }
 
@@ -37,13 +53,12 @@ DATABASES = {
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'o(je41k00h8cz*x36@6uyq&c3mz(3*w()z&hlb017@xeikc&x5'
+SECRET_KEY = getenv('SECRET_KEY', 'o(je41k00h8cz*x36@6uyq&c3mz(3*w()z&hlb017@xeikc&x5')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = getenv('ALLOWED_HOSTS', '', split=True)
 
 # Application definition
 
@@ -186,13 +201,17 @@ HIJACK_REGISTER_ADMIN = False
 # See: http://django-hijack.readthedocs.io/en/latest/configuration/#allowing-get-method-for-hijack-views
 HIJACK_ALLOW_GET_REQUESTS = True
 
+REDIS_HOST = getenv('REDIS_HOST', 'localhost')
+REDIS_PORT = int(getenv('REDIS_PORT', 6379))
+REDIS_DB_CACHE = getenv('REDIS_DB_CACHE', 1)
+
 # Channels
 ASGI_APPLICATION = 'zac.routing.application'
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
+            "hosts": [(REDIS_HOST, REDIS_PORT)],
         },
     },
 }
@@ -223,6 +242,6 @@ DEFAULT_NOTIFICATIONS_HANDLER = 'zac.demo.mijngemeente.api.handlers.default'
 
 # Override settings with local settings.
 try:
-    from .local import *
+    from .local import *  # noqa
 except ImportError:
     pass
