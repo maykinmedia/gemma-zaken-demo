@@ -243,7 +243,7 @@ LOGGING = {
         'project': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOGGING_DIR, '{{ project_name|lower }}.log'),
+            'filename': os.path.join(LOGGING_DIR, 'zac.log'),
             'formatter': 'verbose',
             'maxBytes': 1024 * 1024 * 10,  # 10 MB
             'backupCount': 10
