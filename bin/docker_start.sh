@@ -22,6 +22,14 @@ done
 >&2 echo "Apply database migrations"
 python src/manage.py migrate
 
+# check if we need to run collectstatic (volume overwrites image content)
+target=/app/static
+if [ "$(find "$target" -mindepth 1 -print -quit 2>/dev/null)" ]; then
+    echo "Not empty, skipping"
+else
+    python src/manage.py collectstatic --noinput
+fi
+
 # Start server
 >&2 echo "Starting server"
 cd src

@@ -80,19 +80,64 @@ spec:
         k8s-app: demo
     spec:
       containers:
-      - name: demo
-        image: vngr/gemma-zaken-demo:latest
-        imagePullPolicy: Always
-        env:
-        - name: DJANGO_SETTINGS_MODULE
-          value: zac.conf.docker
-        - name: SUBPATH
-          value: "/demo"
-        - name: DB_HOST
-          value: postgres-demo
-        - name: DB_PASSWORD
-          value: u9PjMS%D?Q6Y4,w"
-        - name: REDIS_HOST
-          value: redis-demo
-        - name: SECRET_KEY
-          value: '07$@clb=*(uqsrn1gdvrb%k&wvtgd!mw$gv6ku4ol%7il*k4@g'
+        - name: demo
+          image: vngr/gemma-zaken-demo:latest
+          imagePullPolicy: Always
+          env:
+          - name: DJANGO_SETTINGS_MODULE
+            value: zac.conf.docker
+          - name: SUBPATH
+            value: "/demo"
+          - name: DB_HOST
+            value: postgres-demo
+          - name: DB_PASSWORD
+            value: 'u9PjMS%D?Q6Y4,w"'
+          - name: REDIS_HOST
+            value: redis-demo
+          - name: SECRET_KEY
+            value: '07-@clb=*(uqsrn1gdvrb/k&wvtgd!mw=gv6ku4ol%7il*k4@g'
+          volumeMounts:
+            - name: demo-staticfiles
+              mountPath: /app/static/
+      volumes:
+        - name: demo-staticfiles
+          persistentVolumeClaim:
+            claimName: demo-staticfiles-claim
+
+
+---
+
+# Nginx front facing reverse proxy, handles websocket + staticfiles
+
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: demo-nginx
+  labels:
+    k8s-app: demo-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: demo-nginx
+  template:
+    metadata:
+      name: demo-nginx
+      labels:
+        k8s-app: demo-nginx
+    spec:
+      containers:
+        - name: demo-nginx
+          image: nginx:1.15
+          volumeMounts:
+            - name: demo-staticfiles-nginx
+              mountPath: /static/
+            - name: demo-nginx-conf
+              mountPath: /etc/nginx/conf.d/
+      volumes:
+        - name: demo-staticfiles-nginx
+          persistentVolumeClaim:
+            claimName: demo-staticfiles-claim
+        - name: demo-nginx-conf
+          configMap:
+            name: demo-nginx-conf
