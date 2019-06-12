@@ -4,9 +4,11 @@ services:
   db:
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
   web:
     volumes:
       - static:/app/static
+
   nginx:
     volumes:
       - nginx_logs:/var/log/nginx
