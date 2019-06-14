@@ -134,7 +134,7 @@ class ZaakForm(forms.Form):
     identificatie = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
     bronorganisatie = forms.CharField()
     registratiedatum = forms.DateField()
-    einddatum = forms.DateField(widget=forms.DateInput(attrs={'readonly': 'readonly'}))
+    einddatum = forms.DateField(widget=forms.DateInput(attrs={'readonly': 'readonly'}), required=False)
     toelichting = forms.CharField(widget=forms.Textarea, required=False)
     longitude = forms.FloatField(widget=forms.HiddenInput, required=False)
     latitude = forms.FloatField(widget=forms.HiddenInput, required=False)
