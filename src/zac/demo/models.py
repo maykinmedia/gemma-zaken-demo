@@ -1,5 +1,6 @@
 import base64
 import json
+from collections import namedtuple
 from urllib.parse import urlparse
 
 from django.core.exceptions import ValidationError
@@ -13,6 +14,8 @@ from vng_api_common.notifications.models import (
     NotificationsConfig, Subscription
 )
 from zds_client import Client
+
+ServiceConfig = namedtuple('ServiceConfig', ['base_url', 'client_id', 'secret'])
 
 
 class NotifyMethod(DjangoChoices):
@@ -96,14 +99,14 @@ class SiteConfiguration(SingletonModel):
     )
     callback_url = models.URLField(
         _('Callback URL'), blank=True,
-        help_text=_('De URL van deze demo applicatie waar het NC berichten naar toe kan sturen.')
+        help_text=_('De URL van deze demo applicatie waar het NRC berichten naar toe kan sturen.')
     )
 
     nc_method = models.CharField(
         _('Notificatie methode'), max_length=20, default=NotifyMethod.webhook)
     nc_base_url = models.CharField(
-        _('NC basis URL'), blank=True, default='http://localhost:8004/api/v1/', max_length=255,
-        help_text=_('Notificatie API van het Notificatie component'))
+        _('NRC basis URL'), blank=True, default='http://localhost:8004/api/v1/', max_length=255,
+        help_text=_('Notificatie API van het Notificatie routering component'))
 
     nc_client_id = models.CharField(
         _('Client ID'), max_length=255, blank=True)
@@ -149,7 +152,7 @@ class SiteConfiguration(SingletonModel):
     def clean(self):
         if self.nc_method == NotifyMethod.webhook:
             if not self.nc_base_url:
-                raise ValidationError(_('Bij "webhook" als notificatie methode moet de "NC basis URL" ingevuld zijn.'))
+                raise ValidationError(_('Bij "webhook" als notificatie methode moet de "NRC basis URL" ingevuld zijn.'))
         else:
             if not self.nc_amqp_host:
                 raise ValidationError(_('Bij "AMQP-server" als notificatie methode moet de "AMQP-host" ingevuld zijn.'))
@@ -178,15 +181,19 @@ class SiteConfiguration(SingletonModel):
 
         # Create Subscription based on details here with default channel and
         # topics.
-        Subscription.objects.update_or_create(
-            config=notifications_config,
-            defaults={
-                'callback_url': self.callback_url,
-                'client_id': self.callback_client_id,
-                'secret': self.callback_secret,
-                'channels': ['zaken', ]
-            }
-        )
+        try:
+            Subscription.objects.update_or_create(
+                config=notifications_config,
+                defaults={
+                    'callback_url': self.callback_url,
+                    'client_id': self.callback_client_id,
+                    'secret': self.callback_secret,
+                    'channels': ['zaken', ]
+                }
+            )
+        except Subscription.MultipleObjectsReturned:
+            # Manual configuration needed
+            pass
 
     def reload_config(self):
         self.__class__.CLIENTS.clear()
@@ -198,15 +205,32 @@ class SiteConfiguration(SingletonModel):
         # return [(ex.name, ex.get_filters()) for ex in self.exchange_set.all()]
         return ['zaken', [{'foo.bar'}, {'bar.foo'}, ]]
 
+    def get_service_config(self, service):
+        """
+        Returns a `ServiceConfig` for given `service`.
+
+        :param service: The service name.
+        :return: A `ServiceConfig`.
+        """
+        base_url = getattr(self, '{}_base_url'.format(service))
+        client_id = getattr(self, '{}_client_id'.format(service), None)
+        if not client_id:
+            client_id = self.global_api_client_id
+        secret = getattr(self, '{}_secret'.format(service), None)
+        if not secret:
+            secret = self.global_api_secret
+
+        return ServiceConfig(base_url, client_id, secret)
+
     def get_zdsclient_config(self):
         """
         Returns the ZDSClient configuration format.
         """
         result = {}
         for service in self.SERVICES:
-            base_url = getattr(self, '{}_base_url'.format(service))
-            if base_url:
-                o = urlparse(base_url)
+            service_config = self.get_service_config(service)
+            if service_config.base_url:
+                o = urlparse(service_config.base_url)
                 result[service] = {
                     'host': o.hostname,
                     'scheme': o.scheme,
@@ -219,19 +243,12 @@ class SiteConfiguration(SingletonModel):
                 else:
                     result[service]['port'] = 80
 
-                client_id = getattr(self, '{}_client_id'.format(service), None)
-                if not client_id:
-                    client_id = self.global_api_client_id
-                secret = getattr(self, '{}_secret'.format(service), None)
-                if not secret:
-                    secret = self.global_api_secret
-
-                if client_id and secret:
+                if service_config.client_id and service_config.secret:
                     result[service]['auth'] = {
-                        'client_id': client_id,
-                        'secret': secret,
-                        'user_id': None,
-                        'user_representation': None
+                        'client_id': service_config.client_id,
+                        'secret': service_config.secret,
+                        'user_id': 'anonymous',
+                        'user_representation': 'Anonymous'
                     }
 
         return result

@@ -1,0 +1,52 @@
+{% extends "demo/base.html" %}
+
+{% block content %}
+
+  <div class="container">
+
+    <div class="row">
+      <div class="col-md-12">
+        {% for name, config in groups %}
+          <h2>{{ name }}</h2>
+          <table class="table table-striped">
+              <thead>
+                  <tr>
+                      <th scope="col" width="300">Parameter</th>
+                      <th scope="col">Waarde</th>
+                      <th scope="col" width="100">Status</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for param, value, ok, message in config %}
+                      <tr>
+                          <td><strong>{{ param }}</strong></td>
+                          <td>
+                              {{ value|urlize }}
+                              {% if message %}
+                                <p><span class="small warning-feedback">{{ message }}</span></p>
+                              {% endif %}
+                          </td>
+                          <td class="text-{{ ok|yesno:'success,danger,muted' }}">
+                              <i class="fa fa-{{ ok|yesno:'check,times,minus' }}"></i>
+                          </td>
+                      </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="row text-center">
+      <div class="col-md-12">
+        <p></p>
+        <p>
+          <a href="{% url 'admin:index' %}" class="btn btn-secondary">Bewerken</a>
+          <a href="{% url 'index' %}" class="btn btn-secondary">Annuleren</a>
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+{% endblock %}

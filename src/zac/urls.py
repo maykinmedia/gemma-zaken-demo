@@ -24,5 +24,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('hijack/', include('hijack.urls', namespace='hijack')),
     path('apps/', include('zac.demo.urls')),
+    path('config/', include('zac.config.urls')),
     path('status/', include('zac.status.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

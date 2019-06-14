@@ -85,6 +85,7 @@ INSTALLED_APPS = [
     'zac.accounts',
     'zac.demo',
     'zac.status',
+    'zac.config',
 
     # Demo applicaties
     'zac.demo.mor',

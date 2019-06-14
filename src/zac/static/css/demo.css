@@ -18,13 +18,17 @@ label.required {
 }
 
 .col {
-    overflow: auto;
+  overflow: auto;
 }
 
 .tooltip-inner {
-    max-width: 200%;
+  max-width: 200%;
 }
 
 .tooltip-element {
-    border-bottom: 1px dotted;
+  border-bottom: 1px dotted;
+}
+
+.warning-feedback {
+ color: #dc3545;
 }

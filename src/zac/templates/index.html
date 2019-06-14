@@ -5,7 +5,7 @@
     <section class="jumbotron text-center">
       <div class="container">
         <h1 class="jumbotron-heading">Demo applicaties</h1>
-        <p class="lead text-muted">De demo applicaties maken gebruik van 1 of meer van de Zaak-gerelateerde componenten.</p>
+        <p class="lead text-muted">De demo applicaties maken gebruik van 1 of meer van de Zaakgericht werken API's.</p>
 
         <table class="table">
           <thead>
@@ -16,7 +16,7 @@
             <tr>
               <th class="app-index-col">Burger Applicatie</th>
               <th><span data-toggle="tooltip" data-placement="top" title="Zaken API (Zaak registratie component)">ZRC</span></th>
-              <th><span data-toggle="tooltip" data-placement="top" title="Zaaktypen API (Zaaktype catalogus)">ZTC</span></th>
+              <th><span data-toggle="tooltip" data-placement="top" title="Catalogus API (Zaaktype catalogus)">ZTC</span></th>
               <th><span data-toggle="tooltip" data-placement="top" title="Documenten API (Document registratie component)">DRC</span></th>
               <th><span data-toggle="tooltip" data-placement="top" title="Besluiten API (Besluit registratie component)">BRC</span></th>
               <th><span data-toggle="tooltip" data-placement="top" title="Notificatie API (Notificatie component)">NC</span></th>
@@ -110,8 +110,12 @@
         </table>
 
         <p>
-          <a href="{% url 'admin:index' %}" class="btn btn-secondary">Configuratie</a>
+          <a href="{% url 'config-index' %}" class="btn btn-secondary">Configuratie</a>
           <a href="{% url 'status-index' %}" class="btn btn-secondary">API Status</a>
+        </p>
+
+        <p>
+          <a href="{% url 'admin:index' %}" class="btn btn-sm btn-danger"><i class="fas fa-lock"></i> Beheer</a>
         </p>
       </div>
     </section>
