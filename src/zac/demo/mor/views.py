@@ -139,13 +139,13 @@ class MORCreateView(ZACViewMixin, FormView):
                 'informatieobjecttype': informatieobjecttype['url'],
             })
 
-            # Koppel dit document aan de Zaak in het DRC. De omgekeerde
-            # relatie is de verantwoordelijkheid van het DRC.
-            oio = client('drc', request=self.request).create('objectinformatieobject', {
-                'object': zaak['url'],
+            # Koppel dit document aan de Zaak in het ZRC. De omgekeerde
+            # relatie is de verantwoordelijkheid van het ZRC om te maken in het
+            # DRC.
+            zio = client('zrc', request=self.request).create('zaakinformatieobject', {
                 'informatieobject': eio['url'],
-                # TODO: Deze enum moet ergens vandaan komen.
-                'objectType': 'zaak',
+                'zaak': zaak['url'],
+                'beschrijving': 'Afbeelding behorende bij de zaak.',
             })
 
         return super().form_valid(form)
