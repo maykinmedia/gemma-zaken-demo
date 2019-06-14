@@ -130,7 +130,7 @@ class SiteConfigurationAdmin(SingletonModelAdmin):
         )
         return auth.credentials()['Authorization']
     get_callback_jwt.short_description = _('Callback JWT')
-    get_callback_jwt.help_text = _('De JWT die het NC moet gebruiken om van de callback API van deze demo applicatie '
+    get_callback_jwt.help_text = _('De JWT die het NRC moet gebruiken om van de callback API van deze demo applicatie '
                                    'gebruik te mogen maken.')
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
@@ -139,7 +139,7 @@ class SiteConfigurationAdmin(SingletonModelAdmin):
         subscription = Subscription.objects.first()
         if subscription and not subscription._subscription and request.method == 'GET':
             messages.warning(request, mark_safe(_(
-                'Notificaties zijn nog niet volledig geconfigureerd: <a href="{}">Registreer de webhook bij het NC</a>.'
+                'Notificaties zijn nog niet volledig geconfigureerd: <a href="{}">Registreer de webhook bij het NRC</a>.'
             ).format(reverse('admin:notifications_subscription_changelist'))))
 
         return super().change_view(request, object_id, form_url, extra_context)

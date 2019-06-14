@@ -290,7 +290,7 @@ class ZaakDetailView(ZACViewMixin, FormView):
 
 
 class StatusForm(forms.Form):
-    statustype_url = forms.ChoiceField(label='Status')
+    statustype_url = forms.ChoiceField(label='Status', required=True)
     toelichting = forms.CharField()
 
     def __init__(self, *args, **kwargs):
@@ -376,7 +376,7 @@ class StatusCreateView(ZACViewMixin, FormView):
 
 
 class BesluitForm(forms.Form):
-    besluittype_url = forms.ChoiceField(label='Besluit')
+    besluittype_url = forms.ChoiceField(label='Besluit', required=True)
     toelichting = forms.CharField()
 
     def __init__(self, *args, **kwargs):
@@ -486,7 +486,7 @@ class BesluitCreateView(ZACViewMixin, FormView):
 
 
 class ResultaatForm(forms.Form):
-    resultaattype_url = forms.ChoiceField(label='Resultaat')
+    resultaattype_url = forms.ChoiceField(label='Resultaat', required=True)
     toelichting = forms.CharField()
 
     def __init__(self, *args, **kwargs):
