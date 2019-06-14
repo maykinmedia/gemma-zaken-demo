@@ -112,7 +112,7 @@
 
     var webSocket = new WebSocket(
         '{{ settings.IS_HTTPS|yesno:"wss,ws" }}://' + window.location.host +
-        '{{ settings.FORCE_SCRIPT_NAME }}/ws/notifications/' + username + '/');
+        '{{ settings.FORCE_SCRIPT_NAME|default:'' }}/ws/notifications/' + username + '/');
 
     webSocket.onmessage = function(e) {
         var data = JSON.parse(e.data);
