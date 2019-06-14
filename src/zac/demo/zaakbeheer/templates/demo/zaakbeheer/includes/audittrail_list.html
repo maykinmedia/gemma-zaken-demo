@@ -1,13 +1,15 @@
-<table class="table">
+<table class="table table-sm">
     <tbody>
       {% for audittrail in audittrail_list %}
         <tr>
-            <td>{{ audittrail.aanmaakdatum}}</td>
+            <td width="200">{{ audittrail.aanmaakdatum}}</td>
             <td>
                 <b>{{ audittrail.resource|capfirst }}</b> {{ audittrail.resourceWeergave }}
                 is {{ audittrail.actieWeergave }} in {{ audittrail.bron }} door
                 <b><a class="tooltip-element" data-toggle="tooltip" title="{{ audittrail.gebruikersId }}">{{ audittrail.gebruikersWeergave }}</a></b>
                 via <b><a class="tooltip-element" data-toggle="tooltip" title="{{ audittrail.applicatieId }}">{{ audittrail.applicatieWeergave }}</a></b>
+            </td>
+            <td width="175">
                 <button class="btn btn-default float-right" data-toggle="modal" data-target="#myModal-{{forloop.counter}}">Toon wijzigingen</button>
             </td>
         </tr>
