@@ -137,6 +137,7 @@ class MORCreateView(ZACViewMixin, FormView):
                 'taal': 'dut',  # TODO: Why?!
                 'inhoud': base64_string,
                 'informatieobjecttype': informatieobjecttype['url'],
+                'indicatieGebruiksrecht': False,
             })
 
             # Koppel dit document aan de Zaak in het ZRC. De omgekeerde
