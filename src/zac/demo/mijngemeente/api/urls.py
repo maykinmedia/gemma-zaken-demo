@@ -1,7 +1,7 @@
 from django.urls import path
 
-from vng_api_common.notifications.api.views import NotificationView
+from .views import CallbackView
 
 urlpatterns = [
-    path('callbacks', NotificationView.as_view(), name='mijngemeente-notificaties-webhook'),
+    path('callbacks', CallbackView.as_view(), name='mijngemeente-notificaties-webhook'),
 ]
