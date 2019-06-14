@@ -62,6 +62,7 @@ class ZaakMapView(ZACViewMixin, FormView):
         return self.render_to_response(
             self.get_context_data(
                 form=form,
-                zaken_json=json.dumps(zaken),
+                # For simplicity, we just show the first page.
+                zaken_json=json.dumps(zaken['results']),
             )
         )
