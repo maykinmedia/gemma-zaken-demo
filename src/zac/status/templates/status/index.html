@@ -34,8 +34,12 @@
       <div class="col-md-12">
         <p></p>
         <p>
-          <a href="{% url 'admin:index' %}" class="btn btn-secondary">Configuratie</a>
+          <a href="{% url 'config-index' %}" class="btn btn-secondary">Configuratie</a>
           <a href="{% url 'index' %}" class="btn btn-secondary">Terug naar Demo applicaties</a>
+        </p>
+
+        <p>
+          <a href="{% url 'admin:index' %}" class="btn btn-sm btn-danger"><i class="fas fa-lock"></i> Beheer</a>
         </p>
       </div>
     </div>
