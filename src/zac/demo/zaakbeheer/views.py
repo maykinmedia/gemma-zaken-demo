@@ -345,7 +345,9 @@ class StatusCreateView(ZACViewMixin, FormView):
 
         # Retrieve available StatusTypes of this ZaakType in the ZTC
         statustypes_by_url = api_response_list_to_dict(
-            self.ztc_client.list('statustype', catalogus_uuid=self.catalogus_uuid, zaaktype_uuid=get_uuid(self.zaak['zaaktype']))
+            self.ztc_client.list('statustype', query_params={
+                'zaaktype': self.zaak['zaaktype'],
+            })
         )
         statustype_choices = [(url, obj['omschrijving']) for url, obj in statustypes_by_url.items()]
 
@@ -449,7 +451,12 @@ class BesluitCreateView(ZACViewMixin, FormView):
 
         # TODO: Workaround: The reverse relation exists: Each besluittype has 0
         # or more zaaktypes but we need to list ALL besluittypes.
-        besluittype_list = self.ztc_client.list('besluittype', catalogus_uuid=self.catalogus_uuid)
+
+        zaaktype = self.ztc_client.retrieve('zaaktype', url=self.zaak['zaaktype'])
+        besluittype_list = self.ztc_client.list('besluittype', query_params={
+                'catalogus': zaaktype['catalogus'],
+            })
+
         besluittype_choices = []
         for besluittype in besluittype_list:
             # TODO (in the workaround): Enable filtering, but this can only be
