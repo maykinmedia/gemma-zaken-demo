@@ -98,6 +98,12 @@ class SiteConfigurationAdmin(SingletonModelAdmin):
                 'orc_secret',
             ]
         }),
+        (_('Basis registratie (ingeschreven) personen (BRiP)'), {
+            'fields': [
+                'brp_base_url',
+                'brp_api_key',
+            ]
+        }),
         (_('Demo applicatie: Melding openbare ruimte'), {
             'fields': [
                 'zrc_bronorganisatie',
@@ -106,6 +112,7 @@ class SiteConfigurationAdmin(SingletonModelAdmin):
                 'ztc_mor_informatieobjecttype_image_uuid',
             ]
         }),
+
     )
     inlines = [OtherZTCInline, ]
     readonly_fields = ['get_example_callback_url', 'get_callback_jwt']

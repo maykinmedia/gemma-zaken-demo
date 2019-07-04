@@ -9,6 +9,9 @@ from zac.demo.models import SiteConfiguration, client
 
 
 def _can_connect(service, url):
+    if not url:
+        return False, _('Server niet geconfigureerd')
+
     try:
         response = requests.get(url, timeout=1)
     except Exception:
@@ -206,6 +209,31 @@ def _get_mor_config(config):
         ),
     ]
 
+def _get_brp_config(config):
+    error_msg = None
+
+    if config.brp_base_url:
+        try:
+            response = requests.get(config.brp_base_url + 'ingeschrevenpersonen/', timeout=1, headers={'X-API-KEY': config.brp_api_key})
+        except Exception:
+            error_msg = _('Server onbereikbaar')
+        else:
+            if response.status_code == 401:
+                error_msg = _('Autorisatie mislukt.')
+            elif response.status_code not in [200, 400]:
+                error_msg = _('Server geeft een error: {}'.format(response.status_code) )
+    else:
+        error_msg = _('Server niet geconfigureerd')
+
+    return [
+        (
+            _('Basis URL'),
+            config.brp_base_url,
+            not bool(error_msg),
+            error_msg or ''
+        ),
+    ]
+
 
 class ConfigView(TemplateView):
     template_name = 'config/index.html'
@@ -228,6 +256,10 @@ class ConfigView(TemplateView):
             groups.append(
                 (service.upper(), _get_api_config(config, service, url))
             )
+
+        groups.append(
+            (_('BRiP'), _get_brp_config(config))
+        )
 
         context.update({
             'groups': groups

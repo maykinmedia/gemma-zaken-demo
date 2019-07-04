@@ -130,7 +130,7 @@ class SiteConfiguration(SingletonModel):
     orc_base_url = models.CharField(
         _('ORC basis URL'), blank=True, default='http://localhost:8010/api/v1/',
         max_length=255,
-        help_text=_('Zaken API van het Zaak registratie component'))
+        help_text=_('Overige registraties API (niet meer in gebruik).'))
     orc_client_id = models.CharField(
         _('Client ID'), max_length=255, blank=True)
     orc_secret = models.CharField(
@@ -145,6 +145,13 @@ class SiteConfiguration(SingletonModel):
         _('Statustype "Nieuw" UUID'), max_length=36, blank=True)
     ztc_mor_informatieobjecttype_image_uuid = models.CharField(
         _('Informatieobjecttype "Afbeelding" UUID'), max_length=36, blank=True)
+
+    brp_base_url = models.CharField(
+        _('BRP basis URL'), blank=True,
+        max_length=255,
+        help_text=_('Basis registratie (ingeschreven) personen API.'))
+    brp_api_key = models.CharField(
+        _('API-sleutel'), max_length=255, blank=True)
 
     class Meta:
         verbose_name = _('Configuratie')
