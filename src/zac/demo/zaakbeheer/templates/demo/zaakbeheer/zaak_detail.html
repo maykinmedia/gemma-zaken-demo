@@ -10,6 +10,12 @@
     <a href="{% url 'demo:zaakbeheer-statuscreate' zaak_uuid %}" class="btn btn-primary">Status toevoegen</a>
   </p>
 
+  <h2>Betrokkenen</h2>
+  {% include "demo/zaakbeheer/includes/betrokkene_list.html" with rollen_list=rollen_list %}
+  <p>
+    <a href="{% url 'demo:zaakbeheer-betrokkenecreate' zaak_uuid %}" class="btn btn-primary">Betrokkene toevoegen</a>
+  </p>
+
   <h2>Documenten</h2>
   {% include "demo/zaakbeheer/includes/document_list.html" with document_list=document_list %}
 

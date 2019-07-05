@@ -1,0 +1,18 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>Naam</th>
+      <th>Rol</th>
+      <th>Acties</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for rol in rollen_list %}
+      <tr>
+        <td>{{ rol.betrokkeneNaam }}</td>
+        <td>{{ rol.rolomschrijving }}</td>
+        <td><a href="{{ rol.url }}">Toon details</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

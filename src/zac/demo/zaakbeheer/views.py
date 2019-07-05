@@ -2,6 +2,7 @@ import copy
 import datetime
 import logging
 
+import requests
 from django import forms
 from django.contrib import messages
 from django.urls import reverse
@@ -9,6 +10,7 @@ from django.utils.safestring import mark_safe
 from django.views.generic import FormView, TemplateView
 
 from dictdiffer import diff
+from djchoices import DjangoChoices, ChoiceItem
 from zds_client.client import ClientError
 
 from ..mixins import ZACViewMixin
@@ -278,11 +280,23 @@ class ZaakDetailView(ZACViewMixin, FormView):
             audit['wijzigingen'] = format_dict_diff(changes)
             audit['aanmaakdatum'] = datetime.datetime.strptime(audit['aanmaakdatum'], "%Y-%m-%dT%H:%M:%S.%fZ")
 
+        # Betrokkenen/Rollen
+        rollen_list = self.zrc_client.list('rol', query_params={
+            'zaak': self.zaak['url'],
+        })
+
+        for rol in rollen_list:
+            if rol['betrokkene']:
+                personen = get_personen(self.config, self.zrc_client, url=rol['betrokkene'])
+                if personen:
+                    rol['betrokkeneNaam'] = personen[0][1]['naam']['aanschrijfwijze']
+
         context.update({
             'zaak_uuid': self.zaak_uuid,
             'status_list': status_list,
             'document_list': document_list,
             'besluit_list': besluit_list,
+            'rollen_list': rollen_list,
             'resultaat': resultaat,
             'audittrail_list': sorted(audittrail_list, key=lambda x: x['aanmaakdatum'])
         })
@@ -581,5 +595,172 @@ class ResultaatEditView(ZACViewMixin, FormView):
             'zaak_uuid': self.zaak_uuid,
             'resultaat_type': resultaat_type,
             'resultaat': resultaat,
+        })
+        return context
+
+
+class Rol(DjangoChoices):
+    # TODO: We can probably load these from the OAS...
+    adviseur = ChoiceItem('Adviseur', 'Adviseur')
+    behandelaar = ChoiceItem('Behandelaar', 'Behandelaar')
+    belanghebbende = ChoiceItem('Belanghebbende', 'Belanghebbende')
+    beslisser = ChoiceItem('Beslisser', 'Beslisser')
+    initiator = ChoiceItem('Initiator', 'Initiator')
+    klantcontacter = ChoiceItem('Klantcontacter', 'Klantcontacter')
+    zaakcoordinator = ChoiceItem('Zaakcoördinator', 'Zaakcoördinator')
+    mede_initiator = ChoiceItem('Mede-initiator', 'Mede-initiator')
+
+
+class BetrokkeneForm(forms.Form):
+    betrokkene_url = forms.ChoiceField(label='Persoon', required=True)
+    rol_omschrijving = forms.ChoiceField(label='Rol', choices=Rol.choices, required=True)
+    rol_toelichting = forms.CharField(label='Toelichting', required=False)
+
+    def __init__(self, *args, **kwargs):
+        betrokkene_choices = kwargs.pop('betrokkene_choices')
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['betrokkene_url'].choices = betrokkene_choices
+
+
+def get_personen(config, client, bsn=None, url=None):
+    """
+    Grabs personen from the BRP. Didn't test any error-scenario's.
+
+    Very, very basic but works for API-lab.
+
+    :param config:
+    :param client:
+    :param bsn:
+    :param url:
+    :return:
+    """
+    personen = []
+
+    if bsn:
+        url = config.brp_base_url + f'ingeschrevenpersonen/{bsn}'
+    try:
+        response = requests.get(url, headers={'X-API-KEY': config.brp_api_key})
+    except Exception:
+        return personen
+
+    # Add log entry
+    client._log.add(
+        'brp',
+        url,
+        'GET',
+        {},
+        {},
+        response.status_code,
+        dict(response.headers),
+        response.content,
+    )
+
+    # Make the URL's part of the data.
+    if response.status_code == 200:
+        data = response.json()
+        personen.append(
+            (
+                url,
+                data,
+            )
+        )
+
+    return personen
+
+
+class BetrokkeneCreateView(ZACViewMixin, FormView):
+    title = 'ZAC - Betrokkene'
+    subtitle = 'Betrokkenen beheren van deze zaak'
+    template_name = 'demo/zaakbeheer/betrokkene_create.html'
+    form_class = BetrokkeneForm
+
+    def _pre_dispatch(self, request, *args, **kwargs):
+        self.config = SiteConfiguration.get_solo()
+
+        # Retrieve Zaak from ZRC
+        self.zrc_client = client('zrc')
+        self.zaak = self.zrc_client.retrieve('zaak', uuid=self.kwargs.get('uuid'))
+        self.zaak_uuid = get_uuid(self.zaak['url'])
+
+        # # Work with any configured ZTC.
+        # self.ztc_client = client('ztc', url=self.zaak['zaaktype'])
+        # # TODO: Make a nicer way to get the catalogus UUID.
+        # self.catalogus_uuid = get_uuid(self.zaak['zaaktype'], -3)
+
+    def post(self, request, *args, **kwargs):
+        if request.POST.get('bsn'):
+            # Update form with hits.
+            return self.render_to_response(self.get_context_data(form=self.get_form()))
+        else:
+            return super().post(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return '{}?keep-logs=true'.format(
+            reverse('demo:zaakbeheer-betrokkenecreate', kwargs={'uuid': self.kwargs.get('uuid')})
+        )
+
+    def form_valid(self, form):
+        form_data = form.cleaned_data
+
+        # Create the Rol in the ZRC
+        data = {
+            'zaak': self.zaak['url'],
+            'betrokkene': form_data['betrokkene_url'],
+            'betrokkeneType': 'Natuurlijk persoon',
+            'rolomschrijving': form_data['rol_omschrijving'],
+            'roltoelichting': form_data['rol_toelichting'],
+        }
+
+        self.zrc_client.create('rol', data)
+        messages.add_message(self.request, messages.SUCCESS, 'Betrokkene succesvol toegevoegd.')
+
+        return super().form_valid(form)
+
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+
+        personen_choices = [
+            ('', '(leeg)')
+        ]
+
+        # TODO: Handle search better but keep transaction log as is for demo
+        # purposes.
+        bsn = self.request.GET.get('bsn', None)
+        if bsn:
+            personen = get_personen(self.config, self.zrc_client, bsn)
+
+            for url, persoon_data in personen:
+                personen_choices.append(
+                    (
+                        url,
+                        persoon_data['naam']['aanschrijfwijze'],
+                    )
+                )
+
+        form_kwargs.update({
+            'betrokkene_choices': personen_choices
+        })
+
+        return form_kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        rollen_list = self.zrc_client.list('rol', query_params={
+            'zaak': self.zaak['url'],
+        })
+
+        for rol in rollen_list:
+            if rol['betrokkene']:
+                # Naive approach, but works for API-lab
+                personen = get_personen(self.config, self.zrc_client, url=rol['betrokkene'])
+                if personen:
+                    rol['betrokkeneNaam'] = personen[0][1]['naam']['aanschrijfwijze']
+
+        context.update({
+            'zaak_uuid': self.zaak_uuid,
+            'rollen_list': rollen_list,
         })
         return context

@@ -1,0 +1,45 @@
+{% extends "demo/form.html" %}
+
+{% block form-submit-label %}Toevoegen{% endblock %}
+
+{% block content-before-form %}
+
+  <h2>Betrokkenen</h2>
+  {% include "demo/zaakbeheer/includes/betrokkene_list.html" with betrokkenne_list=betrokkenne_list %}
+
+  <p>
+    <a href="{% url 'demo:zaakbeheer-detail' zaak_uuid %}" class="btn btn-secondary">Terug naar zaak</a>
+  </p>
+
+  <h2>Betrokkene toevoegen</h2>
+  <h3>Personen zoeken</h3>
+
+  <form method="get" enctype="multipart/form-data" action="">
+    {% csrf_token %}
+
+    <div class="form-group ">
+        <label for="id_bsn" class="required">BSN</label>
+        <input type="text" name="bsn" id="id_bsn" value="" class="form-control ">
+    </div>
+
+    <p><strong>Of</strong></p>
+
+    <!-- TODO: Search by last name and birthdate doesn't work yet -->
+    <div class="form-group ">
+        <label for="id_achternaam" class="required">Achternaam</label>
+        <input type="text" name="achternaam" id="id_achternaam" value="" class="form-control ">
+    </div>
+    <div class="form-group ">
+        <label for="id_geboortedatum" class="required">Geboortedatum</label>
+        <input type="text" name="geboortedatum" id="id_geboortedatum" value="" class="form-control ">
+    </div>
+
+    <button type="submit" class="btn btn-primary" name="zoeken" value="zoeken">Zoeken</button>
+
+  </form>
+
+  <p></p>
+
+  <h3>Persoon toevoegen als betrokkene</h3>
+
+{% endblock %}
