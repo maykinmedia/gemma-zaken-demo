@@ -35,7 +35,7 @@ djangorestframework-camel-case==1.0.3  # via vng-api-common
 djangorestframework==3.9.2  # via drf-nested-routers, drf-yasg
 drf-nested-routers==0.91  # via vng-api-common
 drf-yasg==1.14.0          # via vng-api-common
-factory_boy==2.10.0
+factory-boy==2.10.0
 faker==1.0.2              # via factory-boy
 gemma-zds-client==0.11.0
 hiredis==1.0.0            # via aioredis
@@ -50,7 +50,7 @@ jinja2==2.10              # via coreschema
 markupsafe==1.1.1         # via jinja2
 msgpack==0.6.1            # via channels-redis
 oyaml==0.7                # via vng-api-common
-pip-tools==3.7.0
+pip-tools==4.0.0
 psycopg2-binary==2.7.5
 pyhamcrest==1.9.0         # via twisted
 pyjwt==1.7.1              # via gemma-zds-client, vng-api-common
@@ -73,4 +73,8 @@ vng-api-common==0.54.0
 waitress==1.2.1           # via webtest
 webob==1.8.5              # via webtest
 webtest==2.0.33           # via django-webtest
+whitenoise==4.1.2
 zope.interface==4.6.0     # via twisted
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools==41.0.1        # via pyhamcrest, zope.interface
