@@ -75,6 +75,11 @@ def api_response_list_to_dict(lst, key=None):
     """
     # TODO: The by-url pattern might be so common it should be in the client.
 
+    # Workaround for pages.
+    # TODO: For simplicity, just grab the first page.
+    if isinstance(lst, dict) and 'results' in lst:
+        lst = lst['results']
+
     if key is None:
         key = 'url'
 

@@ -100,14 +100,14 @@ class ZaakListView(ZACViewMixin, TemplateView):
             status = statusses_by_url.get(zaak['status'])
             statustype = None
             if status:
-                statustype = statustypen_by_url.get(status['statusType'])
+                statustype = statustypen_by_url.get(status['statustype'])
 
                 # If the StatusType is not in the "main" ZTC, retrieve it
                 # manually.
                 if statustype is None:
                     statustype = (
-                        client('ztc', url=status['statusType'])
-                        .retrieve('statustype', url=status['statusType'])
+                        client('ztc', url=status['statustype'])
+                        .retrieve('statustype', url=status['statustype'])
                     )
 
             detail_url = reverse('demo:zaakbeheer-detail', kwargs={'uuid': get_uuid(zaak['url'])})
@@ -218,7 +218,7 @@ class ZaakDetailView(ZACViewMixin, FormView):
         )
         # Amend the resulting besluiten with their respective type.
         for status in status_list:
-            status['statusType_embedded'] = statustypes_by_url.get(status['statusType'], None)
+            status['statustype_embedded'] = statustypes_by_url.get(status['statustype'], None)
 
         # Retrieve a list of EnkelvoudigInformatieObject
         #
@@ -251,7 +251,7 @@ class ZaakDetailView(ZACViewMixin, FormView):
         if self.zaak['resultaat']:
             resultaat = self.zrc_client.retrieve('resultaat', url=self.zaak['resultaat'])
             try:
-                resultaat_type = self.ztc_client.retrieve('resultaattype', url=resultaat['resultaatType'])
+                resultaat_type = self.ztc_client.retrieve('resultaattype', url=resultaat['resultaattype'])
             except ClientError as e:
                 logger.exception(e)
             resultaat['resultaattype_embedded'] = resultaat_type
@@ -345,7 +345,7 @@ class StatusCreateView(ZACViewMixin, FormView):
         # Create the Status in the ZRC
         status = client('zrc').create('status', {
             'zaak': self.zaak['url'],
-            'statusType': form_data['statustype_url'],
+            'statustype': form_data['statustype_url'],
             'datumStatusGezet': datetime.datetime.now().isoformat(),
             'statustoelichting': form_data['toelichting'],
         })
@@ -382,7 +382,7 @@ class StatusCreateView(ZACViewMixin, FormView):
         )
         # Amend the resulting besluiten with their respective type.
         for status in status_list:
-            status['statusType_embedded'] = statustypes_by_url.get(status['statusType'], None)
+            status['statustype_embedded'] = statustypes_by_url.get(status['statustype'], None)
 
         context.update({
             'zaak_uuid': self.zaak_uuid,
@@ -547,7 +547,7 @@ class ResultaatEditView(ZACViewMixin, FormView):
 
         # Create the Resultaat in the ZRC
         data = {
-            'resultaatType': form_data['resultaattype_url'],
+            'resultaattype': form_data['resultaattype_url'],
             'zaak': self.zaak['url'],
             'toelichting': form_data['toelichting'],
         }
@@ -589,7 +589,7 @@ class ResultaatEditView(ZACViewMixin, FormView):
 
         if self.zaak['resultaat']:
             resultaat = self.zrc_client.retrieve('resultaat', url=self.zaak['resultaat'])
-            resultaat_type = self.ztc_client.retrieve('resultaattype', url=resultaat['resultaatType'])
+            resultaat_type = self.ztc_client.retrieve('resultaattype', url=resultaat['resultaattype'])
 
         context.update({
             'zaak_uuid': self.zaak_uuid,
@@ -613,15 +613,17 @@ class Rol(DjangoChoices):
 
 class BetrokkeneForm(forms.Form):
     betrokkene_url = forms.ChoiceField(label='Persoon', required=True)
-    rol_omschrijving = forms.ChoiceField(label='Rol', choices=Rol.choices, required=True)
+    roltype_url = forms.ChoiceField(label='Rol', required=True)
     rol_toelichting = forms.CharField(label='Toelichting', required=False)
 
     def __init__(self, *args, **kwargs):
         betrokkene_choices = kwargs.pop('betrokkene_choices')
+        roltype_choices = kwargs.pop('roltype_choices')
 
         super().__init__(*args, **kwargs)
 
         self.fields['betrokkene_url'].choices = betrokkene_choices
+        self.fields['roltype_url'].choices = roltype_choices
 
 
 def get_personen(config, client, bsn=None, url=None):
@@ -685,9 +687,7 @@ class BetrokkeneCreateView(ZACViewMixin, FormView):
         self.zaak_uuid = get_uuid(self.zaak['url'])
 
         # # Work with any configured ZTC.
-        # self.ztc_client = client('ztc', url=self.zaak['zaaktype'])
-        # # TODO: Make a nicer way to get the catalogus UUID.
-        # self.catalogus_uuid = get_uuid(self.zaak['zaaktype'], -3)
+        self.ztc_client = client('ztc', url=self.zaak['zaaktype'])
 
     def post(self, request, *args, **kwargs):
         if request.POST.get('bsn'):
@@ -709,7 +709,7 @@ class BetrokkeneCreateView(ZACViewMixin, FormView):
             'zaak': self.zaak['url'],
             'betrokkene': form_data['betrokkene_url'],
             'betrokkeneType': 'Natuurlijk persoon',
-            'rolomschrijving': form_data['rol_omschrijving'],
+            'roltype': form_data['roltype_url'],
             'roltoelichting': form_data['rol_toelichting'],
         }
 
@@ -725,6 +725,7 @@ class BetrokkeneCreateView(ZACViewMixin, FormView):
             ('', '(leeg)')
         ]
 
+        # Search persons on BSN if search was performed.
         # TODO: Handle search better but keep transaction log as is for demo
         # purposes.
         bsn = self.request.GET.get('bsn', None)
@@ -739,8 +740,22 @@ class BetrokkeneCreateView(ZACViewMixin, FormView):
                     )
                 )
 
+        # Retrieve available StatusTypes of this ZaakType in the ZTC
+        roltypes_by_url = api_response_list_to_dict(
+            self.ztc_client.list('roltype', query_params={
+                'zaaktype': self.zaak['zaaktype'],
+            })
+        )
+        roltype_choices = [
+            (
+                url,
+                obj['omschrijving'] if obj['omschrijving'] else obj['omschrijvingGeneriek']
+            ) for url, obj in roltypes_by_url.items()
+        ]
+
         form_kwargs.update({
-            'betrokkene_choices': personen_choices
+            'betrokkene_choices': personen_choices,
+            'roltype_choices': roltype_choices
         })
 
         return form_kwargs

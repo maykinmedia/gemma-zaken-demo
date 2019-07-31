@@ -18,7 +18,7 @@ channels
 channels-redis
 daphne
 gemma-zds-client
-vng-api-common
+vng-api-common==1.0.5
 dictdiffer
 
 raven

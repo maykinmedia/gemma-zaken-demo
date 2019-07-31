@@ -77,10 +77,10 @@ class StoreAndPublishHandler:
                 # The idea is to *not* show the initial status, since we
                 # already notified the creation of Zaak.
                 config = SiteConfiguration.get_solo()
-                if status['statusType'].endswith(config.ztc_mor_statustype_new_uuid):
+                if status['statustype'].endswith(config.ztc_mor_statustype_new_uuid):
                     return
 
-                status_type = ztc_client.retrieve('statustype', url=status['statusType'])
+                status_type = ztc_client.retrieve('statustype', url=status['statustype'])
 
                 # TODO: Attribute "informeren" is not part of the ZTC API yet...
                 if not status_type.get('informeren', True):
