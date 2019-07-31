@@ -258,7 +258,7 @@ class ConfigView(TemplateView):
             )
 
         groups.append(
-            (_('BRiP'), _get_brp_config(config))
+            (_('BRP'), _get_brp_config(config))
         )
 
         context.update({
