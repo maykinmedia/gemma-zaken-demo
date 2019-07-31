@@ -24,7 +24,7 @@ class NotifyMethod(DjangoChoices):
 
 
 class SiteConfiguration(SingletonModel):
-    SERVICES = ['zrc', 'drc', 'ztc', 'brc', 'nc', 'vrl', 'orc', ]
+    SERVICES = ['zrc', 'drc', 'ztc', 'brc', 'nc', 'vrl', ]
     CLIENTS = {}
 
     global_api_client_id = models.CharField(
@@ -125,16 +125,6 @@ class SiteConfiguration(SingletonModel):
         _('VRL basis URL'), blank=True, default='https://ref.tst.vng.cloud/referentielijsten/api/v1/',
         max_length=255,
         help_text=_('VNG Referentielijsten API: Typisch de landelijke API URL en niet een eigen installatie.'))
-
-    # ORC-configuratie
-    orc_base_url = models.CharField(
-        _('ORC basis URL'), blank=True, default='http://localhost:8010/api/v1/',
-        max_length=255,
-        help_text=_('Overige registraties API (niet meer in gebruik).'))
-    orc_client_id = models.CharField(
-        _('Client ID'), max_length=255, blank=True)
-    orc_secret = models.CharField(
-        _('Secret'), max_length=512, blank=True)
 
     # MOR-configuratie
     zrc_bronorganisatie = models.CharField(max_length=9, default='517439943')

@@ -91,14 +91,7 @@ class SiteConfigurationAdmin(SingletonModelAdmin):
                 # 'nc_amqp_port',
             ]
         }),
-        (_('Overige registraties component (ORC)'), {
-            'fields': [
-                'orc_base_url',
-                'orc_client_id',
-                'orc_secret',
-            ]
-        }),
-        (_('Basis registratie (ingeschreven) personen (BRiP)'), {
+        (_('Basis registratie (ingeschreven) personen (BRP)'), {
             'fields': [
                 'brp_base_url',
                 'brp_api_key',
