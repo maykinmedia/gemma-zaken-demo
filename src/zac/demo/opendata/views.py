@@ -5,7 +5,7 @@ from django.views.generic import FormView
 
 from zac.demo.mixins import ZACViewMixin
 from zac.demo.models import SiteConfiguration, client
-from zac.demo.utils import get_uuid
+from zac.demo.utils import get_uuid, api_response_list_to_dict
 
 
 class CoordinatesForm(forms.Form):
@@ -35,9 +35,15 @@ class ZaakMapView(ZACViewMixin, FormView):
 
         config = SiteConfiguration.get_solo()
 
-        zaak_typen = client('ztc').list('zaaktype', catalogus_uuid=config.ztc_catalogus_uuid)
+        zaaktypen_by_url = api_response_list_to_dict(
+            client('ztc').list('zaaktype', query_params={
+                'catalogus': config.ztc_catalogus_url
+            })
+        )
+        zaaktype_choices = [(url, obj['omschrijving']) for url, obj in zaaktypen_by_url.items()]
+
         form_kwargs.update({
-            'zaaktype_choices': [(zaak_type['url'], zaak_type['omschrijving']) for zaak_type in zaak_typen]
+            'zaaktype_choices': zaaktype_choices
         })
 
         return form_kwargs

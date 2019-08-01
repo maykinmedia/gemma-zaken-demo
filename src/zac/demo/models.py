@@ -154,6 +154,10 @@ class SiteConfiguration(SingletonModel):
             if not self.nc_amqp_host:
                 raise ValidationError(_('Bij "AMQP-server" als notificatie methode moet de "AMQP-host" ingevuld zijn.'))
 
+    @property
+    def ztc_catalogus_url(self):
+        return '{}catalogussen/{}'.format(self.ztc_base_url, self.ztc_catalogus_uuid)
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
