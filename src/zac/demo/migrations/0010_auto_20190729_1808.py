@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('demo', '0009_auto_20190704_0924'),
-        ('vng_api_common', '0005_auto_20190614_1346'),
+        ('notifications', '0009_auto_20190729_0427'),
     ]
 
     operations = [
