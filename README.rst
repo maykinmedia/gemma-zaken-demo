@@ -30,10 +30,13 @@ Zie ``INSTALL.rst`` voor installatie aanwijzingen, beschikbare instellingen
 en commando's.
 
 
-.. |build-status| image:: https://jenkins.nlx.io/buildStatus/icon?job=gemma-zaken-demo
+.. |build-status| image:: https://travis-ci.org/VNG-Realisatie/gemma-zaken-demo.svg?branch=master
     :alt: Build status
-    :target: https://jenkins.nlx.io/job/gemma-zaken-demo
+    :target: https://travis-ci.org/VNG-Realisatie/gemma-zaken-demo
 
+.. |coverage| image:: https://codecov.io/github/VNG-Realisatie/gemma-zaken-demo/branch/master/graphs/badge.svg?branch=master
+    :alt: Coverage
+    :target: https://codecov.io/gh/VNG-Realisatie/gemma-zaken-demo
 
 .. _VNG-Realisatie: https://www.vngrealisatie.nl
 .. _gemma-zaken: https://github.com/VNG-Realisatie/gemma-zaken
