@@ -7,7 +7,7 @@ GEMMA Zaken - Demo applicaties
 :Keywords: gemma, zaken, demo, zrc, ztc, drc, orc
 :PythonVersion: 3.6
 
-|build-status|
+|build-status| |coverage|
 
 Demo applicaties voor GEMMA Zaken componenten zoals te vinden in `gemma-zaken`_
 
