@@ -48,7 +48,7 @@ class ZaakListView(ZACViewMixin, TemplateView):
         )
 
         # Retrieve a list of all ZaakTypen from the "main" ZTC
-        zaaktypen = client('ztc').list('zaaktype', catalogus_uuid=config.ztc_catalogus_uuid)
+        zaaktypen = client('ztc').list('zaaktype', catalogus_uuid=config.ztc_catalogus_uuid)['results']
         zaaktypes_by_url = api_response_list_to_dict(zaaktypen)
 
         # Retrieve a list of StatusTypen from the "main" ZTC.
@@ -63,7 +63,7 @@ class ZaakListView(ZACViewMixin, TemplateView):
                     'statustype',
                     catalogus_uuid=config.ztc_catalogus_uuid,
                     zaaktype_uuid=get_uuid(zaaktype['url'])
-                )
+                )['results']
             )
         statustypen_by_url = dict([
             (statustype['url'], statustype) for statustype in statustypen
@@ -236,7 +236,7 @@ class ZaakDetailView(ZACViewMixin, FormView):
             document_list.append(document)
 
         # Retrieve a list of Besluiten
-        besluit_list = client('brc').list('besluit', query_params={'zaak': self.zaak['url']})
+        besluit_list = client('brc').list('besluit', query_params={'zaak': self.zaak['url']})['results']
         besluittypes_by_url = api_response_list_to_dict(
             self.ztc_client.list('besluittype', catalogus_uuid=self.catalogus_uuid)
         )
