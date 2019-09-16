@@ -2,22 +2,22 @@ import copy
 import datetime
 import logging
 
-import requests
 from django import forms
 from django.contrib import messages
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views.generic import FormView, TemplateView
 
+import requests
 from dictdiffer import diff
-from djchoices import DjangoChoices, ChoiceItem
+from djchoices import ChoiceItem, DjangoChoices
 from zds_client.client import ClientError
 
 from ..mixins import ZACViewMixin
 from ..models import SiteConfiguration, client
 from ..utils import (
-    api_response_list_to_dict, extract_pagination_info, format_dict_diff,
-    get_uuid, isodate
+    api_response_list_to_dict, extract_pagination_info, fetch_paginated_list,
+    format_dict_diff, get_uuid, isodate
 )
 
 logger = logging.getLogger(__name__)
@@ -43,9 +43,7 @@ class ZaakListView(ZACViewMixin, TemplateView):
 
         # TODO: Workaround: The status should be done with embedding when
         # requesting a list of Zaken.
-        statusses_by_url = api_response_list_to_dict(
-            client('zrc').list('status')
-        )
+        statusses_by_url = api_response_list_to_dict(fetch_paginated_list(client('zrc'), 'status'))
 
         # Retrieve a list of all ZaakTypen from the "main" ZTC
         zaaktypen = client('ztc').list('zaaktype', catalogus_uuid=config.ztc_catalogus_uuid)['results']
@@ -212,7 +210,8 @@ class ZaakDetailView(ZACViewMixin, FormView):
 
         # Retrieve a list of Status (this is possible because we need the types
         # for just this Zaak of a certain ZaakType).
-        status_list = self.zrc_client.list('status', query_params={'zaak': self.zaak['url']})
+        # TODO: grab other pages
+        status_list = self.zrc_client.list('status', query_params={'zaak': self.zaak['url']})["results"]
         statustypes_by_url = api_response_list_to_dict(
             self.ztc_client.list('statustype', catalogus_uuid=self.catalogus_uuid, zaaktype_uuid=get_uuid(self.zaak['zaaktype']))
         )
@@ -281,9 +280,10 @@ class ZaakDetailView(ZACViewMixin, FormView):
             audit['aanmaakdatum'] = datetime.datetime.strptime(audit['aanmaakdatum'], "%Y-%m-%dT%H:%M:%S.%fZ")
 
         # Betrokkenen/Rollen
+        # TODO: fetch extra pages
         rollen_list = self.zrc_client.list('rol', query_params={
             'zaak': self.zaak['url'],
-        })
+        })['results']
 
         for rol in rollen_list:
             if rol['betrokkene']:
@@ -376,7 +376,8 @@ class StatusCreateView(ZACViewMixin, FormView):
 
         # Retrieve a list of Status (this is possible because we need the types
         # for just this Zaak of a certain ZaakType).
-        status_list = client('zrc').list('status', query_params={'zaak': self.zaak['url']})
+        # TODO: fetch extra pages
+        status_list = client('zrc').list('status', query_params={'zaak': self.zaak['url']})['results']
         statustypes_by_url = api_response_list_to_dict(
             self.ztc_client.list('statustype', catalogus_uuid=self.catalogus_uuid, zaaktype_uuid=get_uuid(self.zaak['zaaktype']))
         )
@@ -763,9 +764,10 @@ class BetrokkeneCreateView(ZACViewMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        # TODO: fetch extra pages
         rollen_list = self.zrc_client.list('rol', query_params={
             'zaak': self.zaak['url'],
-        })
+        })['results']
 
         for rol in rollen_list:
             if rol['betrokkene']:

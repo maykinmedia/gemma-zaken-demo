@@ -124,6 +124,18 @@ def extract_pagination_info(response: dict, page_param='page') -> dict:
     return pagination
 
 
+def fetch_paginated_list(client, resource: str) -> list:
+    response = client.list(resource)
+    results = response["results"]
+
+    while(response.get("next")):
+        next_page = extract_page_from_url(response["next"])
+        response = client.list(resource, query_params={"page": next_page})
+        results += response["results"]
+
+    return results
+
+
 def get_uuid(url, index=-1):
     return url.split('/')[index]
 
