@@ -5,7 +5,7 @@ from django.views.generic import FormView
 
 from zac.demo.mixins import ZACViewMixin
 from zac.demo.models import SiteConfiguration, client
-from zac.demo.utils import get_uuid, api_response_list_to_dict
+from zac.demo.utils import api_response_list_to_dict, get_uuid
 
 
 class CoordinatesForm(forms.Form):
