@@ -48,6 +48,11 @@
 
 {% block extra_scripts %}
   {% get_solo 'demo.SiteConfiguration' as site_config %}
+
+  {% if zaken_json %}
+    {{ zaken_json|json_script:"zaken-json" }}
+  {% endif %}
+
   <script type="application/javascript">
 
     function generateGeoJSONCircle(circle) {
@@ -128,7 +133,8 @@
       be a direct Ajax call.
        */
       {% if zaken_json %}
-        var results = JSON.parse('{{ zaken_json|safe }}');
+        var zakenJsonElement = document.getElementById('zaken-json');
+        var results = JSON.parse(zakenJsonElement.textContent);
 
         var infowindow = new google.maps.InfoWindow();
 
