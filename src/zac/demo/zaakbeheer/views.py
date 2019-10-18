@@ -709,7 +709,7 @@ class BetrokkeneCreateView(ZACViewMixin, FormView):
         data = {
             'zaak': self.zaak['url'],
             'betrokkene': form_data['betrokkene_url'],
-            'betrokkeneType': 'Natuurlijk persoon',
+            'betrokkeneType': 'natuurlijk_persoon',
             'roltype': form_data['roltype_url'],
             'roltoelichting': form_data['rol_toelichting'],
         }
