@@ -20,7 +20,7 @@ Introductie
 Om tijdens demonstraties aan te tonen hoe de verschillende componenten met
 elkaar samen werken zijn enkele demo applicaties ontwikkeld. Deze demo
 applicaties vormen (op dit moment) geen best practices of vormen een onderdeel
-van de nieuwe ZDS standaard.
+van de nieuwe API standaard voor Zaakgericht werken.
 
 
 Documentatie
