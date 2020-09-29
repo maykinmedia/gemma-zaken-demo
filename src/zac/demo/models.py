@@ -1,4 +1,3 @@
-import base64
 import json
 from collections import namedtuple
 from urllib.parse import urlparse
@@ -142,6 +141,16 @@ class SiteConfiguration(SingletonModel):
         help_text=_('Basis registratie (ingeschreven) personen API.'))
     brp_api_key = models.CharField(
         _('API-sleutel'), max_length=255, blank=True)
+
+    # objects API
+    objects_api = models.ForeignKey(
+        "zgw_consumers.Service", null=True, blank=True, on_delete=models.SET_NULL,
+        related_name="objects_config"
+    )
+    objecttypes_api = models.ForeignKey(
+        "zgw_consumers.Service", null=True, blank=True, on_delete=models.SET_NULL,
+        related_name="objecttypes_config"
+    )
 
     class Meta:
         verbose_name = _('Configuratie')
