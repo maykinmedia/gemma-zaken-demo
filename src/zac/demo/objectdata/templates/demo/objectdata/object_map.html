@@ -1,0 +1,115 @@
+{% extends "demo/base.html" %}
+{% load l10n solo_tags %}
+
+{% block extra_style %}
+  {{ block.super }}
+
+  <style>
+    #map-canvas { height: 600px; }
+  </style>
+{% endblock %}
+
+{% block content %}
+
+  <div class="container">
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="row">
+        <div class="col-lg-8">
+
+          <label class="required">Selecteer gebied</label>
+          <div id="map-canvas"></div>
+
+        </div>
+        <div class="col-sm-4">
+
+          {% include "includes/form_fields.html" %}
+
+          <button type="submit" class="btn btn-primary">Opvragen</button>
+
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm">
+        </div>
+      </div>
+
+    </form>
+
+  </div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+  {% get_solo 'demo.SiteConfiguration' as site_config %}
+
+  <script type="application/javascript">
+
+    function generateGeoJSONCircle(circle) {
+        // center, radius, numSides
+        const numSides = 20;
+        const degreeStep = 360 / numSides;
+        const points = []
+
+        for (let i = 0; i < numSides; i++){
+            const gpos = google.maps.geometry.spherical.computeOffset(circle.center, circle.radius, degreeStep * i);
+            points.push([gpos.lng(), gpos.lat()]);
+        }
+
+        // Duplicate the last point to close the geojson ring
+        points.push(points[0]);
+
+        return points;
+    }
+
+    function initMap() {
+        const location = new google.maps.LatLng(
+                {{ site_config.google_maps_lat|unlocalize }},
+                {{ site_config.google_maps_long|unlocalize }}
+        );
+
+        const mapDiv = document.getElementById('map-canvas');
+        let map = new google.maps.Map(mapDiv, {
+            center: location,
+            zoom: 13,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            styles: [
+                {
+                    featureType: 'poi.business',
+                    stylers: [{visibility: 'off'}]
+                },
+                {
+                    featureType: 'transit',
+                    elementType: 'labels.icon',
+                    stylers: [{visibility: 'off'}]
+                }
+            ]
+        });
+
+        let circle = new google.maps.Circle({
+          center: location,
+          map: map,
+          radius: {{ form.radius.value|default:'1000' }},
+          fillColor: '#FF0000',
+          fillOpacity: 0.2,
+          strokeColor: "#FFF",
+          strokeWeight: 0,
+          editable: true
+      });
+
+       let points = generateGeoJSONCircle(circle);
+       console.log("points=", points);
+    }
+
+
+  </script>
+
+  {{ block.super }}
+
+  <script src="https://maps.googleapis.com/maps/api/js?key={{ site_config.google_maps_api_key }}&callback=initMap&libraries=geometry" async defer></script>
+
+
+{% endblock %}
