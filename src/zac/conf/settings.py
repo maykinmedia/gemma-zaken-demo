@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     # Convenience
     'vng_api_common',
     'vng_api_common.notifications',
+    'zgw_consumers',
 
     # Apps rondom de demo
     'zac.accounts',
