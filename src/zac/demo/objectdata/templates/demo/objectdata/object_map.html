@@ -46,16 +46,20 @@
 {% block extra_scripts %}
   {% get_solo 'demo.SiteConfiguration' as site_config %}
 
+  {% if objects_json %}
+    {{ objects_json|json_script:"objects-json" }}
+  {% endif %}
+
   <script type="application/javascript">
 
     function generateGeoJSONCircle(circle) {
         // center, radius, numSides
         const numSides = 20;
         const degreeStep = 360 / numSides;
-        const points = []
+        let points = []
 
         for (let i = 0; i < numSides; i++){
-            const gpos = google.maps.geometry.spherical.computeOffset(circle.center, circle.radius, degreeStep * i);
+            const gpos = google.maps.geometry.spherical.computeOffset(circle.getCenter(), circle.getRadius(), degreeStep * i);
             points.push([gpos.lng(), gpos.lat()]);
         }
 
@@ -67,8 +71,8 @@
 
     function initMap() {
         const location = new google.maps.LatLng(
-                {{ site_config.google_maps_lat|unlocalize }},
-                {{ site_config.google_maps_long|unlocalize }}
+                {% firstof form.latitude.value site_config.google_maps_lat|unlocalize %},
+                {% firstof form.longitude.value site_config.google_maps_long|unlocalize %}
         );
 
         const mapDiv = document.getElementById('map-canvas');
@@ -98,10 +102,51 @@
           strokeColor: "#FFF",
           strokeWeight: 0,
           editable: true
-      });
+        });
 
-       let points = generateGeoJSONCircle(circle);
-       console.log("points=", points);
+        map.addListener('click', moveCircle);
+        function moveCircle(event) {
+          circle.setCenter(event.latLng);
+        }
+
+        function updateCoordinates() {
+          const points = generateGeoJSONCircle(circle);
+          $('#id_coordinates').val(JSON.stringify(points));
+
+          // Meta data to redraw circle...
+          $('#id_latitude').val(circle.getCenter().lat);
+          $('#id_longitude').val(circle.getCenter().lng);
+          $('#id_radius').val(parseInt(circle.radius));
+        }
+
+        circle.addListener('radius_changed', updateCoordinates);
+        circle.addListener('center_changed', updateCoordinates);
+
+      updateCoordinates();
+
+      /*
+      Results are obtained via a request/response instead of an Ajax call to
+      make the network traffic overview work. It can however, just as easily
+      be a direct Ajax call.
+       */
+      {% if objects_json %}
+        const objectsJsonElement = document.getElementById('objects-json');
+        const results = JSON.parse(objectsJsonElement.text);
+        const infowindow = new google.maps.InfoWindow();
+
+        results.forEach(el => {
+            const marker = new google.maps.Marker({
+                map: map,
+                position: new google.maps.LatLng(el.record.geometry.coordinates[1], el.record.geometry.coordinates[0])
+            });
+            marker.addListener('click', function() {
+                infowindow.open(map, marker);
+                infowindow.setContent('<a href='+ el.url+ '>link</a>');
+            });
+        });
+
+      {% endif %}
+
     }
 
 
