@@ -1,0 +1,160 @@
+{% extends "demo/base.html" %}
+{% load l10n solo_tags %}
+
+{% block extra_style %}
+  {{ block.super }}
+
+  <style>
+    #map-canvas { height: 600px; }
+  </style>
+{% endblock %}
+
+{% block content %}
+
+  <div class="container">
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="row">
+        <div class="col-lg-8">
+
+          <label class="required">Selecteer gebied</label>
+          <div id="map-canvas"></div>
+
+        </div>
+        <div class="col-sm-4">
+
+          {% include "includes/form_fields.html" %}
+
+          <button type="submit" class="btn btn-primary">Opvragen</button>
+
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm">
+        </div>
+      </div>
+
+    </form>
+
+  </div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+  {% get_solo 'demo.SiteConfiguration' as site_config %}
+
+  {% if objects_json %}
+    {{ objects_json|json_script:"objects-json" }}
+  {% endif %}
+
+  <script type="application/javascript">
+
+    function generateGeoJSONCircle(circle) {
+        // center, radius, numSides
+        const numSides = 20;
+        const degreeStep = 360 / numSides;
+        let points = []
+
+        for (let i = 0; i < numSides; i++){
+            const gpos = google.maps.geometry.spherical.computeOffset(circle.getCenter(), circle.getRadius(), degreeStep * i);
+            points.push([gpos.lng(), gpos.lat()]);
+        }
+
+        // Duplicate the last point to close the geojson ring
+        points.push(points[0]);
+
+        return points;
+    }
+
+    function initMap() {
+        const location = new google.maps.LatLng(
+                {% firstof form.latitude.value site_config.google_maps_lat|unlocalize %},
+                {% firstof form.longitude.value site_config.google_maps_long|unlocalize %}
+        );
+
+        const mapDiv = document.getElementById('map-canvas');
+        let map = new google.maps.Map(mapDiv, {
+            center: location,
+            zoom: 13,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            styles: [
+                {
+                    featureType: 'poi.business',
+                    stylers: [{visibility: 'off'}]
+                },
+                {
+                    featureType: 'transit',
+                    elementType: 'labels.icon',
+                    stylers: [{visibility: 'off'}]
+                }
+            ]
+        });
+
+        let circle = new google.maps.Circle({
+          center: location,
+          map: map,
+          radius: {{ form.radius.value|default:'1000' }},
+          fillColor: '#FF0000',
+          fillOpacity: 0.2,
+          strokeColor: "#FFF",
+          strokeWeight: 0,
+          editable: true
+        });
+
+        map.addListener('click', moveCircle);
+        function moveCircle(event) {
+          circle.setCenter(event.latLng);
+        }
+
+        function updateCoordinates() {
+          const points = generateGeoJSONCircle(circle);
+          $('#id_coordinates').val(JSON.stringify(points));
+
+          // Meta data to redraw circle...
+          $('#id_latitude').val(circle.getCenter().lat);
+          $('#id_longitude').val(circle.getCenter().lng);
+          $('#id_radius').val(parseInt(circle.radius));
+        }
+
+        circle.addListener('radius_changed', updateCoordinates);
+        circle.addListener('center_changed', updateCoordinates);
+
+      updateCoordinates();
+
+      /*
+      Results are obtained via a request/response instead of an Ajax call to
+      make the network traffic overview work. It can however, just as easily
+      be a direct Ajax call.
+       */
+      {% if objects_json %}
+        const objectsJsonElement = document.getElementById('objects-json');
+        const results = JSON.parse(objectsJsonElement.text);
+        const infowindow = new google.maps.InfoWindow();
+
+        results.forEach(el => {
+            const marker = new google.maps.Marker({
+                map: map,
+                position: new google.maps.LatLng(el.record.geometry.coordinates[1], el.record.geometry.coordinates[0])
+            });
+            marker.addListener('click', function() {
+                infowindow.open(map, marker);
+                infowindow.setContent('<a href='+ el.url+ '>link</a>');
+            });
+        });
+
+      {% endif %}
+
+    }
+
+
+  </script>
+
+  {{ block.super }}
+
+  <script src="https://maps.googleapis.com/maps/api/js?key={{ site_config.google_maps_api_key }}&callback=initMap&libraries=geometry" async defer></script>
+
+
+{% endblock %}

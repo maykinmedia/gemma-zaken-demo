@@ -20,5 +20,6 @@ daphne
 gemma-zds-client
 vng-api-common==1.0.5
 dictdiffer
+zgw-consumers
 
 raven
