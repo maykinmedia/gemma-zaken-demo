@@ -105,17 +105,10 @@ class SiteConfigurationAdmin(SingletonModelAdmin):
                 'ztc_mor_informatieobjecttype_image_uuid',
             ]
         }),
-        (_('Objects and objecttypes'), {
-            'fields': [
-                'objects_api',
-                'objecttypes_api',
-            ]
-        })
 
     )
     inlines = [OtherZTCInline, ]
     readonly_fields = ['get_example_callback_url', 'get_callback_jwt']
-    raw_id_fields = ('objects_api', 'objecttypes_api')
 
     def get_example_callback_url(self, obj):
         return 'http(s)://<domain>{}'.format(

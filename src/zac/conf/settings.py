@@ -80,7 +80,6 @@ INSTALLED_APPS = [
     # Convenience
     'vng_api_common',
     'vng_api_common.notifications',
-    'zgw_consumers',
 
     # Apps rondom de demo
     'zac.accounts',
@@ -95,7 +94,6 @@ INSTALLED_APPS = [
     'zac.demo.archiveren',
     'zac.demo.selectielijst',
     'zac.demo.mijngemeente',
-    'zac.demo.objectdata',
 ]
 
 MIDDLEWARE = [
