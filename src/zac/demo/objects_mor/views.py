@@ -8,7 +8,7 @@ from django.views.generic import FormView, TemplateView
 
 from ..api import (
     create_object, get_objects_grouped, get_objecttype_choices,
-    get_objecttype_melding
+    get_objecttype_melding, retrieve_object
 )
 from ..mixins import ZACViewMixin
 from ..models import SiteConfiguration, client
@@ -73,8 +73,10 @@ class ObjectMorCreateView(ZACViewMixin, FormView):
         # Verwerk de melding informatie...
         form_data = form.cleaned_data
 
+        # retrieve object data from
+        object_data = retrieve_object(form_data['object'])
+
         # Maak een Zaak aan in het ZRC.
-        # FIXME do I need to add zaak geometry?
         data = {
             'zaaktype': zaaktype['url'],
             'toelichting': form_data['toelichting'],
@@ -82,6 +84,7 @@ class ObjectMorCreateView(ZACViewMixin, FormView):
             'registratiedatum': datetime.date.today().isoformat(),
             'startdatum': datetime.date.today().isoformat(),
             'verantwoordelijkeOrganisatie': config.zrc_bronorganisatie,
+            'zaakgeometrie': object_data['record']['geometry']
         }
 
         zaak = client('zrc', request=self.request).create('zaak', data)
@@ -106,7 +109,6 @@ class ObjectMorCreateView(ZACViewMixin, FormView):
         # retrieve melding object type
         objecttype_melding = get_objecttype_melding()
         # create melding object
-        # FIXME do I need to add melding geometry?
         object_melding = create_object(
             {
                 "type": objecttype_melding["url"],

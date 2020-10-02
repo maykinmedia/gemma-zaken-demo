@@ -43,3 +43,10 @@ def create_object(data) -> dict:
     objects_client = config.objects_api.build_client()
 
     return objects_client.create("object", data=data)
+
+
+def retrieve_object(url=None, uuid=None) -> dict:
+    config = SiteConfiguration.get_solo()
+    objects_client = config.objects_api.build_client()
+
+    return objects_client.retrieve("object", url=url, uuid=uuid)
