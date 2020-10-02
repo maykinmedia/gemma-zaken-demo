@@ -96,6 +96,7 @@ INSTALLED_APPS = [
     'zac.demo.selectielijst',
     'zac.demo.mijngemeente',
     'zac.demo.objectdata',
+    'zac.demo.objects_mor',
 ]
 
 MIDDLEWARE = [

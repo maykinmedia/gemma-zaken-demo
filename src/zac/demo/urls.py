@@ -11,4 +11,5 @@ urlpatterns = [
     path('selectielijst/', include('zac.demo.selectielijst.urls')),
     path('mijngemeente/', include('zac.demo.mijngemeente.urls')),
     path('objectsdata/', include('zac.demo.objectdata.urls')),
+    path('objectsmor/', include('zac.demo.objects_mor.urls')),
 ]
