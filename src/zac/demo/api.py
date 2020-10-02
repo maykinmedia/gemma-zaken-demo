@@ -36,3 +36,10 @@ def get_objects_grouped() -> dict:
         groups[object_type] = list(objects)
 
     return groups
+
+
+def create_object(data) -> dict:
+    config = SiteConfiguration.get_solo()
+    objects_client = config.objects_api.build_client()
+
+    return objects_client.create("object", data=data)
