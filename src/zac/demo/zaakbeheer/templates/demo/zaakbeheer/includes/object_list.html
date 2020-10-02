@@ -14,7 +14,7 @@
             <td>{{ object.record.typeVersion }}</td>
 
             <td>
-                <button class="btn btn-default float-right" data-toggle="modal" data-target="#objectModal-{{forloop.counter}}">Toon wijzigingen</button>
+                <button class="btn btn-default float-right" data-toggle="modal" data-target="#objectModal-{{forloop.counter}}">Toon gegevens</button>
             </td>
         </tr>
 
@@ -34,7 +34,7 @@
                                     <strong>Veld</strong>
                                 </div>
                                 <div class="col">
-                                    <strong>waarde</strong>
+                                    <strong>Waarde</strong>
                                 </div>
                             </div>
                             {% for field, value in object.record.data.items  %}
