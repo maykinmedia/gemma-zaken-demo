@@ -1,0 +1,23 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>Datum</th>
+      <th>Type</th>
+      <th>Type versie</th>
+    </tr>
+  </thead>
+    <tbody>
+      {% for object in object_list %}
+        <tr>
+            <td>{{ object.record.startDate }}</td>
+            <td>{{ object.object_type_embedded.name }}</td>
+            <td>{{ object.record.typeVersion }}</td>
+
+{#            <td>#}
+{#                <button class="btn btn-default float-right" data-toggle="modal" data-target="#myModal-{{forloop.counter}}">Toon wijzigingen</button>#}
+{#            </td>#}
+        </tr>
+
+      {% endfor %}
+    </tbody>
+  </table>

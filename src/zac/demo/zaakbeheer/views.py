@@ -13,6 +13,7 @@ from dictdiffer import diff
 from djchoices import ChoiceItem, DjangoChoices
 from zds_client.client import ClientError
 
+from ..api import get_objecttypes_by_url, retrieve_object
 from ..mixins import ZACViewMixin
 from ..models import SiteConfiguration, client
 from ..utils import (
@@ -291,6 +292,22 @@ class ZaakDetailView(ZACViewMixin, FormView):
                 if personen:
                     rol['betrokkeneNaam'] = personen[0][1]['naam']['aanschrijfwijze']
 
+        # Objects
+        objecttypes_by_url = get_objecttypes_by_url()
+        object_list = []
+        zaak_objects = self.zrc_client.list('zaakobject', query_params={
+            'zaak': self.zaak['url'],
+        })['results']
+        for zo in zaak_objects:
+            try:
+                object = retrieve_object(url=zo["object"])
+            except ClientError as e:
+                logger.exception(e)
+                continue
+            else:
+                object["object_type_embedded"] = objecttypes_by_url.get(object["type"])
+                object_list.append(object)
+
         context.update({
             'zaak_uuid': self.zaak_uuid,
             'status_list': status_list,
@@ -298,6 +315,7 @@ class ZaakDetailView(ZACViewMixin, FormView):
             'besluit_list': besluit_list,
             'rollen_list': rollen_list,
             'resultaat': resultaat,
+            'object_list': object_list,
             'audittrail_list': sorted(audittrail_list, key=lambda x: x['aanmaakdatum'])
         })
         return context
