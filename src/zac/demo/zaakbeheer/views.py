@@ -1,5 +1,6 @@
 import copy
 import datetime
+import json
 import logging
 
 from django import forms
@@ -306,6 +307,8 @@ class ZaakDetailView(ZACViewMixin, FormView):
                 continue
             else:
                 object["object_type_embedded"] = objecttypes_by_url.get(object["type"])
+                if isinstance(object["record"]["data"], str):
+                    object["record"]["data"] = json.loads(object["record"]["data"])
                 object_list.append(object)
 
         context.update({
