@@ -109,7 +109,13 @@ class SiteConfigurationAdmin(SingletonModelAdmin):
                 'objects_api',
                 'objecttypes_api',
             ]
-        })
+        }),
+        (_('Demo applicatie: Melding openbare ruimte met Objects API'), {
+            'fields': [
+                'objecttypes_mor_objecttype_uuid',
+                'objecttypes_mor_objecttype_version',
+            ]
+        }),
 
     )
     inlines = [OtherZTCInline, ]
