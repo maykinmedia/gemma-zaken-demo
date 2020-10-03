@@ -1,0 +1,72 @@
+{% extends "demo/form_with_map.html" %}
+{% load l10n solo_tags %}
+
+{% block form-submit-label %}Indienen{% endblock %}
+
+
+{% block extra_scripts %}
+  {% get_solo 'demo.SiteConfiguration' as site_config %}
+
+  {{ object_groups|json_script:"object-groups" }}
+  <script type="application/javascript">
+
+    function initMap() {
+      let mapDiv = document.getElementById('map-canvas');
+      let map = new google.maps.Map(mapDiv, {
+        center: new google.maps.LatLng({{ site_config.google_maps_lat|unlocalize }},{{ site_config.google_maps_long|unlocalize }}),
+        zoom: 15,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        styles: [
+          {
+            featureType: 'poi.business',
+            stylers: [{visibility: 'off'}]
+          },
+          {
+            featureType: 'transit',
+            elementType: 'labels.icon',
+            stylers: [{visibility: 'off'}]
+          }
+        ]
+      });
+      let markers = [];
+
+      const objectType = document.getElementById('id_objecttype');
+      objectType.addEventListener("change", showObjects)
+
+      function removeMarkers() {
+          markers.forEach(marker => marker.setMap(null))
+          markers.length = 0;
+      }
+
+      function showObjects() {
+          removeMarkers();
+
+          const objectTypeValue = objectType.selectedOptions[0].value;
+          const objectGroups = JSON.parse(document.getElementById('object-groups').text);
+          const objects = objectGroups[objectTypeValue];
+          const objectInput = document.getElementById('id_object')
+          const infowindow = new google.maps.InfoWindow();
+
+          objects.filter(el => el.record.geometry)
+                 .forEach(el => {
+              const marker = new google.maps.Marker({
+                  map: map,
+                  position: new google.maps.LatLng(el.record.geometry.coordinates[1], el.record.geometry.coordinates[0])
+              });
+              markers.push(marker);
+              marker.addListener('click', function () {
+                  objectInput.value = el.url;
+                  $("#id_object").val(el.url);
+                  infowindow.open(map, marker);
+                  infowindow.setContent('<a href=' + el.url + '>link</a>');
+              });
+          })
+      }
+
+      showObjects();
+
+    }
+  </script>
+
+  {{ block.super }}
+{% endblock %}

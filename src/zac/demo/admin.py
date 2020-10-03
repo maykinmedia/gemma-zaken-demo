@@ -4,7 +4,6 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from solo.admin import SingletonModelAdmin
-from vng_api_common.models import APICredential, JWTSecret
 from vng_api_common.notifications.constants import (
     SCOPE_NOTIFICATIES_CONSUMEREN_LABEL
 )
@@ -110,7 +109,13 @@ class SiteConfigurationAdmin(SingletonModelAdmin):
                 'objects_api',
                 'objecttypes_api',
             ]
-        })
+        }),
+        (_('Demo applicatie: Melding openbare ruimte met Objects API'), {
+            'fields': [
+                'objecttypes_mor_objecttype_uuid',
+                'objecttypes_mor_objecttype_version',
+            ]
+        }),
 
     )
     inlines = [OtherZTCInline, ]

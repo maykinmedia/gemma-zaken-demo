@@ -151,6 +151,11 @@ class SiteConfiguration(SingletonModel):
         "zgw_consumers.Service", null=True, blank=True, on_delete=models.SET_NULL,
         related_name="objecttypes_config"
     )
+    objecttypes_mor_objecttype_uuid = models.CharField(
+        _('Objecttype "Melding" UUID'), max_length=36, blank=True)
+
+    objecttypes_mor_objecttype_version = models.SmallIntegerField(
+        _('Objecttype "Melding" Version'), null=True, blank=True)
 
     class Meta:
         verbose_name = _('Configuratie')
