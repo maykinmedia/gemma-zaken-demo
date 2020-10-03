@@ -31,6 +31,10 @@
     <a href="{% url 'demo:zaakbeheer-resultaatedit' zaak_uuid %}" class="btn btn-primary">Resultaat opgeven of wijzigen</a>
   </p>
 
+  <h2>Gerelateerde objecten</h2>
+  {% include "demo/zaakbeheer/includes/object_list.html" with object_list=object_list %}
+
+
   <h2>Audit trail</h2>
   {% include "demo/zaakbeheer/includes/audittrail_list.html" with audittrail_list=audittrail_list %}
 

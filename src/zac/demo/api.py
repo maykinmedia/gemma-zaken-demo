@@ -1,18 +1,22 @@
-import datetime
 from itertools import groupby
 
-from zac.demo.models import SiteConfiguration, client
+from zac.demo.models import SiteConfiguration
 from zac.demo.utils import api_response_list_to_dict
 
 
 # Object Types API
-def get_objecttype_choices() -> list:
+def get_objecttypes_by_url() -> dict:
     config = SiteConfiguration.get_solo()
     objecttypes_client = config.objecttypes_api.build_client()
 
     objecttypes_by_url = api_response_list_to_dict(
         objecttypes_client.list('objecttype')
     )
+    return objecttypes_by_url
+
+
+def get_objecttype_choices() -> list:
+    objecttypes_by_url = get_objecttypes_by_url()
     objecttype_choices = [(url, obj['name']) for url, obj in objecttypes_by_url.items()]
     return objecttype_choices
 
