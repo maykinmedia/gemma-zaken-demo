@@ -4,8 +4,6 @@
 #
 #    pip-compile requirements.in
 #
---extra-index-url https://packagecloud.io/github/git-lfs/pypi/simple
-
 aioredis==1.2.0           # via channels-redis
 asgiref==2.3.2            # via channels, channels-redis
 async-timeout==3.0.1      # via aioredis, asgiref
