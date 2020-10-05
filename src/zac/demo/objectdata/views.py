@@ -19,7 +19,9 @@ class ObjectMapForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['objecttype'].choices = get_objecttype_choices()
+        self.fields['objecttype'].choices = get_objecttype_choices(
+            query_params={'publicData': True}
+        )
 
 
 class ObjectMapView(ZACViewMixin, FormView):

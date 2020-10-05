@@ -27,11 +27,11 @@ class ObjectMorCreateForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        all_choices = get_objecttype_choices()
+        public_choices = get_objecttype_choices(query_params={'publicData': True})
         mor_objecttype = get_objecttype_melding()
         # can't make a complaint about complaint
         self.fields['objecttype'].choices = [
-            choice for choice in all_choices if choice[0] != mor_objecttype["url"]
+            choice for choice in public_choices if choice[0] != mor_objecttype["url"]
         ]
         self.fields['object'].widget.attrs['placeholder'] = _("Put url or choose object on the map")
 

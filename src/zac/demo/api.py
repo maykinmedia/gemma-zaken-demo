@@ -5,18 +5,18 @@ from zac.demo.utils import api_response_list_to_dict
 
 
 # Object Types API
-def get_objecttypes_by_url() -> dict:
+def get_objecttypes_by_url(**query_params) -> dict:
     config = SiteConfiguration.get_solo()
     objecttypes_client = config.objecttypes_api.build_client()
 
     objecttypes_by_url = api_response_list_to_dict(
-        objecttypes_client.list('objecttype')
+        objecttypes_client.list('objecttype', **query_params)
     )
     return objecttypes_by_url
 
 
-def get_objecttype_choices() -> list:
-    objecttypes_by_url = get_objecttypes_by_url()
+def get_objecttype_choices(**query_params) -> list:
+    objecttypes_by_url = get_objecttypes_by_url(**query_params)
     objecttype_choices = [(url, obj['name']) for url, obj in objecttypes_by_url.items()]
     return objecttype_choices
 
